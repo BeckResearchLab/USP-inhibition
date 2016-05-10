@@ -44,8 +44,13 @@ activity = activity.drop(['PUBCHEM_ACTIVITY_URL', 'PUBCHEM_RESULT_TAG', 'PUBCHEM
                           'Analysis Comment', 'Curve_Description', 'Fit_LogAC50', 'Fit_HillSlope',
                           'Fit_R2', 'Fit_InfiniteActivity', 'Fit_ZeroActivity', 'Fit_CurveClass',
                           'Excluded_Points', 'Compound QC'], axis=1)
-activity.reset_index(['PUBCHEM_RESULT_TAG'], drop=True) 
-activity['dupes'] = activity.duplicated('PUBCHEM_CID')
+activity.rename(columns={'PUBCHEM_CID': 'CID'}, inplace=True)
+activity['dupes'] = activity.duplicated('CID')
 activity = activity[activity['dupes'] == 0].drop(['dupes'], axis=1)
-activity.to_csv('activity_data/cleaned_data.csv')
-print activity
+df_compounds = df_compounds.sort_values(by='CID')
+activity = activity.sort_values(by='CID')
+df = activity.merge(df_compounds)
+df = df.sort_values(by='CID')
+df.to_csv('activity_data/merged_data.csv')
+
+
