@@ -18,7 +18,7 @@ def create_dict(filename, mol):
         data = f.readlines()
         # Null dictionary
         df = (dict([]))
-        for line in data[30000:30001]:
+        for line in data[:]:
             # Splits the line into it's key and molecular string  
             words = line.split()
             if mol == 'smiles':
@@ -50,7 +50,7 @@ def create_dataframe(filename, mol):
         data = f.readlines()
         # Null dataframe
         df = []
-        for line in data[130000:130500]:
+        for line in data[:]:
             # Splits the line into it's key and molecular string  
             words = line.split()
             if mol == 'smiles':
