@@ -4,24 +4,9 @@
 # In[1]:
 
 import pandas as pd
-# import dill as pickle
 
 
 # In[2]:
-
-# To find the number of substances tested
-with open('chemical_notation_data/substances_smiles.txt', 'r') as f:
-    data = f.readlines()
-    i = 1
-    for line in data:
-        words = line.split()
-        i += 1
-    print i 
-
-# Expected: 392719
-
-
-# In[3]:
 
 # To find the number of compounds tested
 with open('chemical_notation_data/compounds_inchi.txt', 'r') as f:
@@ -35,7 +20,7 @@ with open('chemical_notation_data/compounds_inchi.txt', 'r') as f:
 # Expected: 389561
 
 
-# In[4]:
+# In[3]:
 
 def create_dict(filename, mol):
     """
@@ -69,14 +54,10 @@ def create_dict(filename, mol):
         return df
 
 
-# In[5]:
+# In[4]:
 
-# The SMILES and InChI logs of the same material have identical keys 
+# The SMILES and InChI logs of the same compound have identical keys 
 # Creating and joining the SMILES and InChI dictionaries along the same index
-# dict_substances = {key: value + create_dict('chemical_notation_data/substances_inchi.txt', 'inchi')[key] for key, value in 
-                 #create_dict('chemical_notation_data/substances_smiles.txt', 'smiles').iteritems()}
-# dict_substances_active = {key: value + create_dict('chemical_notation_data/substances_active_inchi.txt', 'inchi')[key] for key, value in 
-                 #create_dict('chemical_notation_data/substances_active_smiles.txt', 'smiles').iteritems()}
 
 dict_compounds = {key: value + create_dict('chemical_notation_data/compounds_inchi.txt', 'inchi')[key] for key, value in 
                 create_dict('chemical_notation_data/compounds_smiles.txt','smiles').iteritems()}
@@ -84,7 +65,7 @@ dict_compounds_active = {key: value + create_dict('chemical_notation_data/compou
                 create_dict('chemical_notation_data/compounds_active_smiles.txt', 'smiles').iteritems()}
 
 
-# In[6]:
+# In[5]:
 
 def create_dataframe(filename, mol):
     """
@@ -103,7 +84,7 @@ def create_dataframe(filename, mol):
         data = f.readlines()
         # Null dataframe
         df = []
-        for line in data[:100]:
+        for line in data[:]:
             # Splits the line into it's key and molecular string  
             words = line.split()
             if mol == 'smiles':
@@ -117,55 +98,40 @@ def create_dataframe(filename, mol):
             df.append(z)
         df = pd.DataFrame(df)
         df.columns = ['ID', mol.upper()]
-        # df = df.set_index('ID')
         return df
 
 
-# In[7]:
+# In[6]:
 
 # The SMILES and InChI logs of the same material have identical indices 
 # Creating and joining the SMILES and InChI dataframes along the same index
 
-#df_substances_smiles = create_dataframe('chemical_notation_data/substances_smiles.txt', 'smiles')
-#df_substances_inchi = create_dataframe('chemical_notation_data/substances_inchi.txt', 'inchi')
-
 df_compounds_smiles = create_dataframe('chemical_notation_data/compounds_smiles.txt', 'smiles')
 df_compounds_inchi = create_dataframe('chemical_notation_data/compounds_inchi.txt','inchi')
 
-#df_substances = pd.concat([df_substances_smiles, df_substances_inchi['INCHI']], axis=1).rename(columns = {'ID':'SID'})
 df_compounds = pd.concat([df_compounds_smiles, df_compounds_inchi['INCHI']], axis=1).rename(columns = {'ID':'CID'})
 
 
-# In[8]:
-
-"""file_Name = "testfile"
-# open the file for writing
-fileObject = open(file_Name,'wb') 
-a = open('activity_data/AID_743255_datatable_part1.xlsx', 'r')
-
-# this writes the object a to the
-# file named 'testfile'
-pickle.dump(a,fileObject)   
-
-# here we close the fileObject
-fileObject.close()"""
-
-
-# In[9]:
+# In[7]:
 
 activity = pd.read_csv('activity_data/AID_743255_datatable.csv')
 for i in range(5):
     activity = activity.drop(i, axis=0)
-activity = activity.drop(['PUBCHEM_ACTIVITY_URL', 'PUBCHEM_ASSAYDATA_COMMENT', 'Potency', 'Efficacy','Analysis Comment', 
-                     'Curve_Description','Fit_LogAC50','Fit_HillSlope','Fit_R2','Fit_InfiniteActivity','Fit_ZeroActivity',
-                     'Fit_CurveClass', 'Excluded_Points', 'Compound QC'], axis=1)
-activity.reset_index(['PUBCHEM_RESULT_TAG'], drop=True)
-#activity.Index.names = ['#']
+activity = activity.drop(['PUBCHEM_ACTIVITY_URL', 'PUBCHEM_SID', 'PUBCHEM_ASSAYDATA_COMMENT', 
+                          'Potency', 'Efficacy','Analysis Comment', 'Curve_Description',
+                          'Fit_LogAC50','Fit_HillSlope','Fit_R2','Fit_InfiniteActivity',
+                          'Fit_ZeroActivity','Fit_CurveClass', 'Excluded_Points', 'Compound QC'], axis=1)
+activity.reset_index(['PUBCHEM_RESULT_TAG'], drop=True).to_csv('activity_data/cleaned_data.csv')
 
 
-# In[11]:
+# In[8]:
 
-print df_compounds
+activity.shape
+
+
+# In[9]:
+
+print df_compounds.shape
 
 
 # In[ ]:
