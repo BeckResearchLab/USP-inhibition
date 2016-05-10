@@ -14,17 +14,6 @@ with open('chemical_notation_data/compounds_inchi.txt', 'r') as f:
 # Expected: 389561
 
 
-# The SMILES and InChI logs of the same compound have identical keys 
-# Creating and joining the SMILES and InChI dictionaries along the same index
-
-dict_compounds = {key: value + create_dict('chemical_notation_data/compounds_inchi.txt',
-                                           'inchi')[key] for key, value in create_dict(
-    'chemical_notation_data/compounds_smiles.txt', 'smiles').iteritems()}
-dict_compounds_active = {key: value + create_dict('chemical_notation_data/compounds_'
-                                                  'active_inchi.txt', 'inchi')[key] for
-                         key, value in create_dict('chemical_notation_data/compounds_active'
-                                                   '_smiles.txt', 'smiles').iteritems()}
-
 # The SMILES and InChI logs of the same material have identical indices 
 # Creating and joining the SMILES and InChI dataframes along the same index
 
