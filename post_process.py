@@ -17,15 +17,13 @@ from sklearn.grid_search import GridSearchCV
 
 PICKLE = 'data.pkl'
 
-with open(PICKLE, 'rb') as file:
-    x_train = pickle.load(file)
-    y_train = pickle.load(file)
-    df_test = pickle.load(file)
-    grid_search = pickle.load(file)
-    net = pickle.load(file)
+def results():
+    with open(PICKLE, 'rb') as file:
+        grid_search = pickle.load(file)
+        net = pickle.load(file)
 
-print(grid_search.grid_scores_)
-print(grid_search.best_estimator_)
-print(grid_search.best_score_)
-print(grid_search.best_params_)
-net.save_params_to('/tmp/net.params')
+    print(grid_search.grid_scores_)
+    print(grid_search.best_estimator_)
+    print(grid_search.best_score_)
+    print(grid_search.best_params_)
+    net.save_params_to('/tmp/net.params')
