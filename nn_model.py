@@ -11,7 +11,6 @@ from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
 from sklearn.cross_validation import train_test_split
-from sklearn.grid_search import GridSearchCV
 
 NODES = 10
 # TEST_SIZE = 0.2
@@ -75,11 +74,14 @@ def build_nn(df=None, class_column_name=None):
                   'hidden1_nonlinearity': 
                   [nonlinearities.sigmoid, nonlinearities.softmax],
                   'update_learning_rate': [0.01, 0.1, 0.5]}
-    grid_search = GridSearchCV(net, param_grid, verbose=0)
-    grid_search.fit(x_train, y_train)
+    grid = sklearn.grid_search.GridSearchCV(net, param_grid, verbose=0)
+    grid.fit(x_train, y_train)
 
-    net.fit(x_train, y_train)
-    print(net.score(x_train, y_train))
+    #net.fit(x_train, y_train)
+    #print(net.score(x_train, y_train))
+
+    y_pred = grid.predict(x_test)
+    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(PICKLE, 'wb') as file:
         pickle.dump(x_train, file, pickle.HIGHEST_PROTOCOL)
@@ -87,3 +89,4 @@ def build_nn(df=None, class_column_name=None):
         pickle.dump(df_test, file, pickle.HIGHEST_PROTOCOL)
         pickle.dump(grid_search, file, pickle.HIGHEST_PROTOCOL)
         pickle.dump(net, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(accuracy, file, pickle.HIGHEST_PROTOCOL)
