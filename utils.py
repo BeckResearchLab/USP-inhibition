@@ -1,4 +1,6 @@
 import pandas as pd
+from skfeature.function.similarity_based import fisher_score
+
 
 
 def create_dict(filename, mol):
@@ -65,3 +67,11 @@ def create_dataframe(filename, mol):
         df = pd.DataFrame(df)
         df.columns = ['ID', mol.upper()]
         return df
+
+
+def select_features(x_train, y_train, num_fea):
+    f_score = fisher_score.fisher_score(x_train, y_train)
+    idx = fisher_score.feature_ranking(f_score)
+    selected_features_train = x_train[:, idx[0:num_fea]]
+
+    return fisher_score, idx, selected_features_train
