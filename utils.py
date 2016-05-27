@@ -1,6 +1,7 @@
 import pandas as pd
+import sklearn.feature_selection as f_selection
 from skfeature.function.similarity_based import fisher_score
-
+from sklearn.ensemble import ExtraTreesClassifier
 
 
 def create_dict(filename, mol):
@@ -69,9 +70,32 @@ def create_dataframe(filename, mol):
         return df
 
 
-def select_features(x_train, y_train, num_fea):
-    f_score = fisher_score.fisher_score(x_train, y_train)
-    idx = fisher_score.feature_ranking(f_score)
-    selected_features_train = x_train[:, idx[0:num_fea]]
+def select_features(x, y, num_fea):
+    """
 
-    return fisher_score, idx, selected_features_train
+    :param x: dataset of features
+    :param y: dataset of target property
+    :param num_fea: desired number of features
+    :return:
+    """
+
+    # Fisher's test
+    f_score = fisher_score.fisher_score(x, y)
+    idx = fisher_score.feature_ranking(f_score)
+    x_fisher = x[:, idx[0:num_fea]]
+
+    # Removing features with low variance
+    var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
+    x_var_threshold = var_threshold.fit_transform(x)
+
+    # Univariate feature selection
+    f_regress = f_selection.f_regression(x, y, center=False)
+    # For classification: x_kbest = f_selection.SelectKBest(f_selection.chi2, k=2).fit_transform(x, y)
+    x_kbest = f_selection.SelectKBest(score_func=f_regress, k=2).fit_transform(x, y)
+
+    # Tree-based feature selection
+    clf = ExtraTreesClassifier.fit(x, y)
+    clf.feature_importances_
+    x_trees = f_selection.SelectFromModel(clf, prefit=True).transform(x)
+
+    return fisher_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees
