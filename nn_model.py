@@ -84,9 +84,6 @@ def build_nn(df=None, class_column_name=None):
     accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(PICKLE, 'wb') as file:
-        pickle.dump(x_train, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(y_train, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(df_test, file, pickle.HIGHEST_PROTOCOL)
         pickle.dump(grid_search, file, pickle.HIGHEST_PROTOCOL)
         pickle.dump(net, file, pickle.HIGHEST_PROTOCOL)
         pickle.dump(accuracy, file, pickle.HIGHEST_PROTOCOL)
