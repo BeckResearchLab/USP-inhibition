@@ -18,7 +18,10 @@ with open('chemical_notation_data/compounds_inchi.txt', 'r') as f:
 
 def main():
     """
-    Entry point for all code
+    Module to execute the entire neural network model from data retrieval to
+    model performance metrics
+    @:param: None
+    :return: Post process results
     """
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
@@ -43,8 +46,8 @@ def main():
                               'Fit_ZeroActivity', 'Fit_CurveClass',
                               'Excluded_Points', 'Compound QC', 'Max_Response',
                               'Activity at 0.457 uM', 'Activity at 2.290 uM',
-                              'Activity at 11.40 uM', 'Activity at 57.10 uM'],
-                             axis=1)
+                              'Activity at 11.40 uM', 'Activity at 57.10 uM',
+                              'PUBCHEM_ACTIVITY_OUTCOME'], axis=1)
     activity.rename(columns={'PUBCHEM_CID': 'CID'}, inplace=True)
     activity['dupes'] = activity.duplicated('CID')
     activity = activity[activity['dupes'] == 0].drop(['dupes'], axis=1)
