@@ -161,8 +161,8 @@ def extract_descriptors(dataframe, column):
     for line in dataframe[column][:]:
         smiles = line
         drug2d.ReadMolFromSmile(smiles)
-        alldes.update(drug2d.GetAllDescriptor())
-        print len(alldes)
+        features2d = alldes.update(drug2d.GetAllDescriptor())
+        print features2d
         drug2d.ReadMolFromSmile(smiles)
-        alldes.update(drug3d.GetAllDescriptor())
-        print len(alldes)
+        features3d = alldes.update(drug3d.GetAllDescriptor())
+        print features3d
