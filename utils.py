@@ -1,16 +1,16 @@
 import pandas as pd
 import sklearn.feature_selection as f_selection
-from skfeature.function.similarity_based import fisher_score
+#from scikit-feature/skfeature/function/similarity_based import fisher_score
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.grid_search import GridSearchCV
 from sklearn.svm import SVC, SVR
 from sklearn.feature_selection import RFECV
 from sklearn.decomposition import PCA
-"""from pychem import constitution, topology, connectivity as con, kappa
+from pychem import constitution, topology, connectivity as con, kappa
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
-from pychem import charge, moe, geometric, cpsa, rdf, morse, whim, fingerprint"""
-from pychem.pychem import PyChem2d, PyChem3d
+from pychem import charge, moe, geometric, cpsa, rdf, morse, whim, fingerprint
+from pychem.pychem import Chem
 
 
 def create_dict(filename, mol):
@@ -21,7 +21,6 @@ def create_dict(filename, mol):
     filename - path to file containing molecular notation indexed by sample ID
     mol - type of molecular notation
     Input types: str, str
-    
     Outputs: dictionary of molecular notation indexed by sample ID
     Output types: Python dictionary
     """
@@ -108,7 +107,7 @@ def select_features(x, y, num_fea):
 
     # Percentile-based feature selection using regression
     x_percentile = f_selection.SelectPercentile(score_func=f_regress,
-                                               percentile = 10).fit_transform(x, y)
+                                                percentile=10).fit_transform(x, y)
 
     # "False positive rate"-based feature selection using regression
     x_percentile = f_selection.SelectFpr(score_func=f_regress,
@@ -148,21 +147,142 @@ def select_features(x, y, num_fea):
     return fisher_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees, x_percentile, selector.support_
 
 
-def extract_descriptors(dataframe, column):
+def extract_constitution_descriptors(dataframe, column):
     """
     Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
     :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
     :param column:  The column containing SMILES info for the compounds in the dataframe.
     :return:
     """
-    alldes = {}
-    drug2d = PyChem2d()
-    drug3d = PyChem3d()
+
     for line in dataframe[column][:]:
         smiles = line
-        drug2d.ReadMolFromSmile(smiles)
-        features2d = alldes.update(drug2d.GetAllDescriptor())
-        print features2d
-        drug2d.ReadMolFromSmile(smiles)
-        features3d = alldes.update(drug3d.GetAllDescriptor())
-        print features3d
+        mol = Chem.MolFromSmiles(smiles)
+        constitution = constitution.GetConstitutional(mol)
+        print constitution
+
+
+def extract_topology_descriptors(dataframe, column):
+    """
+    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in the dataframe.
+    :return:
+    """
+
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        balaban = topology.CalculateBalaban(mol)
+        mzagreb1 = topology.CalculateMZagreb1(mol)
+        harary = topology.CalculateHarary(mol)
+
+
+def extract_connectivity_descriptors(dataframe, column):
+    """
+    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in the dataframe.
+    :return:
+    """
+
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        res = con.CalculateChi2(mol)
+        res = con.CalculateMeanRandic(mol)
+        res = con.GetConnectivity(mol)
+
+
+def extract_kappa_descriptors(dataframe, column):
+    """
+    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in the dataframe.
+    :return:
+    """
+
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        res = kappa.CalculateKappa1(mol)
+        res = kappa.CalculateKappa2(mol)
+        res = kappa.GetKappa(mol)
+
+
+def extract_bcut_descriptors(dataframe, column):
+    """
+    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in the dataframe.
+    :return:
+    """
+
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        res = bcut.CalculateBurdenVDW(mol)
+        res = bcut.CalculateBurdenPolarizability(mol)
+
+
+def extract_electronic_state_descriptors(dataframe, column):
+    """
+    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in the dataframe.
+    :return:
+    """
+
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        res = estate.CalculateHeavyAtomEState(mol)
+        res = estate.CalculateMaxEState(mol)
+        res = estate.CalculateHalogenEState(mol)
+        res = estate.GetEstate(mol)
+
+
+def extract_basak_descriptors(dataframe, column):
+    """
+    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in the dataframe.
+    :return:
+    """
+
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        res = basak.CalculateBasakCIC1(mol)
+        res = basak.CalculateBasakSIC2(mol)
+        res = basak.CalculateBasakSIC3(mol)
+        res = basak.Getbasak(mol)
+
+
+def extract_moran_descriptors(dataframe, column):
+    """
+    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in the dataframe.
+    :return:
+    """
+
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        res = moran.CalculateMoranAutoVolume(mol)
+        res = moran.GetMoranAuto(mol)
+
+        res = geary.CalculateGearyAutoMass(mol)
+
+        mp = mp.CalculateMolLogP(mol)
+        mp = mp.CalculateMolMR(mol)
+        mp = mp.CalculateTPSA(mol)
+        mp = mp.GetMolecularProperty(mol)
+        res = charge.CalculateLocalDipoleIndex(mol)
+        res = charge.CalculateAllSumSquareCharge(mol)
+        res = charge.GetCharge(mol)
+        res = moe.CalculateTPSA(mol)
+        res = moe.CalculatePEOEVSA(mol)
+        res = moe.GetMOE(mol)
+        print molweight
