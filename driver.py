@@ -1,8 +1,12 @@
-import pandas as pd
+import sys
+sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
-from utils import create_dict, create_dataframe
+
+import utils
+import pandas as pd
 import nn_model
-import post_process
+import post_process  
+
 
 # To find the number of compounds tested
 with open('chemical_notation_data/compounds_inchi.txt', 'r') as f:
@@ -56,8 +60,9 @@ def main():
     df = activity.merge(df_compounds)
     df = df.sort_values(by='CID')
     df.to_csv('activity_data/merged_data.csv')
-    nn_model.build_nn(df, 'class')
-    post_process.results()
+    utils.extract_constitution_descriptors(df, 'SMILES')
+    #nn_model.build_nn(df, 'class')
+    #post_process.results()
 
 if __name__ == "__main__":
     main()
