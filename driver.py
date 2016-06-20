@@ -30,9 +30,9 @@ def main():
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
 
-    df_compounds_smiles = create_dataframe('chemical_notation_data/'
+    df_compounds_smiles = utils.create_dataframe('chemical_notation_data/'
                                            'compounds_smiles.txt', 'smiles')
-    df_compounds_inchi = create_dataframe('chemical_notation_data/'
+    df_compounds_inchi = utils.create_dataframe('chemical_notation_data/'
                                           'compounds_inchi.txt', 'inchi')
 
     df_compounds = pd.concat([df_compounds_smiles, df_compounds_inchi['INCHI']],
