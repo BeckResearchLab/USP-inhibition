@@ -154,13 +154,40 @@ def extract_constitution_descriptors(dataframe, column):
     :param column:  The column containing SMILES info for the compounds in the dataframe.
     :return:
     """
-
+    weight, nhyd, nhal, nhet, nhev, ncof, ncocl, \
+    ncobr, ncoi, ncarb, nphos, nsulph, noxy, nnitro, \
+    nring, nrot, ndonr, naccr, nsb, ndb, ntb, naro, \
+    nta, aweight = ([] for i in range(24))
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        constitution = constitution.GetConstitutional(mol)
-        print constitution
+        dict = constitution.GetConstitutional(mol)
+        weight.append(dict.get('weight'))
+        nhyd.append(dict.get('nhyd'))
+        nhal.append(dict.get('nhal'))
+        nhet.append(dict.get('nhet'))
+        nhev.append(dict.get('nhev'))
+        ncof.append(dict.get('ncof'))
+        ncocl.append(dict.get('ncocl'))
+        ncobr.append(dict.get('ncobr'))
+        ncoi.append(dict.get('ncoi'))
+        ncarb.append(dict.get('ncarb'))
+        nphos.append(dict.get('nphos'))
+        nsulph.append(dict.get('nsulph'))
+        nnitro.append(dict.get('nnitro'))
+        noxy.append(dict.get('noxy'))
+        nring.append(dict.get('nring'))
+        nrot.append(dict.get('nrot'))
+        ndonr.append(dict.get('ndonr'))
+        naccr.append(dict.get('naccr'))
+        nsb.append(dict.get('nsb'))
+        ndb.append(dict.get('ndb'))
+        ntb.append(dict.get('ntb'))
+        naro.append(dict.get('naro'))
+        nta.append(dict.get('nta'))
+        aweight.append(dict.get('aweight'))
 
+    print nring
 
 def extract_topology_descriptors(dataframe, column):
     """
