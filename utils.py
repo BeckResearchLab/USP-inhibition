@@ -11,6 +11,7 @@ from pychem import constitution, topology, connectivity as con, kappa
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
 from pychem import charge, moe, geometric, cpsa, rdf, morse, whim, fingerprint
 from pychem.pychem import Chem
+from sklearn.preprocessing import RobustScaler, LabelEncoder
 
 
 def create_dict(filename, mol):
@@ -158,6 +159,7 @@ def extract_constitution_descriptors(dataframe, column):
     ncobr, ncoi, ncarb, nphos, nsulph, noxy, nnitro, \
     nring, nrot, ndonr, naccr, nsb, ndb, ntb, naro, \
     nta, aweight = ([] for i in range(24))
+    i = 0
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
@@ -186,6 +188,8 @@ def extract_constitution_descriptors(dataframe, column):
         naro.append(dict.get('naro'))
         nta.append(dict.get('nta'))
         aweight.append(dict.get('aweight'))
+        i = i + 1
+        print i
 
     print nring
 
@@ -313,3 +317,23 @@ def extract_moran_descriptors(dataframe, column):
         res = moe.CalculatePEOEVSA(mol)
         res = moe.GetMOE(mol)
         print molweight
+
+
+def transform_dataframe(dataframe, target_column):
+        """
+        Function to read dataframe and standardize the dataframe with
+        a mean 0 and unit variance on every column except target_column
+
+        Parameters:
+            dataframe : Input pandas dataframe
+            target_column : Identity of the column in df with target data
+        Input types: (pd.Dataframe, str)
+        Output types: pd.Dataframe
+
+        """
+        cols = [col for col in dataframe.columns if col not in
+                [target_column]]
+        robust_scaler = RobustScaler()
+        df = robust_scaler.fit_transform(dataframe[cols])
+        dataframe.columns = df
+        return dataframe
