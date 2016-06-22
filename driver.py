@@ -4,9 +4,12 @@ sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
 import utils
 import pandas as pd
-import nn_model
-import post_process  
+import models
+import post_process
 
+TEST_SIZE = 0.25
+VAL_SIZE = (1/3)
+TARGET_COLUMN = 'Activity_Score'
 
 # To find the number of compounds tested
 with open('chemical_notation_data/compounds_inchi.txt', 'r') as f:
@@ -31,9 +34,9 @@ def main():
     # Creating and joining the SMILES and InChI dataframes along the same index
 
     df_compounds_smiles = utils.create_dataframe('chemical_notation_data/'
-                                           'compounds_smiles.txt', 'smiles')
+                                                 'compounds_smiles.txt', 'smiles')
     df_compounds_inchi = utils.create_dataframe('chemical_notation_data/'
-                                          'compounds_inchi.txt', 'inchi')
+                                                'compounds_inchi.txt', 'inchi')
 
     df_compounds = pd.concat([df_compounds_smiles, df_compounds_inchi['INCHI']],
                              axis=1).rename(columns={'ID': 'CID'})
@@ -60,9 +63,39 @@ def main():
     df = activity.merge(df_compounds)
     df = df.sort_values(by='CID')
     df.to_csv('activity_data/merged_data.csv')
-    utils.extract_constitution_descriptors(df, 'SMILES')
-    #nn_model.build_nn(df, 'class')
-    #post_process.results()
+
+    # Type check inputs for sanity
+    if df is None:
+        raise ValueError('df is None')
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError('df is not a dataframe')
+    if TARGET_COLUMN is None:
+        raise ValueError('target_column is None')
+    if not isinstance(TARGET_COLUMN, basestring):
+        raise TypeError('target_column is not a string')
+    if TARGET_COLUMN not in df.columns:
+        raise ValueError('target_column (%s) is not a valid column name'
+                         % TARGET_COLUMN)
+
+    # Train, validation and test split
+    df = df.sample(frac=1).reset_index(drop=True)
+    df_train, df_test = train_test_split(df, TEST_SIZE)
+    df_train, df_val = train_test_split(df_train, VAL_SIZE)
+    x_train, x_val, x_test = df_train, df_val, df_test
+
+    # Remove the classification column from the dataframe
+    x_train = x_train.drop(TARGET_COLUMN, axis=1, inplace=True).values
+    x_val = x_val.drop(TARGET_COLUMN, axis=1, inplace=True).values
+    x_test = x_test.drop(TARGET_COLUMN, axis=1, inplace=True).values
+    y_train = df_train[TARGET_COLUMN].values.astype(np.int32)
+    y_val = df_val[TARGET_COLUMN].values.astype(np.int32)
+    y_test = df_test[TARGET_COLUMN].values.astype(np.int32)
+
+    # utils.extract_constitution_descriptors(df, 'SMILES')
+    models.build_nn(x_train, y_train, x_val, y_val)
+    models.build_svm(x_train, y_train, x_val, y_val)
+
+    # post_process.results()
 
 if __name__ == "__main__":
     main()
