@@ -320,20 +320,21 @@ def extract_moran_descriptors(dataframe, column):
 
 
 def transform_dataframe(dataframe, target_column):
-        """
-        Function to read dataframe and standardize the dataframe with
-        a mean 0 and unit variance on every column except target_column
 
-        Parameters:
-            dataframe : Input pandas dataframe
-            target_column : Identity of the column in df with target data
-        Input types: (pd.Dataframe, str)
-        Output types: pd.Dataframe
+    """
+    Function to read dataframe and standardize the dataframe with
+    a mean 0 and unit variance on every column except target_column
 
-        """
-        cols = [col for col in dataframe.columns if col not in
-                [target_column]]
-        robust_scaler = RobustScaler()
-        df = robust_scaler.fit_transform(dataframe[cols])
-        dataframe.columns = df
-        return dataframe
+    Parameters:
+        dataframe : Input pandas dataframe
+        target_column : Identity of the column in df with target data
+    Input types: (pd.Dataframe, str)
+    Output types: pd.Dataframe
+
+    """
+    cols = [col for col in dataframe.columns if col not in
+            [target_column]]
+    robust_scaler = RobustScaler()
+    df = robust_scaler.fit_transform(dataframe[cols])
+    dataframe.columns = df
+    return dataframe
