@@ -6,9 +6,8 @@ import utils
 import pandas as pd
 import models
 import post_process
+from sklearn.cross_validation import train_test_split
 
-TEST_SIZE = 0.25
-VAL_SIZE = (1/3)
 TARGET_COLUMN = 'Activity_Score'
 
 # To find the number of compounds tested
@@ -79,23 +78,24 @@ def main():
 
     # Train, validation and test split
     df = df.sample(frac=1).reset_index(drop=True)
-    df_train, df_test = train_test_split(df, TEST_SIZE)
-    df_train, df_val = train_test_split(df_train, VAL_SIZE)
+    df_train, df_test = train_test_split(df, test_size=0.25)
+    df_train, df_val = train_test_split(df_train, test_size=0.333333)
     x_train, x_val, x_test = df_train, df_val, df_test
 
     # Remove the classification column from the dataframe
-    x_train = x_train.drop(TARGET_COLUMN, axis=1, inplace=True).values
-    x_val = x_val.drop(TARGET_COLUMN, axis=1, inplace=True).values
-    x_test = x_test.drop(TARGET_COLUMN, axis=1, inplace=True).values
-    y_train = df_train[TARGET_COLUMN].values.astype(np.int32)
-    y_val = df_val[TARGET_COLUMN].values.astype(np.int32)
-    y_test = df_test[TARGET_COLUMN].values.astype(np.int32)
+    x_train = x_train.drop(TARGET_COLUMN, 1)
+    x_val = x_val.drop(TARGET_COLUMN, 1)
+    x_test = x_test.drop(TARGET_COLUMN, 1)
+    y_train = pd.DataFrame(df_train[TARGET_COLUMN])
+    y_val = pd.DataFrame(df_val[TARGET_COLUMN])
+    y_test = pd.DataFrame(df_test[TARGET_COLUMN])
 
     # utils.extract_constitution_descriptors(df, 'SMILES')
-    models.build_nn(x_train, y_train, x_val, y_val)
-    models.build_svm(x_train, y_train, x_val, y_val)
+    # models.build_nn(x_train, y_train, x_val, y_val)
+    # models.build_svm(x_train, y_train, x_val, y_val)
 
     # post_process.results()
+    print x_train, x_val, x_test, y_train, y_val, y_test
 
 if __name__ == "__main__":
     main()
