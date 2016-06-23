@@ -150,95 +150,123 @@ def select_features(x, y, num_fea):
 
 def extract_constitution_descriptors(dataframe, column):
     """
-    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in the dataframe.
-    :return:
+    Extracting molecular constitution descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      constitutional descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
-    weight, nhyd, nhal, nhet, nhev, ncof, ncocl, \
-    ncobr, ncoi, ncarb, nphos, nsulph, noxy, nnitro, \
-    nring, nrot, ndonr, naccr, nsb, ndb, ntb, naro, \
-    nta, aweight = ([] for i in range(24))
-    i = 0
+    diction = []
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
         dict = constitution.GetConstitutional(mol)
-        weight.append(dict.get('weight'))
-        nhyd.append(dict.get('nhyd'))
-        nhal.append(dict.get('nhal'))
-        nhet.append(dict.get('nhet'))
-        nhev.append(dict.get('nhev'))
-        ncof.append(dict.get('ncof'))
-        ncocl.append(dict.get('ncocl'))
-        ncobr.append(dict.get('ncobr'))
-        ncoi.append(dict.get('ncoi'))
-        ncarb.append(dict.get('ncarb'))
-        nphos.append(dict.get('nphos'))
-        nsulph.append(dict.get('nsulph'))
-        nnitro.append(dict.get('nnitro'))
-        noxy.append(dict.get('noxy'))
-        nring.append(dict.get('nring'))
-        nrot.append(dict.get('nrot'))
-        ndonr.append(dict.get('ndonr'))
-        naccr.append(dict.get('naccr'))
-        nsb.append(dict.get('nsb'))
-        ndb.append(dict.get('ndb'))
-        ntb.append(dict.get('ntb'))
-        naro.append(dict.get('naro'))
-        nta.append(dict.get('nta'))
-        aweight.append(dict.get('aweight'))
-        i = i + 1
-        print i
-
-    print nring
+        diction.append(dict)
+    df_constitution = pd.DataFrame(diction, columns=["nphos", "ndb", "nsb", "ncoi",
+                                               "ncarb", "nsulph", "ncof",
+                                               "nnitro","ncobr", "naro",
+                                               "ndonr", "noxy", "nhet",
+                                               "nhev", "nhal", "naccr",
+                                               "nta", "ntb","nring", "nrot",
+                                               "Weight", "PC2", "PC3", "PC1",
+                                               "PC6", "PC4", "PC5", "AWeight",
+                                               "ncocl", "nhyd"])
+    print df_constitution
 
 def extract_topology_descriptors(dataframe, column):
     """
-    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in the dataframe.
-    :return:
+    Extracting molecular topology descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      topological descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
-
+    diction = []
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        balaban = topology.CalculateBalaban(mol)
-        mzagreb1 = topology.CalculateMZagreb1(mol)
-        harary = topology.CalculateHarary(mol)
+        dict = topology.GetTopology(mol)
+        diction.append(dict)
+    df_topology = pd.DataFrame(diction, columns=['GMTIV','AW', 'Geto', 'DZ',
+                                                 'Gravto', 'IDET', 'Sitov',
+                                                 'IDE', 'TIAC', 'Arto',
+                                                 'Qindex', 'petitjeant',
+                                                 'Hatov', 'diametert',
+                                                 'BertzCT', 'IVDE', 'ISIZ',
+                                                 'Platt', 'ZM2', 'Getov',
+                                                 'ZM1', 'J', 'radiust',
+                                                 'Tsch', 'Thara', 'W', 'MZM2',
+                                                 'GMTI', 'MZM1', 'Ipc',
+                                                 'Sito', 'Tigdi', 'Pol',
+                                                 'Hato', 'Xu'])
+    print df_topology
 
 
-def extract_connectivity_descriptors(dataframe, column):
+def extract_con_descriptors(dataframe, column):
     """
-    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in the dataframe.
-    :return:
+    Extracting molecular connectivity descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      connectivity descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
-
+    diction = []
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        res = con.CalculateChi2(mol)
-        res = con.CalculateMeanRandic(mol)
-        res = con.GetConnectivity(mol)
+        dict = con.GetConnectivity(mol)
+        diction.append(dict)
+    df_con = pd.DataFrame(diction, columns=['Chi3ch', 'knotp', 'dchi3',
+                                            'dchi2', 'dchi1', 'dchi0',
+                                            'Chi5ch', 'Chiv4', 'Chiv7',
+                                            'Chiv6', 'Chiv1', 'Chiv0',
+                                            'Chiv3', 'Chiv2', 'Chi4c',
+                                            'dchi4', 'Chiv4pc', 'Chiv3c',
+                                            'Chiv8', 'Chi3c', 'Chi8',
+                                            'Chi9', 'Chi2', 'Chi3', 'Chi0',
+                                            'Chi1', 'Chi6', 'Chi7', 'Chi4',
+                                            'Chi5', 'Chiv5', 'Chiv4c',
+                                            'Chiv9', 'Chi4pc', 'knotpv',
+                                            'Chiv5ch', 'Chiv3ch', 'Chiv10',
+                                            'Chiv6ch', 'Chi10', 'Chi4ch',
+                                            'Chiv4ch', 'mChi1', 'Chi6ch'])
+    print df_con
+
 
 
 def extract_kappa_descriptors(dataframe, column):
     """
-    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in the dataframe.
-    :return:
+    Extracting molecular kappa descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      kappa descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
-
+    diction = []
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        res = kappa.CalculateKappa1(mol)
-        res = kappa.CalculateKappa2(mol)
-        res = kappa.GetKappa(mol)
+        dict = kappa.GetKappa(mol)
+        print dict
+        diction.append(dict)
+    df_kappa = pd.DataFrame(diction, columns=["nphos", "ndb", "nsb", "ncoi",
+                                               "ncarb", "nsulph", "ncof",
+                                               "nnitro","ncobr", "naro",
+                                               "ndonr", "noxy", "nhet",
+                                               "nhev", "nhal", "naccr",
+                                               "nta", "ntb","nring", "nrot",
+                                               "Weight", "PC2", "PC3", "PC1",
+                                               "PC6", "PC4", "PC5", "AWeight",
+                                               "ncocl", "nhyd"])
+    print df_kappa
 
 
 def extract_bcut_descriptors(dataframe, column):
