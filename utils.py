@@ -318,7 +318,7 @@ def extract_estate_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     diction = []
-    for line in dataframe[column][:10]:
+    for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
         dic = estate.GetEstate(mol)
@@ -401,50 +401,112 @@ def extract_estate_descriptors(dataframe, column):
                                                'Smin18', 'Smin19'])
     print df_estate
 
+
 def extract_basak_descriptors(dataframe, column):
     """
-    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in the dataframe.
-    :return:
+    Extracting molecular basak descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      basak descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
-
+    diction = []
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        res = basak.CalculateBasakCIC1(mol)
-        res = basak.CalculateBasakSIC2(mol)
-        res = basak.CalculateBasakSIC3(mol)
-        res = basak.Getbasak(mol)
+        dic = basak.Getbasak(mol)
+        print dic
+        diction.append(dic)
+    df_basak = pd.DataFrame(diction, columns=['CIC3', 'CIC6', 'SIC5', 'SIC4',
+                                              'SIC6', 'SIC1', 'SIC0', 'SIC3',
+                                              'SIC2', 'CIC5', 'CIC2', 'CIC0',
+                                              'CIC4', 'IC3', 'IC2', 'IC1',
+                                              'IC0', 'CIC1', 'IC6', 'IC5',
+                                              'IC4'])
+    print df_basak
 
 
 def extract_moran_descriptors(dataframe, column):
     """
-    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in the dataframe.
-    :return:
+    Extracting molecular moran descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      moran descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
-
+    diction = []
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        res = moran.CalculateMoranAutoVolume(mol)
-        res = moran.GetMoranAuto(mol)
+        dic = moran.GetMoranAuto(mol)
+        diction.append(dic)
+    df_moran = pd.DataFrame(diction, columns=['MATSv8', 'MATSp4', 'MATSp8',
+                                              'MATSv1', 'MATSp6', 'MATSv3',
+                                              'MATSv2', 'MATSv5', 'MATSv4',
+                                              'MATSv7', 'MATSv6', 'MATSm8',
+                                              'MATSp1', 'MATSm4', 'MATSm5',
+                                              'MATSm6', 'MATSm7', 'MATSm1',
+                                              'MATSm2', 'MATSm3', 'MATSe4',
+                                              'MATSe5', 'MATSe6', 'MATSe7',
+                                              'MATSe1', 'MATSe2', 'MATSe3',
+                                              'MATSe8', 'MATSp3', 'MATSp7',
+                                              'MATSp5', 'MATSp2'])
+    print df_moran
 
-        res = geary.CalculateGearyAutoMass(mol)
 
-        mp = mp.CalculateMolLogP(mol)
-        mp = mp.CalculateMolMR(mol)
-        mp = mp.CalculateTPSA(mol)
-        mp = mp.GetMolecularProperty(mol)
-        res = charge.CalculateLocalDipoleIndex(mol)
-        res = charge.CalculateAllSumSquareCharge(mol)
-        res = charge.GetCharge(mol)
-        res = moe.CalculateTPSA(mol)
-        res = moe.CalculatePEOEVSA(mol)
-        res = moe.GetMOE(mol)
-        print molweight
+def extract_geary_descriptors(dataframe, column):
+    """
+    Extracting molecular geary descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      geary descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
+    """
+    diction = []
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        dic = geary.GetGearyAuto(mol)
+        diction.append(dic)
+    df_geary = pd.DataFrame(diction, columns=['GATSp8', 'GATSv3', 'GATSv2',
+                                              'GATSv1', 'GATSp6', 'GATSv7',
+                                              'GATSv6', 'GATSv5', 'GATSv4',
+                                              'GATSe2', 'GATSe3', 'GATSv8',
+                                              'GATSe6', 'GATSe7', 'GATSe4',
+                                              'GATSe5', 'GATSp5', 'GATSp4',
+                                              'GATSp7', 'GATSe1', 'GATSp1',
+                                              'GATSp3', 'GATSp2', 'GATSe8',
+                                              'GATSm2', 'GATSm3', 'GATSm1',
+                                              'GATSm6', 'GATSm7', 'GATSm4',
+                                              'GATSm5', 'GATSm8'])
+    print df_geary
+
+
+def extract_property_descriptors(dataframe, column):
+    """
+    Extracting molecular property descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      property descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
+    """
+    diction = []
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        dic = mp.GetMolecularProperty(mol)
+        diction.append(dic)
+    df_property = pd.DataFrame(diction, columns=['TPSA', 'Hy', 'LogP',
+                                                 'LogP2', 'UI', 'MR'])
+    print df_property
 
 
 def transform_dataframe(dataframe, target_column):
