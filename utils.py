@@ -1,6 +1,6 @@
 import pandas as pd
 import sklearn.feature_selection as f_selection
-#from scikit-feature/skfeature/function/similarity_based import fisher_score
+# from scikit-feature/skfeature/function/similarity_based import fisher_score
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.grid_search import GridSearchCV
@@ -162,18 +162,19 @@ def extract_constitution_descriptors(dataframe, column):
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        dict = constitution.GetConstitutional(mol)
-        diction.append(dict)
+        dic = constitution.GetConstitutional(mol)
+        diction.append(dic)
     df_constitution = pd.DataFrame(diction, columns=["nphos", "ndb", "nsb", "ncoi",
-                                               "ncarb", "nsulph", "ncof",
-                                               "nnitro","ncobr", "naro",
-                                               "ndonr", "noxy", "nhet",
-                                               "nhev", "nhal", "naccr",
-                                               "nta", "ntb","nring", "nrot",
-                                               "Weight", "PC2", "PC3", "PC1",
-                                               "PC6", "PC4", "PC5", "AWeight",
-                                               "ncocl", "nhyd"])
+                                                     "ncarb", "nsulph", "ncof",
+                                                     "nnitro", "ncobr", "naro",
+                                                     "ndonr", "noxy", "nhet",
+                                                     "nhev", "nhal", "naccr",
+                                                     "nta", "ntb", "nring", "nrot",
+                                                     "Weight", "PC2", "PC3", "PC1",
+                                                     "PC6", "PC4", "PC5", "AWeight",
+                                                     "ncocl", "nhyd"])
     print df_constitution
+
 
 def extract_topology_descriptors(dataframe, column):
     """
@@ -189,9 +190,9 @@ def extract_topology_descriptors(dataframe, column):
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        dict = topology.GetTopology(mol)
-        diction.append(dict)
-    df_topology = pd.DataFrame(diction, columns=['GMTIV','AW', 'Geto', 'DZ',
+        dic = topology.GetTopology(mol)
+        diction.append(dic)
+    df_topology = pd.DataFrame(diction, columns=['GMTIV', 'AW', 'Geto', 'DZ',
                                                  'Gravto', 'IDET', 'Sitov',
                                                  'IDE', 'TIAC', 'Arto',
                                                  'Qindex', 'petitjeant',
@@ -220,8 +221,8 @@ def extract_con_descriptors(dataframe, column):
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        dict = con.GetConnectivity(mol)
-        diction.append(dict)
+        dic = con.GetConnectivity(mol)
+        diction.append(dic)
     df_con = pd.DataFrame(diction, columns=['Chi3ch', 'knotp', 'dchi3',
                                             'dchi2', 'dchi1', 'dchi0',
                                             'Chi5ch', 'Chiv4', 'Chiv7',
@@ -239,7 +240,6 @@ def extract_con_descriptors(dataframe, column):
     print df_con
 
 
-
 def extract_kappa_descriptors(dataframe, column):
     """
     Extracting molecular kappa descriptors using PyChem package and
@@ -254,52 +254,152 @@ def extract_kappa_descriptors(dataframe, column):
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        dict = kappa.GetKappa(mol)
-        print dict
-        diction.append(dict)
-    df_kappa = pd.DataFrame(diction, columns=["nphos", "ndb", "nsb", "ncoi",
-                                               "ncarb", "nsulph", "ncof",
-                                               "nnitro","ncobr", "naro",
-                                               "ndonr", "noxy", "nhet",
-                                               "nhev", "nhal", "naccr",
-                                               "nta", "ntb","nring", "nrot",
-                                               "Weight", "PC2", "PC3", "PC1",
-                                               "PC6", "PC4", "PC5", "AWeight",
-                                               "ncocl", "nhyd"])
+        dic = kappa.GetKappa(mol)
+        diction.append(dic)
+    df_kappa = pd.DataFrame(diction, columns=['phi', 'kappa1', 'kappa3',
+                                              'kappa2', 'kappam1', 'kappam3',
+                                              'kappam2'])
     print df_kappa
 
 
-def extract_bcut_descriptors(dataframe, column):
+def extract_burden_descriptors(dataframe, column):
     """
-    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in the dataframe.
-    :return:
+    Extracting molecular burden descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      burden descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
-
+    diction = []
     for line in dataframe[column][:]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        res = bcut.CalculateBurdenVDW(mol)
-        res = bcut.CalculateBurdenPolarizability(mol)
+        dic = bcut.GetBurden(mol)
+        diction.append(dic)
+    df_burden = pd.DataFrame(diction, columns=['bcutp8', 'bcutm9', 'bcutp9',
+                                               'bcutp5', 'bcutp6', 'bcutm8',
+                                               'bcutp1', 'bcutp2', 'bcutp3',
+                                               'bcutm7', 'bcute9', 'bcutv8',
+                                               'bcutv9', 'bcutv6', 'bcutm6',
+                                               'bcutv4', 'bcutm4', 'bcutm3',
+                                               'bcutm5', 'bcutm1', 'bcutv1',
+                                               'bcutv5', 'bcute8', 'bcutv2',
+                                               'bcutm2', 'bcutp4', 'bcute3',
+                                               'bcutv14', 'bcutv15',
+                                               'bcutv16', 'bcutv10',
+                                               'bcutv11', 'bcutv12',
+                                               'bcutv13', 'bcutp7',
+                                               'bcutp16', 'bcutp14',
+                                               'bcutp15', 'bcutp12',
+                                               'bcutp13', 'bcutp10',
+                                               'bcutp11', 'bcute16',
+                                               'bcute15', 'bcute14',
+                                               'bcute13', 'bcute12',
+                                               'bcute11', 'bcute10',
+                                               'bcutv3', 'bcute7', 'bcute6',
+                                               'bcute5', 'bcute4', 'bcutv7',
+                                               'bcute2', 'bcute1', 'bcutm16',
+                                               'bcutm15', 'bcutm14',
+                                               'bcutm13', 'bcutm12',
+                                               'bcutm11', 'bcutm10'])
+    print df_burden
 
 
-def extract_electronic_state_descriptors(dataframe, column):
+def extract_estate_descriptors(dataframe, column):
     """
-    Extracting molecular descriptors using PyChem package and SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in the dataframe.
-    :return:
+    Extracting molecular E-state descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      E-state descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
-
-    for line in dataframe[column][:]:
+    diction = []
+    for line in dataframe[column][:10]:
         smiles = line
         mol = Chem.MolFromSmiles(smiles)
-        res = estate.CalculateHeavyAtomEState(mol)
-        res = estate.CalculateMaxEState(mol)
-        res = estate.CalculateHalogenEState(mol)
-        res = estate.GetEstate(mol)
-
+        dic = estate.GetEstate(mol)
+        diction.append(dic)
+    df_estate = pd.DataFrame(diction, columns=['Smax38', 'Smax39', 'Smax34',
+                                               'Smax35', 'Smax36', 'Smax37',
+                                               'Smax30', 'Smax31', 'Smax32',
+                                               'Smax33', 'S57', 'S56', 'S55',
+                                               'S54', 'S53', 'S52', 'S51',
+                                               'S50', 'S32', 'S59', 'S58',
+                                               'Smax8', 'Smax9', 'Smax0',
+                                               'Smax1', 'Smax2', 'Smax3',
+                                               'Smax4', 'Smax5', 'Smax6',
+                                               'Smax7', 'Smax29', 'Smax28',
+                                               'Smax23', 'Smax22', 'Smax21',
+                                               'Smax20', 'Smax27', 'Smax26',
+                                               'Smax25', 'Smax24', 'S44',
+                                               'S45', 'S46', 'S47', 'S40',
+                                               'S41', 'S42', 'S43', 'S48',
+                                               'S49', 'Smin78', 'Smin72',
+                                               'Smin73', 'Smin70', 'Smin71',
+                                               'Smin76', 'Smin77', 'Smin74',
+                                               'Smin75', 'S79', 'S78',
+                                               'Smin', 'Smax58', 'Smax59',
+                                               'Smax56', 'Smax57', 'S73',
+                                               'S72', 'S75', 'Smax53', 'S77',
+                                               'S76', 'Save', 'Smin69',
+                                               'Smin68', 'Shal', 'Smin61',
+                                               'Smin32', 'Smin63', 'Smin62',
+                                               'Smin65', 'Smin64', 'Smin67',
+                                               'Smin66', 'DS', 'Smin41',
+                                               'Smin40', 'Smax49', 'Smax48',
+                                               'S68', 'S69', 'Smax45',
+                                               'Smax44', 'Smax47', 'S65',
+                                               'Smax41', 'Smax40', 'Smax43',
+                                               'Smax42', 'Smin54', 'Smax52',
+                                               'Smin56', 'Smin57', 'Smin50',
+                                               'Smin51', 'Smin52', 'Smin53',
+                                               'Smin58', 'Smin59', 'Shev',
+                                               'Shet', 'Scar', 'Smin49',
+                                               'S9', 'S8', 'S3', 'S2', 'S1',
+                                               'Smin55', 'S7', 'S6', 'S5',
+                                               'S4', 'Smax78', 'S66', 'S67',
+                                               'Smax70', 'Smax71', 'Smax72',
+                                               'Smax73', 'Smax74', 'Smax75',
+                                               'Smax76', 'Smax77', 'Smin43',
+                                               'Smin42', 'S19', 'S18',
+                                               'Smin47', 'Smin46', 'Smin45',
+                                               'Smin44', 'S13', 'S12', 'S11',
+                                               'S10', 'S17', 'S16', 'S15',
+                                               'S14', 'S60', 'S64', 'Smin16',
+                                               'S61', 'Smax67', 'Smax66',
+                                               'Smax65', 'Smax64', 'Smax63',
+                                               'Smax62', 'Smax61', 'Smax60',
+                                               'Smax69', 'Smax68', 'Smin60',
+                                               'Smax', 'Smin36', 'Smin37',
+                                               'Smin34', 'Smin35', 'S62',
+                                               'Smin33', 'Smin30', 'Smin31',
+                                               'Smin38', 'Smin39', 'Smax12',
+                                               'Smax13', 'Smax10', 'Smax11',
+                                               'Smax16', 'Smax17', 'Smax14',
+                                               'Smax15', 'Smin20', 'Smax18',
+                                               'Smax19', 'S71', 'S63', 'S70',
+                                               'Smax54', 'Smax55', 'S39',
+                                               'S38', 'S35', 'S34', 'S37',
+                                               'S36', 'S31', 'S30', 'S33',
+                                               'S74', 'Smin25', 'Smin24',
+                                               'Smin27', 'Smin26', 'Smin21',
+                                               'Smax50', 'Smin23', 'Smin22',
+                                               'Smax51', 'Smin29', 'Smin28',
+                                               'Smin6', 'Smin7', 'Smin4',
+                                               'Smin5', 'Smin2', 'Smin3',
+                                               'Smin0', 'Smin1', 'Smin48',
+                                               'Smin8', 'Smin9', 'S22',
+                                               'S23', 'S20', 'S21', 'S26',
+                                               'S27', 'S24', 'S25', 'S28',
+                                               'S29', 'Smin10', 'Smin11',
+                                               'Smin12', 'Smin13', 'Smin14',
+                                               'Smin15', 'Smax46', 'Smin17',
+                                               'Smin18', 'Smin19'])
+    print df_estate
 
 def extract_basak_descriptors(dataframe, column):
     """
