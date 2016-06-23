@@ -78,6 +78,8 @@ def main():
 
     # Train, validation and test split
     df = df.sample(frac=1).reset_index(drop=True)
+    df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
+    df = df.join(df_descriptor)
     df_train, df_test = train_test_split(df, test_size=0.25)
     df_train, df_val = train_test_split(df_train, test_size=0.333333)
     x_train, x_val, x_test = df_train, df_val, df_test
@@ -90,12 +92,11 @@ def main():
     y_val = pd.DataFrame(df_val[TARGET_COLUMN])
     y_test = pd.DataFrame(df_test[TARGET_COLUMN])
 
-    # utils.extract_constitution_descriptors(df, 'SMILES')
+
     # models.build_nn(x_train, y_train, x_val, y_val)
     # models.build_svm(x_train, y_train, x_val, y_val)
 
     # post_process.results()
-    print x_train, x_val, x_test, y_train, y_val, y_test
 
 if __name__ == "__main__":
     main()
