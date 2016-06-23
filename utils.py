@@ -593,7 +593,7 @@ def extract_all_descriptors(dataframe, column):
                     the dataframe.
     :return: Descriptor dataframe
     """
-    df = dataframe[:5]
+    df = dataframe[:]
     df_constitution = extract_constitution_descriptors(df, column)
     df_topology = extract_topology_descriptors(df, column)
     df_con = extract_con_descriptors(df, column)
@@ -611,7 +611,7 @@ def extract_all_descriptors(dataframe, column):
         df_burden).join(df_estate).join(df_basak).join(df_moran).join(
         df_geary).join(df_property).join(df_charge).join(df_moe)
 
-    print df_descriptor
+    return df_descriptor
 
 
 def transform_dataframe(dataframe, target_column):
