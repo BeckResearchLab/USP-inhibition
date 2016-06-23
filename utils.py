@@ -173,7 +173,7 @@ def extract_constitution_descriptors(dataframe, column):
                                                      "Weight", "PC2", "PC3", "PC1",
                                                      "PC6", "PC4", "PC5", "AWeight",
                                                      "ncocl", "nhyd"])
-    print df_constitution
+    return df_constitution
 
 
 def extract_topology_descriptors(dataframe, column):
@@ -204,7 +204,7 @@ def extract_topology_descriptors(dataframe, column):
                                                  'GMTI', 'MZM1', 'Ipc',
                                                  'Sito', 'Tigdi', 'Pol',
                                                  'Hato', 'Xu'])
-    print df_topology
+    return df_topology
 
 
 def extract_con_descriptors(dataframe, column):
@@ -237,7 +237,7 @@ def extract_con_descriptors(dataframe, column):
                                             'Chiv5ch', 'Chiv3ch', 'Chiv10',
                                             'Chiv6ch', 'Chi10', 'Chi4ch',
                                             'Chiv4ch', 'mChi1', 'Chi6ch'])
-    print df_con
+    return df_con
 
 
 def extract_kappa_descriptors(dataframe, column):
@@ -259,7 +259,7 @@ def extract_kappa_descriptors(dataframe, column):
     df_kappa = pd.DataFrame(diction, columns=['phi', 'kappa1', 'kappa3',
                                               'kappa2', 'kappam1', 'kappam3',
                                               'kappam2'])
-    print df_kappa
+    return df_kappa
 
 
 def extract_burden_descriptors(dataframe, column):
@@ -304,7 +304,7 @@ def extract_burden_descriptors(dataframe, column):
                                                'bcutm15', 'bcutm14',
                                                'bcutm13', 'bcutm12',
                                                'bcutm11', 'bcutm10'])
-    print df_burden
+    return df_burden
 
 
 def extract_estate_descriptors(dataframe, column):
@@ -399,7 +399,7 @@ def extract_estate_descriptors(dataframe, column):
                                                'Smin12', 'Smin13', 'Smin14',
                                                'Smin15', 'Smax46', 'Smin17',
                                                'Smin18', 'Smin19'])
-    print df_estate
+    return df_estate
 
 
 def extract_basak_descriptors(dataframe, column):
@@ -425,7 +425,7 @@ def extract_basak_descriptors(dataframe, column):
                                               'CIC4', 'IC3', 'IC2', 'IC1',
                                               'IC0', 'CIC1', 'IC6', 'IC5',
                                               'IC4'])
-    print df_basak
+    return df_basak
 
 
 def extract_moran_descriptors(dataframe, column):
@@ -455,7 +455,7 @@ def extract_moran_descriptors(dataframe, column):
                                               'MATSe1', 'MATSe2', 'MATSe3',
                                               'MATSe8', 'MATSp3', 'MATSp7',
                                               'MATSp5', 'MATSp2'])
-    print df_moran
+    return df_moran
 
 
 def extract_geary_descriptors(dataframe, column):
@@ -485,7 +485,7 @@ def extract_geary_descriptors(dataframe, column):
                                               'GATSm2', 'GATSm3', 'GATSm1',
                                               'GATSm6', 'GATSm7', 'GATSm4',
                                               'GATSm5', 'GATSm8'])
-    print df_geary
+    return df_geary
 
 
 def extract_property_descriptors(dataframe, column):
@@ -506,7 +506,112 @@ def extract_property_descriptors(dataframe, column):
         diction.append(dic)
     df_property = pd.DataFrame(diction, columns=['TPSA', 'Hy', 'LogP',
                                                  'LogP2', 'UI', 'MR'])
-    print df_property
+    return df_property
+
+
+def extract_charge_descriptors(dataframe, column):
+    """
+    Extracting molecular charge descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      charge descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
+    """
+    diction = []
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        dic = charge.GetCharge(mol)
+        diction.append(dic)
+    df_charge = pd.DataFrame(diction, columns=['QNmin', 'QOss', 'Mpc',
+                                               'QHss', 'SPP', 'LDI', 'QCmin',
+                                               'Mac', 'Qass', 'QNss',
+                                               'QCmax', 'QOmax', 'Tpc',
+                                               'Qmax', 'QOmin', 'Tnc',
+                                               'QHmin', 'QCss', 'QHmax',
+                                               'QNmax', 'Rnc', 'Rpc', 'Qmin',
+                                               'Tac', 'Mnc'])
+    return df_charge
+
+
+def extract_moe_descriptors(dataframe, column):
+    """
+    Extracting molecular MOE-type descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      MOE-type descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
+    """
+    diction = []
+    for line in dataframe[column][:]:
+        smiles = line
+        mol = Chem.MolFromSmiles(smiles)
+        dic = moe.GetMOE(mol)
+        diction.append(dic)
+    df_moe = pd.DataFrame(diction, columns=['EstateVSA8', 'EstateVSA9',
+                                            'EstateVSA4', 'EstateVSA5',
+                                            'EstateVSA6', 'EstateVSA7',
+                                            'EstateVSA0', 'EstateVSA1',
+                                            'EstateVSA2', 'EstateVSA3',
+                                            'PEOEVSA13', 'PEOEVSA12',
+                                            'PEOEVSA11', 'PEOEVSA10',
+                                            'VSAEstate0', 'VSAEstate1',
+                                            'VSAEstate2', 'VSAEstate3',
+                                            'VSAEstate4', 'VSAEstate5',
+                                            'VSAEstate6', 'VSAEstate7',
+                                            'VSAEstate8', 'LabuteASA',
+                                            'PEOEVSA3', 'PEOEVSA2',
+                                            'PEOEVSA1', 'PEOEVSA0',
+                                            'PEOEVSA7', 'PEOEVSA6',
+                                            'PEOEVSA5', 'PEOEVSA4',
+                                            'MRVSA5', 'MRVSA4', 'PEOEVSA9',
+                                            'PEOEVSA8', 'MRVSA1', 'MRVSA0',
+                                            'MRVSA3', 'MRVSA2', 'MRVSA9',
+                                            'TPSA1', 'slogPVSA10',
+                                            'slogPVSA11', 'MRVSA8', 'MRVSA7',
+                                            'MRVSA6', 'EstateVSA10',
+                                            'slogPVSA2', 'slogPVSA3',
+                                            'slogPVSA0', 'slogPVSA1',
+                                            'slogPVSA6', 'slogPVSA7',
+                                            'slogPVSA4', 'slogPVSA5',
+                                            'slogPVSA8', 'slogPVSA9',
+                                            'VSAEstate9', 'VSAEstate10'])
+    return df_moe
+
+
+def extract_all_descriptors(dataframe, column):
+    """
+    Extracting all molecular descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param dataframe: The dataframe containing SMILES info for which
+                      all descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
+    """
+    df = dataframe[:5]
+    df_constitution = extract_constitution_descriptors(df, column)
+    df_topology = extract_topology_descriptors(df, column)
+    df_con = extract_con_descriptors(df, column)
+    df_kappa = extract_kappa_descriptors(df, column)
+    df_burden = extract_burden_descriptors(df, column)
+    df_estate = extract_estate_descriptors(df, column)
+    df_basak = extract_basak_descriptors(df, column)
+    df_moran = extract_moran_descriptors(df, column)
+    df_geary = extract_geary_descriptors(df, column)
+    df_property = extract_property_descriptors(df, column)
+    df_charge = extract_charge_descriptors(df, column)
+    df_moe = extract_moe_descriptors(df, column)
+
+    df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa).join(
+        df_burden).join(df_estate).join(df_basak).join(df_moran).join(
+        df_geary).join(df_property).join(df_charge).join(df_moe)
+
+    print df_descriptor
 
 
 def transform_dataframe(dataframe, target_column):
