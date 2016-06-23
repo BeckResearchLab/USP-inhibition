@@ -61,7 +61,10 @@ def main():
     activity = activity.sort_values(by='CID')
     df = activity.merge(df_compounds)
     df = df.sort_values(by='CID')
-    df.to_csv('activity_data/merged_data.csv')
+    df = df.sample(frac=1).reset_index(drop=True)
+    df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
+    df = df.join(df_descriptor)
+    df.to_csv('activity_data/descriptor_data.csv')
 
     # Type check inputs for sanity
     if df is None:
@@ -77,9 +80,6 @@ def main():
                          % TARGET_COLUMN)
 
     # Train, validation and test split
-    df = df.sample(frac=1).reset_index(drop=True)
-    df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
-    df = df.join(df_descriptor)
     df_train, df_test = train_test_split(df, test_size=0.25)
     df_train, df_val = train_test_split(df_train, test_size=0.333333)
     x_train, x_val, x_test = df_train, df_val, df_test
