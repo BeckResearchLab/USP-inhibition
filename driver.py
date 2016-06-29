@@ -11,7 +11,7 @@ from sklearn.cross_validation import train_test_split
 TARGET_COLUMN = 'Activity_Score'
 
 # To find the number of compounds tested
-with open('chemical_notation_data/compounds_inchi.txt', 'r') as f:
+with open('data/chemical_notation_data/compounds_inchi.txt', 'r') as f:
     data = f.readlines()
     i = 1
     for line in data:
@@ -32,15 +32,15 @@ def main():
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
 
-    df_compounds_smiles = utils.create_dataframe('chemical_notation_data/'
+    df_compounds_smiles = utils.create_dataframe('data/chemical_notation_data/'
                                                  'compounds_smiles.txt', 'smiles')
-    df_compounds_inchi = utils.create_dataframe('chemical_notation_data/'
+    df_compounds_inchi = utils.create_dataframe('data/chemical_notation_data/'
                                                 'compounds_inchi.txt', 'inchi')
 
     df_compounds = pd.concat([df_compounds_smiles, df_compounds_inchi['INCHI']],
                              axis=1).rename(columns={'ID': 'CID'})
 
-    activity = pd.read_csv('activity_data/AID_743255_datatable.csv')
+    activity = pd.read_csv('data/activity_data/AID_743255_datatable.csv')
     for j in range(5):
         activity = activity.drop(j, axis=0)
     activity = activity.drop(['PUBCHEM_ACTIVITY_URL', 'PUBCHEM_RESULT_TAG',
@@ -64,7 +64,7 @@ def main():
     df = df.sample(frac=1).reset_index(drop=True)
     df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
     df = df.join(df_descriptor)
-    df.to_csv('activity_data/descriptor_data.csv')
+    df.to_csv('data/descriptor_data.csv')
 
     # Type check inputs for sanity
     if df is None:
