@@ -610,25 +610,23 @@ def extract_all_descriptors(dataframe, column):
     df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa).join(
         df_burden).join(df_estate).join(df_basak).join(df_moran).join(
         df_geary).join(df_property).join(df_charge).join(df_moe)
-
+    df_descriptor = transform_dataframe(df_descriptor)
     return df_descriptor
 
 
-def transform_dataframe(dataframe, target_column):
+def transform_dataframe(dataframe):
 
     """
     Function to read dataframe and standardize the dataframe with
-    a mean 0 and unit variance on every column except target_column
+    a mean 0 and unit variance on every column
 
     Parameters:
         dataframe : Input pandas dataframe
-        target_column : Identity of the column in df with target data
-    Input types: (pd.Dataframe, str)
+    Input types: pd.Dataframe
     Output types: pd.Dataframe
 
     """
-    cols = [col for col in dataframe.columns if col not in
-            [target_column]]
+    cols = [col for col in dataframe.columns]
     robust_scaler = RobustScaler()
     df = robust_scaler.fit_transform(dataframe[cols])
     dataframe.columns = df
