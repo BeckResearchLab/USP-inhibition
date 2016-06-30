@@ -68,8 +68,11 @@ def main():
     df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
     # Transform all column values to mean 0 and unit variance
     df_descriptor = utils.transform_dataframe(df_descriptor)
-    df = df.drop(['SMILES', 'INCHI',], axis=1)
+    # Drop non-descriptor columns before training
+    df = df.drop(['SMILES', 'INCHI', 'CID',	'Phenotype'], axis=1)
     df = df.join(df_descriptor)
+    # Feature selection and reduction
+    # Data to training task
     df.to_csv('data/descriptor_data.csv')
 
     # Type check inputs for sanity
