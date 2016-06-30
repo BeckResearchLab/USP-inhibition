@@ -10,22 +10,20 @@ from sklearn.cross_validation import train_test_split
 
 TARGET_COLUMN = 'Activity_Score'
 
-# To find the number of compounds tested
+# To find the number of compounds tested; expected 389561
 with open('data/chemical_notation_data/compounds_inchi.txt', 'r') as f:
     data = f.readlines()
     i = 1
     for line in data:
         words = line.split()
         i += 1
-    print i 
-
-# Expected: 389561
+    print i
 
 
 def main():
     """
-    Module to execute the entire neural network model from data retrieval to
-    model performance metrics
+    Module to execute the entire package from data retrieval to model
+    performance metrics
     @:param: None
     :return: Post process results
     """
@@ -40,7 +38,9 @@ def main():
     df_compounds = pd.concat([df_compounds_smiles, df_compounds_inchi['INCHI']],
                              axis=1).rename(columns={'ID': 'CID'})
 
+    # Importing inhibitor activity data
     activity = pd.read_csv('data/activity_data/AID_743255_datatable.csv')
+    # Eliminates first five text rows of csv
     for j in range(5):
         activity = activity.drop(j, axis=0)
     activity = activity.drop(['PUBCHEM_ACTIVITY_URL', 'PUBCHEM_RESULT_TAG',
@@ -55,14 +55,19 @@ def main():
                               'Activity at 11.40 uM', 'Activity at 57.10 uM',
                               'PUBCHEM_ACTIVITY_OUTCOME'], axis=1)
     activity.rename(columns={'PUBCHEM_CID': 'CID'}, inplace=True)
+    # Eliminates duplicate compound rows
     activity['dupes'] = activity.duplicated('CID')
     activity = activity[activity['dupes'] == 0].drop(['dupes'], axis=1)
     df_compounds = df_compounds.sort_values(by='CID')
     activity = activity.sort_values(by='CID')
+    # Merging activity data and compound notation data
     df = activity.merge(df_compounds)
     df = df.sort_values(by='CID')
     df = df.sample(frac=1).reset_index(drop=True)
+    # Extracting molecular descriptors for all compounds
     df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
+    # Transform all column values to mean 0 and unit variance
+    df_descriptor = utils.transform_dataframe(df_descriptor)
     df = df.join(df_descriptor)
     df.to_csv('data/descriptor_data.csv')
 
