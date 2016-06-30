@@ -617,8 +617,8 @@ def extract_all_descriptors(dataframe, column):
 def transform_dataframe(dataframe):
 
     """
-    Function to read dataframe and standardize the dataframe with
-    a mean 0 and unit variance on every column
+    Function to read and standardize the dataframe with a
+    mean 0 and unit variance on every column
 
     Parameters:
         dataframe : Input pandas dataframe
