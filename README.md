@@ -2,6 +2,8 @@
 # USP-inhibition
 
 [![Join the chat at https://gitter.im/pearlphilip/USP-inhibition](https://badges.gitter.im/pearlphilip/USP-inhibition.svg)](https://gitter.im/pearlphilip/USP-inhibition?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+[![Build Status](https://travis-ci.org/pearlphilip/USP-inhibition.svg?branch=master)](https://travis-ci.org/pearlphilip/USP-inhibition)
 Cheminformatics models for the design of USP1 or UAF1 abrogators as anticancer agents
 =======
 <img src=https://raw.githubusercontent.com/pearlphilip/USP-inhibition/master/img/usp-inhibition-logo.png alt="Mountain View" width="300px" height="40px">
