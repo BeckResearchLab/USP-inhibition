@@ -5,13 +5,11 @@ Construct a neural network model and support vector regression model from a data
 import pickle
 
 import numpy as np
-import pandas as pd
 from lasagne import nonlinearities
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
-from sklearn.cross_validation import train_test_split
-from sklearn import svm
+from sklearn import svm, metrics
 
 NODES = 10
 NN_PICKLE = 'nn_data.pkl'
@@ -58,10 +56,10 @@ def build_nn(x_train, y_train, x_val, y_val):
     y_pred = grid.predict(x_val)
     accuracy = sklearn.metrics.accuracy_score(y_val, y_pred)
 
-    with open(NN_PICKLE, 'wb') as files:
-        pickle.dump(grid_search, files, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(net, files, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(accuracy, files, pickle.HIGHEST_PROTOCOL)
+    with open(NN_PICKLE, 'wb') as file:
+        pickle.dump(grid_search, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(net, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(accuracy, file, pickle.HIGHEST_PROTOCOL)
 
 
 def build_svm(x_train, y_train, x_val, y_val):
@@ -78,7 +76,13 @@ def build_svm(x_train, y_train, x_val, y_val):
     clf = svm.SVR()
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_val)
-    accuracy = sklearn.metrics.accuracy_score(y_val, y_pred)
+    mean_abs = metrics.mean_absolute_error(y_val, y_pred)
+    mean_sq = metrics.mean_squared_error(y_val, y_pred)
+    median_abs = metrics.median_absolute_error(y_val, y_pred)
+    r2 = metrics.r2_score(y_val, y_pred)
 
-    with open(SVM_PICKLE, 'wb') as files:
-        pickle.dump(accuracy, files, pickle.HIGHEST_PROTOCOL)
+    with open(SVM_PICKLE, 'wb') as file:
+        pickle.dump(mean_abs, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(mean_sq, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(median_abs, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(r2, file, pickle.HIGHEST_PROTOCOL)
