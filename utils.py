@@ -79,6 +79,40 @@ def create_dataframe(filename, mol):
         return df
 
 
+def clean_activity_dataframe(activity_df):
+    """
+
+    :param activity_df:
+    :return:
+    """
+    # Eliminates first five text rows of csv
+    for j in range(5):
+        activity_df = activity_df.drop(j, axis=0)
+    activity_df = activity_df.drop(['PUBCHEM_ACTIVITY_URL',
+                                    'PUBCHEM_RESULT_TAG',
+                                    'PUBCHEM_ACTIVITY_SCORE', 'PUBCHEM_SID',
+                                    'PUBCHEM_ASSAYDATA_COMMENT', 'Potency',
+                                    'Efficacy', 'Analysis Comment',
+                                    'Curve_Description', 'Fit_LogAC50',
+                                    'Fit_HillSlope', 'Fit_R2',
+                                    'Fit_InfiniteActivity',
+                                    'Fit_ZeroActivity', 'Fit_CurveClass',
+                                    'Excluded_Points', 'Compound QC',
+                                    'Max_Response',
+                                    'Activity at 0.457 uM',
+                                    'Activity at 2.290 uM',
+                                    'Activity at 11.40 uM',
+                                    'Activity at 57.10 uM',
+                                    'PUBCHEM_ACTIVITY_OUTCOME'], axis=1)
+    activity_df.rename(columns={'PUBCHEM_CID': 'CID'}, inplace=True)
+    # Eliminates duplicate compound rows
+    activity_df['dupes'] = activity_df.duplicated('CID')
+    activity_df = activity_df[activity_df['dupes'] == 0].drop(['dupes'],
+                                                              axis=1)
+    activity_df = activity_df.sort_values(by='CID')
+    return activity_df
+
+
 def select_features(x, y, num_fea):
     """
 
@@ -631,3 +665,4 @@ def transform_dataframe(dataframe):
     df = robust_scaler.fit_transform(dataframe[cols])
     dataframe.columns = df
     return dataframe
+
