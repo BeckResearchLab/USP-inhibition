@@ -48,18 +48,25 @@ def main():
     df = activity.merge(df_compounds)
     df = df.sort_values(by='CID')
     df = df.sample(frac=1).reset_index(drop=True)
-    print("sending to descriptor calculation")
+
+    # Drop non-descriptor columns before feature space reduction
+    df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
+
     # Extracting molecular descriptors for all compounds
+    print("sending to descriptor calculation")
     df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
+
     # Transform all column values to mean 0 and unit variance
     df_descriptor = utils.transform_dataframe(df_descriptor)
-    # Drop non-descriptor columns before training
-    df = df.drop(['SMILES', 'CID',	'Phenotype'], axis=1)
-    df = df.join(df_descriptor)
-    # Feature selection and reduction
-    # Data to training task
-    df.to_csv('data/descriptor_data.tsv', sep='\t')
+    df_descriptor.to_csv('data/descriptor_data.tsv', sep='\t')
 
+    # Insert random forest code here
+
+    # Feature selection and space reduction
+    fisher_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees, \
+        x_percentile, selector.support_ = select_features(df_descriptor, df_target, num_features)
+
+    # Data to training task
     # Type check inputs for sanity
     if df is None:
         raise ValueError('df is None')
