@@ -1,7 +1,9 @@
 import os
+
 import pandas as pd
 import sklearn.feature_selection as f_selection
-# from scikit-feature/skfeature/function/similarity_based import fisher_score
+
+from scikit-feature.skfeature.function.similarity_based import fisher_score
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.grid_search import GridSearchCV
@@ -10,9 +12,9 @@ from sklearn.feature_selection import RFECV
 from sklearn.decomposition import PCA
 from pychem import constitution, topology, connectivity as con, kappa
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
-from pychem import charge, moe, geometric, cpsa, rdf, morse, whim, fingerprint
+from pychem import charge, moe
 from pychem.pychem import Chem
-from sklearn.preprocessing import RobustScaler, LabelEncoder
+from sklearn.preprocessing import RobustScaler
 
 
 def create_dict(filename, mol):
@@ -117,10 +119,10 @@ def clean_activity_dataframe(activity_df):
 def select_features(x, y, num_features):
     """
 
-    :param x: dataset of features
-    :param y: dataset of target property
-    :param num_fea: desired number of features
-    :return:
+    :param x: dataframe of features
+    :param y: dataframe of target property
+    :param num_features: desired number of features
+    :return: Outputs of feature selection process
     """
 
     # Fisher's test
@@ -146,8 +148,8 @@ def select_features(x, y, num_features):
                                                 percentile=10).fit_transform(x, y)
 
     # "False positive rate"-based feature selection using regression
-    x_percentile = f_selection.SelectFpr(score_func=f_regress,
-                                         alpha=0.05).fit_transform(x, y)
+    x_alpha = f_selection.SelectFpr(score_func=f_regress,
+                                    alpha=0.05).fit_transform(x, y)
 
     # This data set is way to high-dimensional. Better do PCA:
     pca = PCA(n_components=2)
@@ -156,16 +158,14 @@ def select_features(x, y, num_features):
     kbest = f_selection.SelectKBest(score_func=f_regress, k=2)
 
     # Build estimator from PCA and Univariate selection:
-
     combined_features = FeatureUnion([("pca", pca), ("univ_kbest", kbest)])
 
-    # Use combined features to transform dataset:
+    # Use combined features to transform dataframe:
     x_features = combined_features.fit(x, y).transform(x)
 
     svm = SVC(kernel="linear")
 
     # Do grid search over k, n_components and C:
-
     pipeline = Pipeline([("features", x_features), ("svm", svm)])
 
     param_grid = dict(features__pca__n_components=[1, 2, 3],
@@ -180,7 +180,7 @@ def select_features(x, y, num_features):
     selector = RFECV(estimator, step=1, cv=5)
     selector = selector.fit(x, y)
 
-    return fisher_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees, x_percentile, selector.support_
+    return f_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector.support_
 
 
 def extract_constitution_descriptors(dataframe, column):
