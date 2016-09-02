@@ -1,10 +1,10 @@
 import sys
 sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
-
 import utils
 import pandas as pd
 import models
+from multiprocessing import Process
 import post_process
 from sklearn.cross_validation import train_test_split
 
@@ -19,6 +19,11 @@ with open('data/chemical_notation_data/compounds_smiles.txt', 'r') as f:
         i += 1
     print i
 
+with open('data/df_constitution.tsv', 'r') as f:
+    for i, l in enumerate(f):
+        pass
+    print i + 1
+
 
 def main():
     """
@@ -30,7 +35,6 @@ def main():
     # Importing inhibitor notation data
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
-
     df_compounds_smiles = utils.create_dataframe('data/chemical_notation_data/'
                                                  'compounds_smiles.txt', 'smiles')
     df_compounds = df_compounds_smiles.rename(columns={'ID': 'CID'})
@@ -44,6 +48,7 @@ def main():
     df = activity.merge(df_compounds)
     df = df.sort_values(by='CID')
     df = df.sample(frac=1).reset_index(drop=True)
+    print("sending to descriptor calculation")
     # Extracting molecular descriptors for all compounds
     df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
     # Transform all column values to mean 0 and unit variance
@@ -53,7 +58,7 @@ def main():
     df = df.join(df_descriptor)
     # Feature selection and reduction
     # Data to training task
-    df.to_csv('data/descriptor_data.csv')
+    df.to_csv('data/descriptor_data.tsv', sep='\t')
 
     # Type check inputs for sanity
     if df is None:
