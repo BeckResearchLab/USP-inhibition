@@ -8,6 +8,7 @@ from multiprocessing import Process
 import post_process
 from sklearn.cross_validation import train_test_split
 
+FS_PICKLE = 'fs_results.pkl'
 TARGET_COLUMN = 'Activity_Score'
 
 # To find the number of compounds tested; expected 389561
@@ -35,8 +36,9 @@ def main():
     # Importing inhibitor notation data
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
-    df_compounds_smiles = utils.create_dataframe('data/chemical_notation_data/'
-                                                 'compounds_smiles.txt', 'smiles')
+    df_compounds_smiles = utils.create_dataframe('data/chemical_notation_'
+                                                 'data/compounds_smiles.txt',
+                                                 'smiles')
     df_compounds = df_compounds_smiles.rename(columns={'ID': 'CID'})
     df_compounds = df_compounds.sort_values(by='CID')
 
@@ -58,13 +60,27 @@ def main():
 
     # Transform all column values to mean 0 and unit variance
     df_descriptor = utils.transform_dataframe(df_descriptor)
-    df_descriptor.to_csv('data/descriptor_data.tsv', sep='\t')
 
     # Insert random forest code here
 
     # Feature selection and space reduction
-    fisher_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees, \
-        x_percentile, selector.support_ = select_features(df_descriptor, df_target, num_features)
+    f_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees, \
+        x_percentile, x_alpha, selector.support_ = select_features(
+            df_descriptor, df_target, num_features)
+
+    # Pickling feature reduction outputs
+    with open(FS_PICKLE, 'wb') as file:
+        pickle.dump(f_score, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(idx, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_fisher, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_var_threshold, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_kbest, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_trees, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_percentile, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_alpha, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(selector.support_, file, pickle.HIGHEST_PROTOCOL)
+
+    # Import optimal feature space from pickle
 
     # Data to training task
     # Type check inputs for sanity
@@ -93,9 +109,8 @@ def main():
     y_val = pd.DataFrame(df_val[TARGET_COLUMN])
     y_test = pd.DataFrame(df_test[TARGET_COLUMN])
 
-
-    # models.build_nn(x_train, y_train, x_val, y_val)
-    # models.build_svm(x_train, y_train, x_val, y_val)
+    models.build_nn(x_train, y_train, x_val, y_val)
+    models.build_svm(x_train, y_train, x_val, y_val)
 
     # post_process.results()
 
