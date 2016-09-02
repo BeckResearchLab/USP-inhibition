@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import sklearn.feature_selection as f_selection
 # from scikit-feature/skfeature/function/similarity_based import fisher_score
@@ -113,7 +114,7 @@ def clean_activity_dataframe(activity_df):
     return activity_df
 
 
-def select_features(x, y, num_fea):
+def select_features(x, y, num_features):
     """
 
     :param x: dataset of features
@@ -125,7 +126,7 @@ def select_features(x, y, num_fea):
     # Fisher's test
     f_score = fisher_score.fisher_score(x, y)
     idx = fisher_score.feature_ranking(f_score)
-    x_fisher = x[:, idx[0:num_fea]]
+    x_fisher = x[:, idx[0:num_features]]
 
     # Removing features with low variance
     var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
@@ -627,25 +628,77 @@ def extract_all_descriptors(dataframe, column):
                     the dataframe.
     :return: Descriptor dataframe
     """
-    df = dataframe[:]
-    df_constitution = extract_constitution_descriptors(df, column)
-    df_topology = extract_topology_descriptors(df, column)
-    df_con = extract_con_descriptors(df, column)
-    df_kappa = extract_kappa_descriptors(df, column)
-    df_burden = extract_burden_descriptors(df, column)
-    df_estate = extract_estate_descriptors(df, column)
-    df_basak = extract_basak_descriptors(df, column)
-    df_moran = extract_moran_descriptors(df, column)
-    df_geary = extract_geary_descriptors(df, column)
-    df_property = extract_property_descriptors(df, column)
-    df_charge = extract_charge_descriptors(df, column)
-    df_moe = extract_moe_descriptors(df, column)
+    df = dataframe
+    if os.path.exists('data/df_constitution.tsv') and os.access('data/df_constitution.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        constitution = extract_constitution_descriptors(df, column)
+        constitution.to_csv('data/df_constitution.tsv', sep='\t')
+    """if os.path.exists('data/df_topology.tsv') and os.access('data/df_topology.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        print("starting topology calculation")
+        topology = extract_topology_descriptors(df, column)
+        topology.to_csv('data/df_topology.tsv', sep='\t')
+        print("done calculating topology")"""
+    if os.path.exists('data/df_con.tsv') and os.access('data/df_con.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        print("con extraction")
+        con = extract_con_descriptors(df, column)
+        con.to_csv('data/df_con.tsv', sep='\t')
+        print("con complete")
+    if os.path.exists('data/df_kappa.tsv') and os.access('data/df_kappa.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        kappa = extract_kappa_descriptors(df, column)
+        kappa.to_csv('data/df_kappa.tsv', sep='\t')
+    if os.path.exists('data/df_burden.tsv') and os.access('data/df_burden.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        burden = extract_burden_descriptors(df, column)
+        burden.to_csv('data/df_burden.tsv', sep='\t')
+    if os.path.exists('data/df_estate.tsv') and os.access('data/df_estate.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        estate = extract_estate_descriptors(df, column)
+        estate.to_csv('data/df_estate.tsv', sep='\t')
+    if os.path.exists('data/df_basak.tsv') and os.access('data/df_basak.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        basak = extract_basak_descriptors(df, column)
+        basak.to_csv('data/df_basak.tsv', sep='\t')
+    if os.path.exists('data/df_moran.tsv') and os.access('data/df_moran.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        moran = extract_moran_descriptors(df, column)
+        moran.to_csv('data/df_moran.tsv', sep='\t')
+    if os.path.exists('data/df_geary.tsv') and os.access('data/df_geary.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        geary = extract_geary_descriptors(df, column)
+        geary.to_csv('data/df_geary.tsv', sep='\t')
+    if os.path.exists('data/df_property.tsv') and os.access('data/df_property.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        prop = extract_property_descriptors(df, column)
+        prop.to_csv('data/df_property.tsv', sep='\t')
+    if os.path.exists('data/df_charge.tsv') and os.access('data/df_charge.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        charge = extract_charge_descriptors(df, column)
+        charge.to_csv('data/df_charge.tsv', sep='\t')
+    if os.path.exists('data/df_moe.tsv') and os.access('data/df_moe.tsv', os.R_OK):
+        print "File exists and is readable"
+    else:
+        moe = extract_moe_descriptors(df, column)
+        moe.to_csv('data/df_moe.tsv', sep='\t')
 
-    df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa).join(
+    """df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa).join(
         df_burden).join(df_estate).join(df_basak).join(df_moran).join(
         df_geary).join(df_property).join(df_charge).join(df_moe)
     df_descriptor = transform_dataframe(df_descriptor)
-    return df_descriptor
+    return df_descriptor"""
 
 
 def transform_dataframe(dataframe):
@@ -665,4 +718,3 @@ def transform_dataframe(dataframe):
     df = robust_scaler.fit_transform(dataframe[cols])
     dataframe.columns = df
     return dataframe
-
