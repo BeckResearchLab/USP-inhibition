@@ -3,7 +3,6 @@ import os
 import pandas as pd
 import sklearn.feature_selection as f_selection
 
-from scikit-feature.skfeature.function.similarity_based import fisher_score
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.grid_search import GridSearchCV
@@ -116,19 +115,15 @@ def clean_activity_dataframe(activity_df):
     return activity_df
 
 
-def select_features(x, y, num_features):
+def select_features(x, y):
     """
 
     :param x: dataframe of features
     :param y: dataframe of target property
-    :param num_features: desired number of features
     :return: Outputs of feature selection process
     """
 
-    # Fisher's test
-    f_score = fisher_score.fisher_score(x, y)
-    idx = fisher_score.feature_ranking(f_score)
-    x_fisher = x[:, idx[0:num_features]]
+    # Insert random forest code here
 
     # Removing features with low variance
     var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
@@ -180,7 +175,7 @@ def select_features(x, y, num_features):
     selector = RFECV(estimator, step=1, cv=5)
     selector = selector.fit(x, y)
 
-    return f_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector.support_
+    return x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector.support_
 
 
 def extract_constitution_descriptors(dataframe, column):
@@ -640,19 +635,21 @@ def extract_all_descriptors(dataframe, column):
         print("starting topology calculation")
         topology = extract_topology_descriptors(df, column)
         topology.to_csv('data/df_topology.tsv', sep='\t')
-        print("done calculating topology")"""
+        print("done calculating topology")
     if os.path.exists('data/df_con.tsv') and os.access('data/df_con.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("con extraction")
         con = extract_con_descriptors(df, column)
         con.to_csv('data/df_con.tsv', sep='\t')
-        print("con complete")
+        print("con complete")"""
     if os.path.exists('data/df_kappa.tsv') and os.access('data/df_kappa.tsv', os.R_OK):
         print "File exists and is readable"
     else:
+        print("starting kappa calculation")
         kappa = extract_kappa_descriptors(df, column)
         kappa.to_csv('data/df_kappa.tsv', sep='\t')
+    print("done calculating kappa")
     if os.path.exists('data/df_burden.tsv') and os.access('data/df_burden.tsv', os.R_OK):
         print "File exists and is readable"
     else:
