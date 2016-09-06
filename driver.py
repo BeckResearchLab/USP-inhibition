@@ -61,18 +61,12 @@ def main():
     # Transform all column values to mean 0 and unit variance
     df_descriptor = utils.transform_dataframe(df_descriptor)
 
-    # Insert random forest code here
-
     # Feature selection and space reduction
-    f_score, idx, x_fisher, x_var_threshold, x_kbest, x_trees, \
-        x_percentile, x_alpha, selector.support_ = select_features(
-            df_descriptor, df_target, num_features)
+    x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, \
+        selector.support_ = select_features(df_descriptor, df_target)
 
     # Pickling feature reduction outputs
     with open(FS_PICKLE, 'wb') as file:
-        pickle.dump(f_score, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(idx, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_fisher, file, pickle.HIGHEST_PROTOCOL)
         pickle.dump(x_var_threshold, file, pickle.HIGHEST_PROTOCOL)
         pickle.dump(x_kbest, file, pickle.HIGHEST_PROTOCOL)
         pickle.dump(x_trees, file, pickle.HIGHEST_PROTOCOL)
