@@ -2,7 +2,8 @@ import os
 
 import pandas as pd
 import sklearn.feature_selection as f_selection
-
+from sklearn.ensemble import RandomForestRegressor
+import numpy as np
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.grid_search import GridSearchCV
@@ -123,7 +124,12 @@ def select_features(x, y):
     :return: Outputs of feature selection process
     """
 
-    # Insert random forest code here
+    # Random forest feature importance - Mean decrease impurity
+    names = x.columns.values.tolist()
+    rf = RandomForestRegressor()
+    rf.fit(x, y)
+    rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_),
+                                 names), reverse=True)
 
     # Removing features with low variance
     var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
@@ -175,7 +181,7 @@ def select_features(x, y):
     selector = RFECV(estimator, step=1, cv=5)
     selector = selector.fit(x, y)
 
-    return x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector.support_
+    return rf_sorted_score, x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector.support_
 
 
 def extract_constitution_descriptors(dataframe, column):
