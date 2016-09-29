@@ -631,12 +631,12 @@ def extract_all_descriptors(df, column):
     """
     # Zip the parameters because pool.map() takes only one iterable
     params = zip(df, column)
-
+    pool = Pool()
     if os.path.exists('data/df_constitution.tsv') and os.access('data/df_constitution.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting constitution calculation")
-        constitution_df = Pool.map(extract_constitution_descriptors, params)
+        constitution_df = pool.map(extract_constitution_descriptors, params)
         constitution_df.to_csv('data/df_constitution.tsv', sep='\t')
         print("done calculating constitution")
 
@@ -644,7 +644,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting topology calculation")
-        topology_df = Pool.map(extract_topology_descriptors, params)
+        topology_df = pool.map(extract_topology_descriptors, params)
         topology_df.to_csv('data/df_topology.tsv', sep='\t')
         print("done calculating topology")
 
@@ -652,7 +652,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting con calculation")
-        con_df = Pool.map(extract_con_descriptors, params)
+        con_df = pool.map(extract_con_descriptors, params)
         con_df.to_csv('data/df_con.tsv', sep='\t')
         print("done calculating con")
 
@@ -660,7 +660,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting kappa calculation")
-        kappa_df = Pool.map(extract_kappa_descriptors, params)
+        kappa_df = pool.map(extract_kappa_descriptors, params)
         kappa_df.to_csv('data/df_kappa.tsv', sep='\t')
         print("done calculating kappa")
 
@@ -668,7 +668,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting burden calculation")
-        burden_df = Pool.map(extract_burden_descriptors, params)
+        burden_df = pool.map(extract_burden_descriptors, params)
         burden_df.to_csv('data/df_burden.tsv', sep='\t')
         print("done calculating burden")
 
@@ -676,7 +676,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting estate calculation")
-        estate_df = Pool.map(extract_estate_descriptors, params)
+        estate_df = pool.map(extract_estate_descriptors, params)
         estate_df.to_csv('data/df_estate.tsv', sep='\t')
         print("done calculating estate")
 
@@ -684,7 +684,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting basak calculation")
-        basak_df = Pool.map(extract_basak_descriptors, params)
+        basak_df = pool.map(extract_basak_descriptors, params)
         basak_df.to_csv('data/df_basak.tsv', sep='\t')
         print("done calculating basak")
 
@@ -692,7 +692,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting moran calculation")
-        moran_df = Pool.map(extract_moran_descriptors, params)
+        moran_df = pool.map(extract_moran_descriptors, params)
         moran_df.to_csv('data/df_moran.tsv', sep='\t')
         print("done calculating moran")
 
@@ -700,7 +700,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting geary calculation")
-        geary_df = Pool.map(extract_geary_descriptors, params)
+        geary_df = pool.map(extract_geary_descriptors, params)
         geary_df.to_csv('data/df_geary.tsv', sep='\t')
         print("done calculating geary")
 
@@ -708,7 +708,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting property calculation")
-        prop_df = Pool.map(extract_property_descriptors, params)
+        prop_df = pool.map(extract_property_descriptors, params)
         prop_df.to_csv('data/df_property.tsv', sep='\t')
         print("done calculating property")
 
@@ -716,7 +716,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting charge calculation")
-        charge_df = Pool.map(extract_charge_descriptors, params)
+        charge_df = pool.map(extract_charge_descriptors, params)
         charge_df.to_csv('data/df_charge.tsv', sep='\t')
         print("done calculating charge")
 
@@ -724,7 +724,7 @@ def extract_all_descriptors(df, column):
         print "File exists and is readable"
     else:
         print("starting moe calculation")
-        moe_df = Pool.map(extract_moe_descriptors, params)
+        moe_df = pool.map(extract_moe_descriptors, params)
         moe_df.to_csv('data/df_moe.tsv', sep='\t')
         print("done calculating moe")
 
