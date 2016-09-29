@@ -58,9 +58,6 @@ def main():
     print("sending to descriptor calculation")
     df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
 
-    # Transform all column values to mean 0 and unit variance
-    df_descriptor = utils.transform_dataframe(df_descriptor)
-
     # Feature selection and space reduction
     x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, \
         selector.support_ = select_features(df_descriptor, df_target)
