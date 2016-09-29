@@ -1,12 +1,11 @@
-import sys
-sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
-
 import utils
 import pandas as pd
 import models
-from multiprocessing import Process
 import post_process
 from sklearn.cross_validation import train_test_split
+
+import sys
+sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
 FS_PICKLE = 'fs_results.pkl'
 TARGET_COLUMN = 'Activity_Score'
