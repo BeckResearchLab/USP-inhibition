@@ -1,20 +1,20 @@
 import os
+from multiprocessing import Pool
 
 import pandas as pd
 import sklearn.feature_selection as f_selection
-from sklearn.ensemble import RandomForestRegressor
-import numpy as np
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.grid_search import GridSearchCV
-from sklearn.svm import SVC, SVR
-from sklearn.feature_selection import RFECV
-from sklearn.decomposition import PCA
-from pychem import constitution, topology, connectivity as con, kappa
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
-from pychem import charge, moe
+from pychem import charge, moe, constitution
+from pychem import topology, connectivity as con, kappa
 from pychem.pychem import Chem
+from sklearn.decomposition import PCA
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_selection import RFECV
+from sklearn.grid_search import GridSearchCV
+from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.preprocessing import RobustScaler
+from sklearn.svm import SVC, SVR
 
 
 def create_dict(filename, mol):
@@ -184,16 +184,16 @@ def select_features(x, y):
     return rf_sorted_score, x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector.support_
 
 
-def extract_constitution_descriptors(dataframe, column):
+def extract_constitution_descriptors(params):
     """
     Extracting molecular constitution descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      constitutional descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Constitution
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -212,16 +212,16 @@ def extract_constitution_descriptors(dataframe, column):
     return df_constitution
 
 
-def extract_topology_descriptors(dataframe, column):
+def extract_topology_descriptors(params):
     """
     Extracting molecular topology descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      topological descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Topology
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -243,16 +243,16 @@ def extract_topology_descriptors(dataframe, column):
     return df_topology
 
 
-def extract_con_descriptors(dataframe, column):
+def extract_con_descriptors(params):
     """
     Extracting molecular connectivity descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      connectivity descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Connectivity
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -276,16 +276,16 @@ def extract_con_descriptors(dataframe, column):
     return df_con
 
 
-def extract_kappa_descriptors(dataframe, column):
+def extract_kappa_descriptors(params):
     """
     Extracting molecular kappa descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      kappa descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Kappa
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -298,16 +298,16 @@ def extract_kappa_descriptors(dataframe, column):
     return df_kappa
 
 
-def extract_burden_descriptors(dataframe, column):
+def extract_burden_descriptors(params):
     """
     Extracting molecular burden descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      burden descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Burden
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -343,16 +343,16 @@ def extract_burden_descriptors(dataframe, column):
     return df_burden
 
 
-def extract_estate_descriptors(dataframe, column):
+def extract_estate_descriptors(params):
     """
     Extracting molecular E-state descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      E-state descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which E-state
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -438,16 +438,16 @@ def extract_estate_descriptors(dataframe, column):
     return df_estate
 
 
-def extract_basak_descriptors(dataframe, column):
+def extract_basak_descriptors(params):
     """
     Extracting molecular basak descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      basak descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Basak
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -464,16 +464,16 @@ def extract_basak_descriptors(dataframe, column):
     return df_basak
 
 
-def extract_moran_descriptors(dataframe, column):
+def extract_moran_descriptors(params):
     """
     Extracting molecular moran descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      moran descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Moran
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -494,16 +494,16 @@ def extract_moran_descriptors(dataframe, column):
     return df_moran
 
 
-def extract_geary_descriptors(dataframe, column):
+def extract_geary_descriptors(params):
     """
     Extracting molecular geary descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      geary descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Geary
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -524,16 +524,16 @@ def extract_geary_descriptors(dataframe, column):
     return df_geary
 
 
-def extract_property_descriptors(dataframe, column):
+def extract_property_descriptors(params):
     """
     Extracting molecular property descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      property descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Molar
+    Property descriptors info must be evaluated and the column containing
+    SMILES info for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -545,16 +545,16 @@ def extract_property_descriptors(dataframe, column):
     return df_property
 
 
-def extract_charge_descriptors(dataframe, column):
+def extract_charge_descriptors(params):
     """
     Extracting molecular charge descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      charge descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which Charge
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe.
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -572,16 +572,16 @@ def extract_charge_descriptors(dataframe, column):
     return df_charge
 
 
-def extract_moe_descriptors(dataframe, column):
+def extract_moe_descriptors(params):
     """
     Extracting molecular MOE-type descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
-                      MOE-type descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
+    :param params: The dataframe containing SMILES info for which MOE
+    descriptors info must be evaluated and the column containing SMILES info
+    for the compounds in the dataframe..
     :return: Descriptor dataframe
     """
+    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -619,89 +619,120 @@ def extract_moe_descriptors(dataframe, column):
     return df_moe
 
 
-def extract_all_descriptors(dataframe, column):
+def extract_all_descriptors(df, column):
     """
     Extracting all molecular descriptors using PyChem package and
     SMILES strings of compounds.
-    :param dataframe: The dataframe containing SMILES info for which
+    :param df: The dataframe containing SMILES info for which
                       all descriptors info must be evaluated.
     :param column:  The column containing SMILES info for the compounds in
                     the dataframe.
     :return: Descriptor dataframe
     """
-    df = dataframe
+    # Zip the parameters because pool.map() takes only one iterable
+    params = zip(df, column)
+
     if os.path.exists('data/df_constitution.tsv') and os.access('data/df_constitution.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        constitution = extract_constitution_descriptors(df, column)
-        constitution.to_csv('data/df_constitution.tsv', sep='\t')
-    """if os.path.exists('data/df_topology.tsv') and os.access('data/df_topology.tsv', os.R_OK):
+        print("starting constitution calculation")
+        constitution_df = Pool.map(extract_constitution_descriptors, params)
+        constitution_df.to_csv('data/df_constitution.tsv', sep='\t')
+        print("done calculating constitution")
+
+    if os.path.exists('data/df_topology.tsv') and os.access('data/df_topology.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting topology calculation")
-        topology = extract_topology_descriptors(df, column)
-        topology.to_csv('data/df_topology.tsv', sep='\t')
+        topology_df = Pool.map(extract_topology_descriptors, params)
+        topology_df.to_csv('data/df_topology.tsv', sep='\t')
         print("done calculating topology")
+
     if os.path.exists('data/df_con.tsv') and os.access('data/df_con.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        print("con extraction")
-        con = extract_con_descriptors(df, column)
-        con.to_csv('data/df_con.tsv', sep='\t')
-        print("con complete")"""
+        print("starting con calculation")
+        con_df = Pool.map(extract_con_descriptors, params)
+        con_df.to_csv('data/df_con.tsv', sep='\t')
+        print("done calculating con")
+
     if os.path.exists('data/df_kappa.tsv') and os.access('data/df_kappa.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting kappa calculation")
-        kappa = extract_kappa_descriptors(df, column)
-        kappa.to_csv('data/df_kappa.tsv', sep='\t')
-    print("done calculating kappa")
+        kappa_df = Pool.map(extract_kappa_descriptors, params)
+        kappa_df.to_csv('data/df_kappa.tsv', sep='\t')
+        print("done calculating kappa")
+
     if os.path.exists('data/df_burden.tsv') and os.access('data/df_burden.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        burden = extract_burden_descriptors(df, column)
-        burden.to_csv('data/df_burden.tsv', sep='\t')
+        print("starting burden calculation")
+        burden_df = Pool.map(extract_burden_descriptors, params)
+        burden_df.to_csv('data/df_burden.tsv', sep='\t')
+        print("done calculating burden")
+
     if os.path.exists('data/df_estate.tsv') and os.access('data/df_estate.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        estate = extract_estate_descriptors(df, column)
-        estate.to_csv('data/df_estate.tsv', sep='\t')
+        print("starting estate calculation")
+        estate_df = Pool.map(extract_estate_descriptors, params)
+        estate_df.to_csv('data/df_estate.tsv', sep='\t')
+        print("done calculating estate")
+
     if os.path.exists('data/df_basak.tsv') and os.access('data/df_basak.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        basak = extract_basak_descriptors(df, column)
-        basak.to_csv('data/df_basak.tsv', sep='\t')
+        print("starting basak calculation")
+        basak_df = Pool.map(extract_basak_descriptors, params)
+        basak_df.to_csv('data/df_basak.tsv', sep='\t')
+        print("done calculating basak")
+
     if os.path.exists('data/df_moran.tsv') and os.access('data/df_moran.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        moran = extract_moran_descriptors(df, column)
-        moran.to_csv('data/df_moran.tsv', sep='\t')
+        print("starting moran calculation")
+        moran_df = Pool.map(extract_moran_descriptors, params)
+        moran_df.to_csv('data/df_moran.tsv', sep='\t')
+        print("done calculating moran")
+
     if os.path.exists('data/df_geary.tsv') and os.access('data/df_geary.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        geary = extract_geary_descriptors(df, column)
-        geary.to_csv('data/df_geary.tsv', sep='\t')
+        print("starting geary calculation")
+        geary_df = Pool.map(extract_geary_descriptors, params)
+        geary_df.to_csv('data/df_geary.tsv', sep='\t')
+        print("done calculating geary")
+
     if os.path.exists('data/df_property.tsv') and os.access('data/df_property.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        prop = extract_property_descriptors(df, column)
-        prop.to_csv('data/df_property.tsv', sep='\t')
+        print("starting property calculation")
+        prop_df = Pool.map(extract_property_descriptors, params)
+        prop_df.to_csv('data/df_property.tsv', sep='\t')
+        print("done calculating property")
+
     if os.path.exists('data/df_charge.tsv') and os.access('data/df_charge.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        charge = extract_charge_descriptors(df, column)
-        charge.to_csv('data/df_charge.tsv', sep='\t')
+        print("starting charge calculation")
+        charge_df = Pool.map(extract_charge_descriptors, params)
+        charge_df.to_csv('data/df_charge.tsv', sep='\t')
+        print("done calculating charge")
+
     if os.path.exists('data/df_moe.tsv') and os.access('data/df_moe.tsv', os.R_OK):
         print "File exists and is readable"
     else:
-        moe = extract_moe_descriptors(df, column)
-        moe.to_csv('data/df_moe.tsv', sep='\t')
+        print("starting moe calculation")
+        moe_df = Pool.map(extract_moe_descriptors, params)
+        moe_df.to_csv('data/df_moe.tsv', sep='\t')
+        print("done calculating moe")
 
-    """df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa).join(
-        df_burden).join(df_estate).join(df_basak).join(df_moran).join(
-        df_geary).join(df_property).join(df_charge).join(df_moe)
+    df_descriptor = constitution_df.join(topology_df).join(con_df).join(
+        kappa_df).join(burden_df).join(estate_df).join(basak_df).join(moran_df)\
+        .join(geary_df).join(prop_df).join(charge_df).join(moe_df)
     df_descriptor = transform_dataframe(df_descriptor)
-    return df_descriptor"""
+    return df_descriptor
 
 
 def transform_dataframe(dataframe):
