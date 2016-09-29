@@ -731,7 +731,10 @@ def extract_all_descriptors(df, column):
     df_descriptor = constitution_df.join(topology_df).join(con_df).join(
         kappa_df).join(burden_df).join(estate_df).join(basak_df).join(moran_df)\
         .join(geary_df).join(prop_df).join(charge_df).join(moe_df)
+
+    # Transform all column values to mean 0 and unit variance
     df_descriptor = transform_dataframe(df_descriptor)
+
     return df_descriptor
 
 
