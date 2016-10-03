@@ -1,35 +1,40 @@
 #!/usr/bin/env python
 
 """
-Load a neural network model from a data frame
+Tasks performed after model building
 """
 
 import pickle
-
-import numpy as np
-import pandas as pd
-from lasagne import nonlinearities
-from lasagne.layers import DenseLayer
-from lasagne.layers import InputLayer
-from nolearn.lasagne import NeuralNet
-from sklearn.cross_validation import train_test_split
-from sklearn.grid_search import GridSearchCV
 
 NN_PICKLE = 'nn_data.pkl'
 SVM_PICKLE = 'svm_data.pkl'
 
 
 def results():
+    """
+    Printing results and metrics from the pickles used with the learning
+    models used in models.py
+    :return: None
+    """
     with open(NN_PICKLE, 'rb') as result:
         grid = pickle.load(result)
         net = pickle.load(result)
         accuracy = pickle.load(result)
 
+    print("A list of named tuples of scores for each set of parameter "
+          "combinations in param_grid:")
+    print("[parameters, mean_validation_score over CV folds, the list of "
+          "scores for each fold]")
     print(grid.grid_scores_)
+    print("Estimator that was chosen by the search with the highest score:")
     print(grid.best_estimator_)
+    print("Score of best_estimator on the held out data:")
     print(grid.best_score_)
-    print("Best parameters set found on development set:")
+    print("Parameter setting that gave the best results on the held out data:")
     print(grid.best_params_)
+    print("Scorer function used on the held out data to choose the best "
+          "parameters for the model:")
+    print(grid.scorer_)
     print("Accuracy prediction score:")
     print(accuracy)
     grid.save_params_to('/tmp/grid.params')
