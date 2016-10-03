@@ -1,10 +1,17 @@
 #!/usr/bin/env python
 
 """
-Tasks performed after model building
+Tasks performed after model building: Metric analysis and display
 """
 
 import pickle
+
+__author__ = "Pearl Philip"
+__credits__ = ["Pearl Philip", "David Beck"]
+__license__ = "BSD 3-Clause License"
+__maintainer__ = "Pearl Philip"
+__email__ = "pphilip@uw.edu"
+__status__ = "Production"
 
 NN_PICKLE = 'nn_data.pkl'
 SVM_PICKLE = 'svm_data.pkl'
