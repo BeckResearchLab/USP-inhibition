@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+
 """
-Construct a neural network model and support vector regression model from a data frame
+Construct a neural network model and support vector regression model from the data
 """
 
 import pickle
@@ -19,12 +21,12 @@ SVM_PICKLE = 'svm_data.pkl'
 def build_nn(x_train, y_train, x_val, y_val):
     """
     Construct a regression neural network model from input dataframe
-    
-    Parameters:
-        x_train : features dataframe for model training
-        y_train : target dataframe for model training
-        x_val : features dataframe for model validation
-        y_val : target dataframe for model validation
+
+    :param x_train: features dataframe for model training
+    :param y_train: target dataframe for model training
+    :param x_val: features dataframe for model validation
+    :param y_val: target dataframe for model validation
+    :return: None
     """
 
     # Create classification model
@@ -43,14 +45,15 @@ def build_nn(x_train, y_train, x_val, y_val):
                     verbose=1,
                     max_epochs=100)
 
-    param_grid = {'hidden0_num_units': [4, 17, 25],
+    param_grid = {'hidden0_num_units': [1, 4, 17, 25],
                   'hidden0_nonlinearity': 
                   [nonlinearities.sigmoid, nonlinearities.softmax],
-                  'hidden1_num_units': [4, 17, 25],
+                  'hidden1_num_units': [1, 4, 17, 25],
                   'hidden1_nonlinearity': 
                   [nonlinearities.sigmoid, nonlinearities.softmax],
                   'update_learning_rate': [0.01, 0.1, 0.5]}
-    grid = sklearn.grid_search.GridSearchCV(net, param_grid, verbose=0)
+    grid = sklearn.grid_search.GridSearchCV(net, param_grid, verbose=0,
+                                            n_jobs=3, cv=3)
     grid.fit(x_train, y_train)
 
     y_pred = grid.predict(x_val)
@@ -67,11 +70,11 @@ def build_svm(x_train, y_train, x_val, y_val):
     """
     Construct a regression support vector regression model from input dataframe
 
-    Parameters:
-        x_train : features dataframe for model training
-        y_train : target dataframe for model training
-        x_val : features dataframe for model validation
-        y_val : target dataframe for model validation
+    :param x_train: features dataframe for model training
+    :param y_train: target dataframe for model training
+    :param x_val: features dataframe for model validation
+    :param y_val: target dataframe for model validation
+    :return: None
     """
 
     clf = svm.SVR()
