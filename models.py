@@ -13,6 +13,13 @@ from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
 from sklearn import svm, metrics
 
+__author__ = "Pearl Philip"
+__credits__ = ["Pearl Philip", "David Beck"]
+__license__ = "BSD 3-Clause License"
+__maintainer__ = "Pearl Philip"
+__email__ = "pphilip@uw.edu"
+__status__ = "Production"
+
 NODES = 10
 NN_PICKLE = 'nn_data.pkl'
 SVM_PICKLE = 'svm_data.pkl'
