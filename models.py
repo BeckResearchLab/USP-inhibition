@@ -54,12 +54,13 @@ def build_nn(x_train, y_train, x_val, y_val):
     grid.fit(x_train, y_train)
 
     y_pred = grid.predict(x_val)
+    # Accuracy prediction score
     accuracy = sklearn.metrics.accuracy_score(y_val, y_pred)
 
-    with open(NN_PICKLE, 'wb') as file:
-        pickle.dump(grid_search, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(net, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(accuracy, file, pickle.HIGHEST_PROTOCOL)
+    with open(NN_PICKLE, 'wb') as results:
+        pickle.dump(grid, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(net, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
 
 
 def build_svm(x_train, y_train, x_val, y_val):
@@ -76,13 +77,21 @@ def build_svm(x_train, y_train, x_val, y_val):
     clf = svm.SVR()
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_val)
-    mean_abs = metrics.mean_absolute_error(y_val, y_pred)
-    mean_sq = metrics.mean_squared_error(y_val, y_pred)
-    median_abs = metrics.median_absolute_error(y_val, y_pred)
-    r2 = metrics.r2_score(y_val, y_pred)
 
-    with open(SVM_PICKLE, 'wb') as file:
-        pickle.dump(mean_abs, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(mean_sq, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(median_abs, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(r2, file, pickle.HIGHEST_PROTOCOL)
+    # Mean absolute error regression loss
+    mean_abs = metrics.mean_absolute_error(y_val, y_pred)
+    # Mean squared error regression loss
+    mean_sq = metrics.mean_squared_error(y_val, y_pred)
+    # Median absolute error regression loss
+    median_abs = metrics.median_absolute_error(y_val, y_pred)
+    # R^2 (coefficient of determination) regression score function
+    r2 = metrics.r2_score(y_val, y_pred)
+    # Explained variance regression score function
+    exp_var_score = sklearn.metrics.explained_variance_score(y_val, y_pred)
+
+    with open(SVM_PICKLE, 'wb') as results:
+        pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
