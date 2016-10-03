@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""
+Perform data manipulation tasks and create inputs for project workflow
+"""
+
 import os
 from multiprocessing import Pool
 
@@ -15,6 +21,13 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.preprocessing import RobustScaler
 from sklearn.svm import SVC, SVR
+
+__author__ = "Pearl Philip"
+__credits__ = ["Pearl Philip", "David Beck"]
+__license__ = "BSD 3-Clause License"
+__maintainer__ = "Pearl Philip"
+__email__ = "pphilip@uw.edu"
+__status__ = "Production"
 
 
 def create_dict(filename, mol):
