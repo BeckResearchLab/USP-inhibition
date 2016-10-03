@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""
+Primary execution file for USP-Inhibition project
+"""
+
 import utils
 import pandas as pd
 import models
@@ -6,6 +12,13 @@ from sklearn.cross_validation import train_test_split
 
 import sys
 sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
+
+__author__ = "Pearl Philip"
+__credits__ = ["Pearl Philip", "David Beck"]
+__license__ = "BSD 3-Clause License"
+__maintainer__ = "Pearl Philip"
+__email__ = "pphilip@uw.edu"
+__status__ = "Production"
 
 FS_PICKLE = 'fs_results.pkl'
 TARGET_COLUMN = 'Activity_Score'
