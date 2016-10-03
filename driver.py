@@ -75,13 +75,13 @@ def main():
         selector.support_ = select_features(df_descriptor, df_target)
 
     # Pickling feature reduction outputs
-    with open(FS_PICKLE, 'wb') as file:
-        pickle.dump(x_var_threshold, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_kbest, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_trees, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_percentile, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_alpha, file, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(selector.support_, file, pickle.HIGHEST_PROTOCOL)
+    with open(FS_PICKLE, 'wb') as result:
+        pickle.dump(x_var_threshold, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_kbest, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_trees, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_percentile, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_alpha, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(selector.support_, result, pickle.HIGHEST_PROTOCOL)
 
     # Import optimal feature space from pickle
 
