@@ -5,7 +5,7 @@ Perform data manipulation tasks and create inputs for project workflow
 """
 
 import os
-from multiprocessing import Pool
+from multiprocessing import Process
 
 import pandas as pd
 import sklearn.feature_selection as f_selection
@@ -23,11 +23,11 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.svm import SVC, SVR
 
 __author__ = "Pearl Philip"
-__credits__ = ["Pearl Philip", "David Beck"]
+__credits__ = "David Beck"
 __license__ = "BSD 3-Clause License"
 __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
-__status__ = "Production"
+__status__ = "Development"
 
 
 def create_dict(filename, mol):
@@ -197,16 +197,16 @@ def select_features(x, y):
     return rf_sorted_score, x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector.support_
 
 
-def extract_constitution_descriptors(params):
+def extract_constitution_descriptors(dataframe, column):
     """
     Extracting molecular constitution descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Constitution
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which
+    constitution descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -222,19 +222,21 @@ def extract_constitution_descriptors(params):
                                                      "Weight", "PC2", "PC3", "PC1",
                                                      "PC6", "PC4", "PC5", "AWeight",
                                                      "ncocl", "nhyd"])
-    return df_constitution
+
+    df_constitution.to_csv('data/df_constitution.tsv', sep='\t')
+    return
 
 
-def extract_topology_descriptors(params):
+def extract_topology_descriptors(dataframe, column):
     """
     Extracting molecular topology descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Topology
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which topology
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -253,19 +255,21 @@ def extract_topology_descriptors(params):
                                                  'GMTI', 'MZM1', 'Ipc',
                                                  'Sito', 'Tigdi', 'Pol',
                                                  'Hato', 'Xu'])
-    return df_topology
+
+    df_topology.to_csv('data/df_topology.tsv', sep='\t')
+    return
 
 
-def extract_con_descriptors(params):
+def extract_con_descriptors(dataframe, column):
     """
     Extracting molecular connectivity descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Connectivity
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which
+    connectivity descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -286,19 +290,20 @@ def extract_con_descriptors(params):
                                             'Chiv5ch', 'Chiv3ch', 'Chiv10',
                                             'Chiv6ch', 'Chi10', 'Chi4ch',
                                             'Chiv4ch', 'mChi1', 'Chi6ch'])
-    return df_con
+    df_con.to_csv('data/df_con.tsv', sep='\t')
+    return
 
 
-def extract_kappa_descriptors(params):
+def extract_kappa_descriptors(dataframe, column):
     """
     Extracting molecular kappa descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Kappa
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which Kappa
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -308,19 +313,21 @@ def extract_kappa_descriptors(params):
     df_kappa = pd.DataFrame(diction, columns=['phi', 'kappa1', 'kappa3',
                                               'kappa2', 'kappam1', 'kappam3',
                                               'kappam2'])
-    return df_kappa
+
+    df_kappa.to_csv('data/df_kappa.tsv', sep='\t')
+    return
 
 
-def extract_burden_descriptors(params):
+def extract_burden_descriptors(dataframe, column):
     """
     Extracting molecular burden descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Burden
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which Burden
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -353,19 +360,21 @@ def extract_burden_descriptors(params):
                                                'bcutm15', 'bcutm14',
                                                'bcutm13', 'bcutm12',
                                                'bcutm11', 'bcutm10'])
-    return df_burden
+
+    df_burden.to_csv('data/df_burden.tsv', sep='\t')
+    return
 
 
-def extract_estate_descriptors(params):
+def extract_estate_descriptors(dataframe, column):
     """
     Extracting molecular E-state descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which E-state
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which E-State
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -448,19 +457,20 @@ def extract_estate_descriptors(params):
                                                'Smin12', 'Smin13', 'Smin14',
                                                'Smin15', 'Smax46', 'Smin17',
                                                'Smin18', 'Smin19'])
-    return df_estate
+    df_estate.to_csv('data/df_estate.tsv', sep='\t')
+    return
 
 
-def extract_basak_descriptors(params):
+def extract_basak_descriptors(dataframe, column):
     """
     Extracting molecular basak descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Basak
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which Basak
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -474,19 +484,21 @@ def extract_basak_descriptors(params):
                                               'CIC4', 'IC3', 'IC2', 'IC1',
                                               'IC0', 'CIC1', 'IC6', 'IC5',
                                               'IC4'])
-    return df_basak
+
+    df_basak.to_csv('data/df_basak.tsv', sep='\t')
+    return
 
 
-def extract_moran_descriptors(params):
+def extract_moran_descriptors(dataframe, column):
     """
     Extracting molecular moran descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Moran
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which Moran
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -504,19 +516,21 @@ def extract_moran_descriptors(params):
                                               'MATSe1', 'MATSe2', 'MATSe3',
                                               'MATSe8', 'MATSp3', 'MATSp7',
                                               'MATSp5', 'MATSp2'])
-    return df_moran
+
+    df_moran.to_csv('data/df_moran.tsv', sep='\t')
+    return
 
 
-def extract_geary_descriptors(params):
+def extract_geary_descriptors(dataframe, column):
     """
     Extracting molecular geary descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Geary
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which Geary
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -534,19 +548,21 @@ def extract_geary_descriptors(params):
                                               'GATSm2', 'GATSm3', 'GATSm1',
                                               'GATSm6', 'GATSm7', 'GATSm4',
                                               'GATSm5', 'GATSm8'])
-    return df_geary
+
+    df_geary.to_csv('data/df_geary.tsv', sep='\t')
+    return
 
 
-def extract_property_descriptors(params):
+def extract_property_descriptors(dataframe, column):
     """
     Extracting molecular property descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Molar
-    Property descriptors info must be evaluated and the column containing
-    SMILES info for the compounds in the dataframe.
+    :param dataframe: The dataframe containing SMILES info for which property
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -555,19 +571,21 @@ def extract_property_descriptors(params):
         diction.append(dic)
     df_property = pd.DataFrame(diction, columns=['TPSA', 'Hy', 'LogP',
                                                  'LogP2', 'UI', 'MR'])
-    return df_property
+
+    df_property.to_csv('data/df_property.tsv', sep='\t')
+    return
 
 
-def extract_charge_descriptors(params):
+def extract_charge_descriptors(dataframe, column):
     """
     Extracting molecular charge descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which Charge
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe.
-    :return: Descriptor dataframe
+    :param dataframe: The dataframe containing SMILES info for which charge
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
+    :return: Descriptor dataframee
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -582,19 +600,21 @@ def extract_charge_descriptors(params):
                                                'QHmin', 'QCss', 'QHmax',
                                                'QNmax', 'Rnc', 'Rpc', 'Qmin',
                                                'Tac', 'Mnc'])
-    return df_charge
+
+    df_charge.to_csv('data/df_charge.tsv', sep='\t')
+    return
 
 
-def extract_moe_descriptors(params):
+def extract_moe_descriptors(dataframe, column):
     """
     Extracting molecular MOE-type descriptors using PyChem package and
     SMILES strings of compounds.
-    :param params: The dataframe containing SMILES info for which MOE
-    descriptors info must be evaluated and the column containing SMILES info
-    for the compounds in the dataframe..
+    :param dataframe: The dataframe containing SMILES info for which MOE
+    descriptors info must be evaluated
+    :param column: the column containing SMILES info for the compounds
+     in the dataframe.
     :return: Descriptor dataframe
     """
-    dataframe, column = params
     diction = []
     for line in dataframe[column][:]:
         smiles = line
@@ -629,7 +649,9 @@ def extract_moe_descriptors(params):
                                             'slogPVSA4', 'slogPVSA5',
                                             'slogPVSA8', 'slogPVSA9',
                                             'VSAEstate9', 'VSAEstate10'])
-    return df_moe
+
+    df_moe.to_csv('data/df_moe.tsv', sep='\t')
+    return
 
 
 def extract_all_descriptors(df, column):
@@ -643,107 +665,118 @@ def extract_all_descriptors(df, column):
     :return: Descriptor dataframe
     """
     # Zip the parameters because pool.map() takes only one iterable
-    params = zip(df, column)
-    pool = Pool()
+
     if os.path.exists('data/df_constitution.tsv') and os.access('data/df_constitution.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting constitution calculation")
-        constitution_df = pool.map(extract_constitution_descriptors, params)
-        constitution_df.to_csv('data/df_constitution.tsv', sep='\t')
+        p = Process(target=extract_constitution_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating constitution")
 
     if os.path.exists('data/df_topology.tsv') and os.access('data/df_topology.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting topology calculation")
-        topology_df = pool.map(extract_topology_descriptors, params)
-        topology_df.to_csv('data/df_topology.tsv', sep='\t')
+        p = Process(target=extract_topology_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating topology")
 
     if os.path.exists('data/df_con.tsv') and os.access('data/df_con.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting con calculation")
-        con_df = pool.map(extract_con_descriptors, params)
-        con_df.to_csv('data/df_con.tsv', sep='\t')
+        p = Process(target=extract_con_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating con")
 
     if os.path.exists('data/df_kappa.tsv') and os.access('data/df_kappa.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting kappa calculation")
-        kappa_df = pool.map(extract_kappa_descriptors, params)
-        kappa_df.to_csv('data/df_kappa.tsv', sep='\t')
+        p = Process(target=extract_kappa_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating kappa")
 
     if os.path.exists('data/df_burden.tsv') and os.access('data/df_burden.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting burden calculation")
-        burden_df = pool.map(extract_burden_descriptors, params)
-        burden_df.to_csv('data/df_burden.tsv', sep='\t')
+        p = Process(target=extract_burden_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating burden")
 
     if os.path.exists('data/df_estate.tsv') and os.access('data/df_estate.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting estate calculation")
-        estate_df = pool.map(extract_estate_descriptors, params)
-        estate_df.to_csv('data/df_estate.tsv', sep='\t')
+        p = Process(target=extract_estate_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating estate")
 
     if os.path.exists('data/df_basak.tsv') and os.access('data/df_basak.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting basak calculation")
-        basak_df = pool.map(extract_basak_descriptors, params)
-        basak_df.to_csv('data/df_basak.tsv', sep='\t')
+        p = Process(target=extract_basak_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating basak")
 
     if os.path.exists('data/df_moran.tsv') and os.access('data/df_moran.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting moran calculation")
-        moran_df = pool.map(extract_moran_descriptors, params)
-        moran_df.to_csv('data/df_moran.tsv', sep='\t')
+        p = Process(target=extract_moran_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating moran")
 
     if os.path.exists('data/df_geary.tsv') and os.access('data/df_geary.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting geary calculation")
-        geary_df = pool.map(extract_geary_descriptors, params)
-        geary_df.to_csv('data/df_geary.tsv', sep='\t')
+        p = Process(target=extract_geary_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating geary")
 
     if os.path.exists('data/df_property.tsv') and os.access('data/df_property.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting property calculation")
-        prop_df = pool.map(extract_property_descriptors, params)
-        prop_df.to_csv('data/df_property.tsv', sep='\t')
+        p = Process(target=extract_property_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating property")
 
     if os.path.exists('data/df_charge.tsv') and os.access('data/df_charge.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting charge calculation")
-        charge_df = pool.map(extract_charge_descriptors, params)
-        charge_df.to_csv('data/df_charge.tsv', sep='\t')
+        p = Process(target=extract_charge_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating charge")
 
     if os.path.exists('data/df_moe.tsv') and os.access('data/df_moe.tsv', os.R_OK):
         print "File exists and is readable"
     else:
         print("starting moe calculation")
-        moe_df = pool.map(extract_moe_descriptors, params)
-        moe_df.to_csv('data/df_moe.tsv', sep='\t')
+        p = Process(target=extract_moe_descriptors, args=(df, column))
+        p.start()
+        p.join()
         print("done calculating moe")
 
-    df_descriptor = constitution_df.join(topology_df).join(con_df).join(
-        kappa_df).join(burden_df).join(estate_df).join(basak_df).join(moran_df)\
-        .join(geary_df).join(prop_df).join(charge_df).join(moe_df)
+    df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa)\
+        .join(df_burden).join(df_estate).join(df_basak).join(df_moran_df)\
+        .join(df_geary).join(df_property).join(df_charge).join(df_moe)
 
     # Transform all column values to mean 0 and unit variance
     df_descriptor = transform_dataframe(df_descriptor)
