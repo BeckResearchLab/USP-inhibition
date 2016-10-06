@@ -14,11 +14,11 @@ from nolearn.lasagne import NeuralNet
 from sklearn import svm, metrics
 
 __author__ = "Pearl Philip"
-__credits__ = ["Pearl Philip", "David Beck"]
+__credits__ = "David Beck"
 __license__ = "BSD 3-Clause License"
 __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
-__status__ = "Production"
+__status__ = "Development"
 
 NODES = 10
 NN_PICKLE = 'nn_data.pkl'
