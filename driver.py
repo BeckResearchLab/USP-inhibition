@@ -3,22 +3,22 @@
 """
 Primary execution file for USP-Inhibition project
 """
+import sys
+sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
 import utils
 import pandas as pd
 import models
+import pickle
 import post_process
 from sklearn.cross_validation import train_test_split
 
-import sys
-sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
-
 __author__ = "Pearl Philip"
-__credits__ = ["Pearl Philip", "David Beck"]
+__credits__ = "David Beck"
 __license__ = "BSD 3-Clause License"
 __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
-__status__ = "Production"
+__status__ = "Development"
 
 FS_PICKLE = 'fs_results.pkl'
 TARGET_COLUMN = 'Activity_Score'
@@ -32,6 +32,7 @@ with open('data/chemical_notation_data/compounds_smiles.txt', 'r') as f:
         i += 1
     print i
 
+# Test for the length of descriptor files; expected 389561
 with open('data/df_constitution.tsv', 'r') as f:
     for i, l in enumerate(f):
         pass
@@ -55,7 +56,7 @@ def main():
     df_compounds = df_compounds.sort_values(by='CID')
 
     # Importing inhibitor activity data
-    activity = pd.read_csv('data/activity_data/AID_743255_datatable.csv')
+    activity = pd.read_csv('data/activity_data/AID_743255_datatable.csv', dtype=object)
     activity = utils.clean_activity_dataframe(activity)
 
     # Merging activity data and compound notation data
@@ -71,8 +72,8 @@ def main():
     df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
 
     # Feature selection and space reduction
-    x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, \
-        selector.support_ = select_features(df_descriptor, df_target)
+    x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector = \
+        utils.select_features(df_descriptor, df_target)
 
     # Pickling feature reduction outputs
     with open(FS_PICKLE, 'wb') as result:
@@ -81,7 +82,7 @@ def main():
         pickle.dump(x_trees, result, pickle.HIGHEST_PROTOCOL)
         pickle.dump(x_percentile, result, pickle.HIGHEST_PROTOCOL)
         pickle.dump(x_alpha, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(selector.support_, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(selector, result, pickle.HIGHEST_PROTOCOL)
 
     # Import optimal feature space from pickle
 
