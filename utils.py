@@ -207,13 +207,18 @@ def extract_constitution_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = constitution.GetConstitutional(mol)
-        diction.append(dic)
-    df_constitution = pd.DataFrame(diction, columns=["nphos", "ndb", "nsb", "ncoi",
+    if os.path.exists('data/df_constitution.tsv') and os.access('data/df_constitution.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting constitution calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = constitution.GetConstitutional(mol)
+            diction.append(dic)
+        df_constitution = pd.DataFrame(diction, columns=["nphos", "ndb", "nsb", "ncoi",
                                                      "ncarb", "nsulph", "ncof",
                                                      "nnitro", "ncobr", "naro",
                                                      "ndonr", "noxy", "nhet",
@@ -223,8 +228,9 @@ def extract_constitution_descriptors(dataframe, column):
                                                      "PC6", "PC4", "PC5", "AWeight",
                                                      "ncocl", "nhyd"])
 
-    df_constitution.to_csv('data/df_constitution.tsv', sep='\t')
-    return
+        df_constitution.to_csv('data/df_constitution.tsv', sep='\t')
+        print("done calculating constitution")
+        return
 
 
 def extract_topology_descriptors(dataframe, column):
@@ -237,27 +243,33 @@ def extract_topology_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = topology.GetTopology(mol)
-        diction.append(dic)
-    df_topology = pd.DataFrame(diction, columns=['GMTIV', 'AW', 'Geto', 'DZ',
-                                                 'Gravto', 'IDET', 'Sitov',
-                                                 'IDE', 'TIAC', 'Arto',
-                                                 'Qindex', 'petitjeant',
-                                                 'Hatov', 'diametert',
-                                                 'BertzCT', 'IVDE', 'ISIZ',
-                                                 'Platt', 'ZM2', 'Getov',
-                                                 'ZM1', 'J', 'radiust',
-                                                 'Tsch', 'Thara', 'W', 'MZM2',
-                                                 'GMTI', 'MZM1', 'Ipc',
-                                                 'Sito', 'Tigdi', 'Pol',
-                                                 'Hato', 'Xu'])
+    if os.path.exists('data/df_topology.tsv') and os.access('data/df_topology.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting topology calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = topology.GetTopology(mol)
+            diction.append(dic)
+        df_topology = pd.DataFrame(diction, columns=['GMTIV', 'AW', 'Geto', 'DZ',
+                                                     'Gravto', 'IDET', 'Sitov',
+                                                     'IDE', 'TIAC', 'Arto',
+                                                     'Qindex', 'petitjeant',
+                                                     'Hatov', 'diametert',
+                                                     'BertzCT', 'IVDE', 'ISIZ',
+                                                     'Platt', 'ZM2', 'Getov',
+                                                     'ZM1', 'J', 'radiust',
+                                                     'Tsch', 'Thara', 'W', 'MZM2',
+                                                     'GMTI', 'MZM1', 'Ipc',
+                                                     'Sito', 'Tigdi', 'Pol',
+                                                     'Hato', 'Xu'])
 
-    df_topology.to_csv('data/df_topology.tsv', sep='\t')
-    return
+        df_topology.to_csv('data/df_topology.tsv', sep='\t')
+        print("done calculating topology")
+        return
 
 
 def extract_con_descriptors(dataframe, column):
@@ -270,28 +282,34 @@ def extract_con_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = con.GetConnectivity(mol)
-        diction.append(dic)
-    df_con = pd.DataFrame(diction, columns=['Chi3ch', 'knotp', 'dchi3',
-                                            'dchi2', 'dchi1', 'dchi0',
-                                            'Chi5ch', 'Chiv4', 'Chiv7',
-                                            'Chiv6', 'Chiv1', 'Chiv0',
-                                            'Chiv3', 'Chiv2', 'Chi4c',
-                                            'dchi4', 'Chiv4pc', 'Chiv3c',
-                                            'Chiv8', 'Chi3c', 'Chi8',
-                                            'Chi9', 'Chi2', 'Chi3', 'Chi0',
-                                            'Chi1', 'Chi6', 'Chi7', 'Chi4',
-                                            'Chi5', 'Chiv5', 'Chiv4c',
-                                            'Chiv9', 'Chi4pc', 'knotpv',
-                                            'Chiv5ch', 'Chiv3ch', 'Chiv10',
-                                            'Chiv6ch', 'Chi10', 'Chi4ch',
-                                            'Chiv4ch', 'mChi1', 'Chi6ch'])
-    df_con.to_csv('data/df_con.tsv', sep='\t')
-    return
+    if os.path.exists('data/df_con.tsv') and os.access('data/df_con.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting con calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = con.GetConnectivity(mol)
+            diction.append(dic)
+        df_con = pd.DataFrame(diction, columns=['Chi3ch', 'knotp', 'dchi3',
+                                                'dchi2', 'dchi1', 'dchi0',
+                                                'Chi5ch', 'Chiv4', 'Chiv7',
+                                                'Chiv6', 'Chiv1', 'Chiv0',
+                                                'Chiv3', 'Chiv2', 'Chi4c',
+                                                'dchi4', 'Chiv4pc', 'Chiv3c',
+                                                'Chiv8', 'Chi3c', 'Chi8',
+                                                'Chi9', 'Chi2', 'Chi3', 'Chi0',
+                                                'Chi1', 'Chi6', 'Chi7', 'Chi4',
+                                                'Chi5', 'Chiv5', 'Chiv4c',
+                                                'Chiv9', 'Chi4pc', 'knotpv',
+                                                'Chiv5ch', 'Chiv3ch', 'Chiv10',
+                                                'Chiv6ch', 'Chi10', 'Chi4ch',
+                                                'Chiv4ch', 'mChi1', 'Chi6ch'])
+        df_con.to_csv('data/df_con.tsv', sep='\t')
+        print("done calculating con")
+        return
 
 
 def extract_kappa_descriptors(dataframe, column):
@@ -304,18 +322,24 @@ def extract_kappa_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = kappa.GetKappa(mol)
-        diction.append(dic)
-    df_kappa = pd.DataFrame(diction, columns=['phi', 'kappa1', 'kappa3',
-                                              'kappa2', 'kappam1', 'kappam3',
-                                              'kappam2'])
+    if os.path.exists('data/df_kappa.tsv') and os.access('data/df_kappa.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting kappa calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = kappa.GetKappa(mol)
+            diction.append(dic)
+        df_kappa = pd.DataFrame(diction, columns=['phi', 'kappa1', 'kappa3',
+                                                  'kappa2', 'kappam1', 'kappam3',
+                                                  'kappam2'])
 
-    df_kappa.to_csv('data/df_kappa.tsv', sep='\t')
-    return
+        df_kappa.to_csv('data/df_kappa.tsv', sep='\t')
+        print("done calculating kappa")
+        return
 
 
 def extract_burden_descriptors(dataframe, column):
@@ -328,41 +352,47 @@ def extract_burden_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = bcut.GetBurden(mol)
-        diction.append(dic)
-    df_burden = pd.DataFrame(diction, columns=['bcutp8', 'bcutm9', 'bcutp9',
-                                               'bcutp5', 'bcutp6', 'bcutm8',
-                                               'bcutp1', 'bcutp2', 'bcutp3',
-                                               'bcutm7', 'bcute9', 'bcutv8',
-                                               'bcutv9', 'bcutv6', 'bcutm6',
-                                               'bcutv4', 'bcutm4', 'bcutm3',
-                                               'bcutm5', 'bcutm1', 'bcutv1',
-                                               'bcutv5', 'bcute8', 'bcutv2',
-                                               'bcutm2', 'bcutp4', 'bcute3',
-                                               'bcutv14', 'bcutv15',
-                                               'bcutv16', 'bcutv10',
-                                               'bcutv11', 'bcutv12',
-                                               'bcutv13', 'bcutp7',
-                                               'bcutp16', 'bcutp14',
-                                               'bcutp15', 'bcutp12',
-                                               'bcutp13', 'bcutp10',
-                                               'bcutp11', 'bcute16',
-                                               'bcute15', 'bcute14',
-                                               'bcute13', 'bcute12',
-                                               'bcute11', 'bcute10',
-                                               'bcutv3', 'bcute7', 'bcute6',
-                                               'bcute5', 'bcute4', 'bcutv7',
-                                               'bcute2', 'bcute1', 'bcutm16',
-                                               'bcutm15', 'bcutm14',
-                                               'bcutm13', 'bcutm12',
-                                               'bcutm11', 'bcutm10'])
+    if os.path.exists('data/df_burden.tsv') and os.access('data/df_burden.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting burden calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = bcut.GetBurden(mol)
+            diction.append(dic)
+        df_burden = pd.DataFrame(diction, columns=['bcutp8', 'bcutm9', 'bcutp9',
+                                                   'bcutp5', 'bcutp6', 'bcutm8',
+                                                   'bcutp1', 'bcutp2', 'bcutp3',
+                                                   'bcutm7', 'bcute9', 'bcutv8',
+                                                   'bcutv9', 'bcutv6', 'bcutm6',
+                                                   'bcutv4', 'bcutm4', 'bcutm3',
+                                                   'bcutm5', 'bcutm1', 'bcutv1',
+                                                   'bcutv5', 'bcute8', 'bcutv2',
+                                                   'bcutm2', 'bcutp4', 'bcute3',
+                                                   'bcutv14', 'bcutv15',
+                                                   'bcutv16', 'bcutv10',
+                                                   'bcutv11', 'bcutv12',
+                                                   'bcutv13', 'bcutp7',
+                                                   'bcutp16', 'bcutp14',
+                                                   'bcutp15', 'bcutp12',
+                                                   'bcutp13', 'bcutp10',
+                                                   'bcutp11', 'bcute16',
+                                                   'bcute15', 'bcute14',
+                                                   'bcute13', 'bcute12',
+                                                   'bcute11', 'bcute10',
+                                                   'bcutv3', 'bcute7', 'bcute6',
+                                                   'bcute5', 'bcute4', 'bcutv7',
+                                                   'bcute2', 'bcute1', 'bcutm16',
+                                                   'bcutm15', 'bcutm14',
+                                                   'bcutm13', 'bcutm12',
+                                                   'bcutm11', 'bcutm10'])
 
-    df_burden.to_csv('data/df_burden.tsv', sep='\t')
-    return
+        df_burden.to_csv('data/df_burden.tsv', sep='\t')
+        print("done calculating burden")
+        return
 
 
 def extract_estate_descriptors(dataframe, column):
@@ -375,90 +405,96 @@ def extract_estate_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = estate.GetEstate(mol)
-        diction.append(dic)
-    df_estate = pd.DataFrame(diction, columns=['Smax38', 'Smax39', 'Smax34',
-                                               'Smax35', 'Smax36', 'Smax37',
-                                               'Smax30', 'Smax31', 'Smax32',
-                                               'Smax33', 'S57', 'S56', 'S55',
-                                               'S54', 'S53', 'S52', 'S51',
-                                               'S50', 'S32', 'S59', 'S58',
-                                               'Smax8', 'Smax9', 'Smax0',
-                                               'Smax1', 'Smax2', 'Smax3',
-                                               'Smax4', 'Smax5', 'Smax6',
-                                               'Smax7', 'Smax29', 'Smax28',
-                                               'Smax23', 'Smax22', 'Smax21',
-                                               'Smax20', 'Smax27', 'Smax26',
-                                               'Smax25', 'Smax24', 'S44',
-                                               'S45', 'S46', 'S47', 'S40',
-                                               'S41', 'S42', 'S43', 'S48',
-                                               'S49', 'Smin78', 'Smin72',
-                                               'Smin73', 'Smin70', 'Smin71',
-                                               'Smin76', 'Smin77', 'Smin74',
-                                               'Smin75', 'S79', 'S78',
-                                               'Smin', 'Smax58', 'Smax59',
-                                               'Smax56', 'Smax57', 'S73',
-                                               'S72', 'S75', 'Smax53', 'S77',
-                                               'S76', 'Save', 'Smin69',
-                                               'Smin68', 'Shal', 'Smin61',
-                                               'Smin32', 'Smin63', 'Smin62',
-                                               'Smin65', 'Smin64', 'Smin67',
-                                               'Smin66', 'DS', 'Smin41',
-                                               'Smin40', 'Smax49', 'Smax48',
-                                               'S68', 'S69', 'Smax45',
-                                               'Smax44', 'Smax47', 'S65',
-                                               'Smax41', 'Smax40', 'Smax43',
-                                               'Smax42', 'Smin54', 'Smax52',
-                                               'Smin56', 'Smin57', 'Smin50',
-                                               'Smin51', 'Smin52', 'Smin53',
-                                               'Smin58', 'Smin59', 'Shev',
-                                               'Shet', 'Scar', 'Smin49',
-                                               'S9', 'S8', 'S3', 'S2', 'S1',
-                                               'Smin55', 'S7', 'S6', 'S5',
-                                               'S4', 'Smax78', 'S66', 'S67',
-                                               'Smax70', 'Smax71', 'Smax72',
-                                               'Smax73', 'Smax74', 'Smax75',
-                                               'Smax76', 'Smax77', 'Smin43',
-                                               'Smin42', 'S19', 'S18',
-                                               'Smin47', 'Smin46', 'Smin45',
-                                               'Smin44', 'S13', 'S12', 'S11',
-                                               'S10', 'S17', 'S16', 'S15',
-                                               'S14', 'S60', 'S64', 'Smin16',
-                                               'S61', 'Smax67', 'Smax66',
-                                               'Smax65', 'Smax64', 'Smax63',
-                                               'Smax62', 'Smax61', 'Smax60',
-                                               'Smax69', 'Smax68', 'Smin60',
-                                               'Smax', 'Smin36', 'Smin37',
-                                               'Smin34', 'Smin35', 'S62',
-                                               'Smin33', 'Smin30', 'Smin31',
-                                               'Smin38', 'Smin39', 'Smax12',
-                                               'Smax13', 'Smax10', 'Smax11',
-                                               'Smax16', 'Smax17', 'Smax14',
-                                               'Smax15', 'Smin20', 'Smax18',
-                                               'Smax19', 'S71', 'S63', 'S70',
-                                               'Smax54', 'Smax55', 'S39',
-                                               'S38', 'S35', 'S34', 'S37',
-                                               'S36', 'S31', 'S30', 'S33',
-                                               'S74', 'Smin25', 'Smin24',
-                                               'Smin27', 'Smin26', 'Smin21',
-                                               'Smax50', 'Smin23', 'Smin22',
-                                               'Smax51', 'Smin29', 'Smin28',
-                                               'Smin6', 'Smin7', 'Smin4',
-                                               'Smin5', 'Smin2', 'Smin3',
-                                               'Smin0', 'Smin1', 'Smin48',
-                                               'Smin8', 'Smin9', 'S22',
-                                               'S23', 'S20', 'S21', 'S26',
-                                               'S27', 'S24', 'S25', 'S28',
-                                               'S29', 'Smin10', 'Smin11',
-                                               'Smin12', 'Smin13', 'Smin14',
-                                               'Smin15', 'Smax46', 'Smin17',
-                                               'Smin18', 'Smin19'])
-    df_estate.to_csv('data/df_estate.tsv', sep='\t')
-    return
+    if os.path.exists('data/df_estate.tsv') and os.access('data/df_estate.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting estate calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = estate.GetEstate(mol)
+            diction.append(dic)
+        df_estate = pd.DataFrame(diction, columns=['Smax38', 'Smax39', 'Smax34',
+                                                   'Smax35', 'Smax36', 'Smax37',
+                                                   'Smax30', 'Smax31', 'Smax32',
+                                                   'Smax33', 'S57', 'S56', 'S55',
+                                                   'S54', 'S53', 'S52', 'S51',
+                                                   'S50', 'S32', 'S59', 'S58',
+                                                   'Smax8', 'Smax9', 'Smax0',
+                                                   'Smax1', 'Smax2', 'Smax3',
+                                                   'Smax4', 'Smax5', 'Smax6',
+                                                   'Smax7', 'Smax29', 'Smax28',
+                                                   'Smax23', 'Smax22', 'Smax21',
+                                                   'Smax20', 'Smax27', 'Smax26',
+                                                   'Smax25', 'Smax24', 'S44',
+                                                   'S45', 'S46', 'S47', 'S40',
+                                                   'S41', 'S42', 'S43', 'S48',
+                                                   'S49', 'Smin78', 'Smin72',
+                                                   'Smin73', 'Smin70', 'Smin71',
+                                                   'Smin76', 'Smin77', 'Smin74',
+                                                   'Smin75', 'S79', 'S78',
+                                                   'Smin', 'Smax58', 'Smax59',
+                                                   'Smax56', 'Smax57', 'S73',
+                                                   'S72', 'S75', 'Smax53', 'S77',
+                                                   'S76', 'Save', 'Smin69',
+                                                   'Smin68', 'Shal', 'Smin61',
+                                                   'Smin32', 'Smin63', 'Smin62',
+                                                   'Smin65', 'Smin64', 'Smin67',
+                                                   'Smin66', 'DS', 'Smin41',
+                                                   'Smin40', 'Smax49', 'Smax48',
+                                                   'S68', 'S69', 'Smax45',
+                                                   'Smax44', 'Smax47', 'S65',
+                                                   'Smax41', 'Smax40', 'Smax43',
+                                                   'Smax42', 'Smin54', 'Smax52',
+                                                   'Smin56', 'Smin57', 'Smin50',
+                                                   'Smin51', 'Smin52', 'Smin53',
+                                                   'Smin58', 'Smin59', 'Shev',
+                                                   'Shet', 'Scar', 'Smin49',
+                                                   'S9', 'S8', 'S3', 'S2', 'S1',
+                                                   'Smin55', 'S7', 'S6', 'S5',
+                                                   'S4', 'Smax78', 'S66', 'S67',
+                                                   'Smax70', 'Smax71', 'Smax72',
+                                                   'Smax73', 'Smax74', 'Smax75',
+                                                   'Smax76', 'Smax77', 'Smin43',
+                                                   'Smin42', 'S19', 'S18',
+                                                   'Smin47', 'Smin46', 'Smin45',
+                                                   'Smin44', 'S13', 'S12', 'S11',
+                                                   'S10', 'S17', 'S16', 'S15',
+                                                   'S14', 'S60', 'S64', 'Smin16',
+                                                   'S61', 'Smax67', 'Smax66',
+                                                   'Smax65', 'Smax64', 'Smax63',
+                                                   'Smax62', 'Smax61', 'Smax60',
+                                                   'Smax69', 'Smax68', 'Smin60',
+                                                   'Smax', 'Smin36', 'Smin37',
+                                                   'Smin34', 'Smin35', 'S62',
+                                                   'Smin33', 'Smin30', 'Smin31',
+                                                   'Smin38', 'Smin39', 'Smax12',
+                                                   'Smax13', 'Smax10', 'Smax11',
+                                                   'Smax16', 'Smax17', 'Smax14',
+                                                   'Smax15', 'Smin20', 'Smax18',
+                                                   'Smax19', 'S71', 'S63', 'S70',
+                                                   'Smax54', 'Smax55', 'S39',
+                                                   'S38', 'S35', 'S34', 'S37',
+                                                   'S36', 'S31', 'S30', 'S33',
+                                                   'S74', 'Smin25', 'Smin24',
+                                                   'Smin27', 'Smin26', 'Smin21',
+                                                   'Smax50', 'Smin23', 'Smin22',
+                                                   'Smax51', 'Smin29', 'Smin28',
+                                                   'Smin6', 'Smin7', 'Smin4',
+                                                   'Smin5', 'Smin2', 'Smin3',
+                                                   'Smin0', 'Smin1', 'Smin48',
+                                                   'Smin8', 'Smin9', 'S22',
+                                                   'S23', 'S20', 'S21', 'S26',
+                                                   'S27', 'S24', 'S25', 'S28',
+                                                   'S29', 'Smin10', 'Smin11',
+                                                   'Smin12', 'Smin13', 'Smin14',
+                                                   'Smin15', 'Smax46', 'Smin17',
+                                                   'Smin18', 'Smin19'])
+        df_estate.to_csv('data/df_estate.tsv', sep='\t')
+        print("done calculating estate")
+        return
 
 
 def extract_basak_descriptors(dataframe, column):
@@ -471,22 +507,30 @@ def extract_basak_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = basak.Getbasak(mol)
-        print dic
-        diction.append(dic)
-    df_basak = pd.DataFrame(diction, columns=['CIC3', 'CIC6', 'SIC5', 'SIC4',
-                                              'SIC6', 'SIC1', 'SIC0', 'SIC3',
-                                              'SIC2', 'CIC5', 'CIC2', 'CIC0',
-                                              'CIC4', 'IC3', 'IC2', 'IC1',
-                                              'IC0', 'CIC1', 'IC6', 'IC5',
-                                              'IC4'])
+    if os.path.exists('data/df_basak.tsv') and os.access('data/df_basak.tsv', os.R_OK):
+        print("File exists and is readable")
+        return
+    else:
+        print("starting basak calculation")
+        diction = []
+        i = 0
+        for line in dataframe[column][:]:
+            smiles = line
+            i += 1
+            print i
+            mol = Chem.MolFromSmiles(smiles)
+            dic = basak.Getbasak(mol)
+            diction.append(dic)
+        df_basak = pd.DataFrame(diction, columns=['CIC3', 'CIC6', 'SIC5', 'SIC4',
+                                                  'SIC6', 'SIC1', 'SIC0', 'SIC3',
+                                                  'SIC2', 'CIC5', 'CIC2', 'CIC0',
+                                                  'CIC4', 'IC3', 'IC2', 'IC1',
+                                                  'IC0', 'CIC1', 'IC6', 'IC5',
+                                                  'IC4'])
 
-    df_basak.to_csv('data/df_basak.tsv', sep='\t')
-    return
+        df_basak.to_csv('data/df_basak.tsv', sep='\t')
+        print("done calculating basak")
+        return
 
 
 def extract_moran_descriptors(dataframe, column):
@@ -499,26 +543,32 @@ def extract_moran_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = moran.GetMoranAuto(mol)
-        diction.append(dic)
-    df_moran = pd.DataFrame(diction, columns=['MATSv8', 'MATSp4', 'MATSp8',
-                                              'MATSv1', 'MATSp6', 'MATSv3',
-                                              'MATSv2', 'MATSv5', 'MATSv4',
-                                              'MATSv7', 'MATSv6', 'MATSm8',
-                                              'MATSp1', 'MATSm4', 'MATSm5',
-                                              'MATSm6', 'MATSm7', 'MATSm1',
-                                              'MATSm2', 'MATSm3', 'MATSe4',
-                                              'MATSe5', 'MATSe6', 'MATSe7',
-                                              'MATSe1', 'MATSe2', 'MATSe3',
-                                              'MATSe8', 'MATSp3', 'MATSp7',
-                                              'MATSp5', 'MATSp2'])
+    if os.path.exists('data/df_moran.tsv') and os.access('data/df_moran.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting moran calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = moran.GetMoranAuto(mol)
+            diction.append(dic)
+        df_moran = pd.DataFrame(diction, columns=['MATSv8', 'MATSp4', 'MATSp8',
+                                                  'MATSv1', 'MATSp6', 'MATSv3',
+                                                  'MATSv2', 'MATSv5', 'MATSv4',
+                                                  'MATSv7', 'MATSv6', 'MATSm8',
+                                                  'MATSp1', 'MATSm4', 'MATSm5',
+                                                  'MATSm6', 'MATSm7', 'MATSm1',
+                                                  'MATSm2', 'MATSm3', 'MATSe4',
+                                                  'MATSe5', 'MATSe6', 'MATSe7',
+                                                  'MATSe1', 'MATSe2', 'MATSe3',
+                                                  'MATSe8', 'MATSp3', 'MATSp7',
+                                                  'MATSp5', 'MATSp2'])
 
-    df_moran.to_csv('data/df_moran.tsv', sep='\t')
-    return
+        df_moran.to_csv('data/df_moran.tsv', sep='\t')
+        print("done calculating moran")
+        return
 
 
 def extract_geary_descriptors(dataframe, column):
@@ -531,26 +581,32 @@ def extract_geary_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = geary.GetGearyAuto(mol)
-        diction.append(dic)
-    df_geary = pd.DataFrame(diction, columns=['GATSp8', 'GATSv3', 'GATSv2',
-                                              'GATSv1', 'GATSp6', 'GATSv7',
-                                              'GATSv6', 'GATSv5', 'GATSv4',
-                                              'GATSe2', 'GATSe3', 'GATSv8',
-                                              'GATSe6', 'GATSe7', 'GATSe4',
-                                              'GATSe5', 'GATSp5', 'GATSp4',
-                                              'GATSp7', 'GATSe1', 'GATSp1',
-                                              'GATSp3', 'GATSp2', 'GATSe8',
-                                              'GATSm2', 'GATSm3', 'GATSm1',
-                                              'GATSm6', 'GATSm7', 'GATSm4',
-                                              'GATSm5', 'GATSm8'])
+    if os.path.exists('data/df_geary.tsv') and os.access('data/df_geary.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting geary calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = geary.GetGearyAuto(mol)
+            diction.append(dic)
+        df_geary = pd.DataFrame(diction, columns=['GATSp8', 'GATSv3', 'GATSv2',
+                                                  'GATSv1', 'GATSp6', 'GATSv7',
+                                                  'GATSv6', 'GATSv5', 'GATSv4',
+                                                  'GATSe2', 'GATSe3', 'GATSv8',
+                                                  'GATSe6', 'GATSe7', 'GATSe4',
+                                                  'GATSe5', 'GATSp5', 'GATSp4',
+                                                  'GATSp7', 'GATSe1', 'GATSp1',
+                                                  'GATSp3', 'GATSp2', 'GATSe8',
+                                                  'GATSm2', 'GATSm3', 'GATSm1',
+                                                  'GATSm6', 'GATSm7', 'GATSm4',
+                                                  'GATSm5', 'GATSm8'])
 
-    df_geary.to_csv('data/df_geary.tsv', sep='\t')
-    return
+        df_geary.to_csv('data/df_geary.tsv', sep='\t')
+        print("done calculating geary")
+        return
 
 
 def extract_property_descriptors(dataframe, column):
@@ -563,17 +619,23 @@ def extract_property_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = mp.GetMolecularProperty(mol)
-        diction.append(dic)
-    df_property = pd.DataFrame(diction, columns=['TPSA', 'Hy', 'LogP',
-                                                 'LogP2', 'UI', 'MR'])
+    if os.path.exists('data/df_property.tsv') and os.access('data/df_property.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting property calculation")
+        diction = []
+        for line in dataframe[column]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = mp.GetMolecularProperty(mol)
+            diction.append(dic)
+        df_property = pd.DataFrame(diction, columns=['TPSA', 'Hy', 'LogP',
+                                                     'LogP2', 'UI', 'MR'])
 
-    df_property.to_csv('data/df_property.tsv', sep='\t')
-    return
+        df_property.to_csv('data/df_property.tsv', sep='\t')
+        print("done calculating property")
+        return
 
 
 def extract_charge_descriptors(dataframe, column):
@@ -584,25 +646,31 @@ def extract_charge_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
-    :return: Descriptor dataframee
+    :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = charge.GetCharge(mol)
-        diction.append(dic)
-    df_charge = pd.DataFrame(diction, columns=['QNmin', 'QOss', 'Mpc',
-                                               'QHss', 'SPP', 'LDI', 'QCmin',
-                                               'Mac', 'Qass', 'QNss',
-                                               'QCmax', 'QOmax', 'Tpc',
-                                               'Qmax', 'QOmin', 'Tnc',
-                                               'QHmin', 'QCss', 'QHmax',
-                                               'QNmax', 'Rnc', 'Rpc', 'Qmin',
-                                               'Tac', 'Mnc'])
+    if os.path.exists('data/df_charge.tsv') and os.access('data/df_charge.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting charge calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = charge.GetCharge(mol)
+            diction.append(dic)
+        df_charge = pd.DataFrame(diction, columns=['QNmin', 'QOss', 'Mpc',
+                                                   'QHss', 'SPP', 'LDI', 'QCmin',
+                                                   'Mac', 'Qass', 'QNss',
+                                                   'QCmax', 'QOmax', 'Tpc',
+                                                   'Qmax', 'QOmin', 'Tnc',
+                                                   'QHmin', 'QCss', 'QHmax',
+                                                   'QNmax', 'Rnc', 'Rpc', 'Qmin',
+                                                   'Tac', 'Mnc'])
 
-    df_charge.to_csv('data/df_charge.tsv', sep='\t')
-    return
+        df_charge.to_csv('data/df_charge.tsv', sep='\t')
+        print("done calculating charge")
+        return
 
 
 def extract_moe_descriptors(dataframe, column):
@@ -615,43 +683,49 @@ def extract_moe_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    diction = []
-    for line in dataframe[column][:]:
-        smiles = line
-        mol = Chem.MolFromSmiles(smiles)
-        dic = moe.GetMOE(mol)
-        diction.append(dic)
-    df_moe = pd.DataFrame(diction, columns=['EstateVSA8', 'EstateVSA9',
-                                            'EstateVSA4', 'EstateVSA5',
-                                            'EstateVSA6', 'EstateVSA7',
-                                            'EstateVSA0', 'EstateVSA1',
-                                            'EstateVSA2', 'EstateVSA3',
-                                            'PEOEVSA13', 'PEOEVSA12',
-                                            'PEOEVSA11', 'PEOEVSA10',
-                                            'VSAEstate0', 'VSAEstate1',
-                                            'VSAEstate2', 'VSAEstate3',
-                                            'VSAEstate4', 'VSAEstate5',
-                                            'VSAEstate6', 'VSAEstate7',
-                                            'VSAEstate8', 'LabuteASA',
-                                            'PEOEVSA3', 'PEOEVSA2',
-                                            'PEOEVSA1', 'PEOEVSA0',
-                                            'PEOEVSA7', 'PEOEVSA6',
-                                            'PEOEVSA5', 'PEOEVSA4',
-                                            'MRVSA5', 'MRVSA4', 'PEOEVSA9',
-                                            'PEOEVSA8', 'MRVSA1', 'MRVSA0',
-                                            'MRVSA3', 'MRVSA2', 'MRVSA9',
-                                            'TPSA1', 'slogPVSA10',
-                                            'slogPVSA11', 'MRVSA8', 'MRVSA7',
-                                            'MRVSA6', 'EstateVSA10',
-                                            'slogPVSA2', 'slogPVSA3',
-                                            'slogPVSA0', 'slogPVSA1',
-                                            'slogPVSA6', 'slogPVSA7',
-                                            'slogPVSA4', 'slogPVSA5',
-                                            'slogPVSA8', 'slogPVSA9',
-                                            'VSAEstate9', 'VSAEstate10'])
+    if os.path.exists('data/df_moe.tsv') and os.access('data/df_moe.tsv', os.R_OK):
+        print "File exists and is readable"
+        return
+    else:
+        print("starting moe calculation")
+        diction = []
+        for line in dataframe[column][:]:
+            smiles = line
+            mol = Chem.MolFromSmiles(smiles)
+            dic = moe.GetMOE(mol)
+            diction.append(dic)
+        df_moe = pd.DataFrame(diction, columns=['EstateVSA8', 'EstateVSA9',
+                                                'EstateVSA4', 'EstateVSA5',
+                                                'EstateVSA6', 'EstateVSA7',
+                                                'EstateVSA0', 'EstateVSA1',
+                                                'EstateVSA2', 'EstateVSA3',
+                                                'PEOEVSA13', 'PEOEVSA12',
+                                                'PEOEVSA11', 'PEOEVSA10',
+                                                'VSAEstate0', 'VSAEstate1',
+                                                'VSAEstate2', 'VSAEstate3',
+                                                'VSAEstate4', 'VSAEstate5',
+                                                'VSAEstate6', 'VSAEstate7',
+                                                'VSAEstate8', 'LabuteASA',
+                                                'PEOEVSA3', 'PEOEVSA2',
+                                                'PEOEVSA1', 'PEOEVSA0',
+                                                'PEOEVSA7', 'PEOEVSA6',
+                                                'PEOEVSA5', 'PEOEVSA4',
+                                                'MRVSA5', 'MRVSA4', 'PEOEVSA9',
+                                                'PEOEVSA8', 'MRVSA1', 'MRVSA0',
+                                                'MRVSA3', 'MRVSA2', 'MRVSA9',
+                                                'TPSA1', 'slogPVSA10',
+                                                'slogPVSA11', 'MRVSA8', 'MRVSA7',
+                                                'MRVSA6', 'EstateVSA10',
+                                                'slogPVSA2', 'slogPVSA3',
+                                                'slogPVSA0', 'slogPVSA1',
+                                                'slogPVSA6', 'slogPVSA7',
+                                                'slogPVSA4', 'slogPVSA5',
+                                                'slogPVSA8', 'slogPVSA9',
+                                                'VSAEstate9', 'VSAEstate10'])
 
-    df_moe.to_csv('data/df_moe.tsv', sep='\t')
-    return
+        df_moe.to_csv('data/df_moe.tsv', sep='\t')
+        print("done calculating moe")
+        return
 
 
 def extract_all_descriptors(df, column):
@@ -664,124 +738,80 @@ def extract_all_descriptors(df, column):
                     the dataframe.
     :return: Descriptor dataframe
     """
-    # Zip the parameters because pool.map() takes only one iterable
+    p1 = Process(target=extract_constitution_descriptors, args=(df, column))
+    p1.start()
 
-    if os.path.exists('data/df_constitution.tsv') and os.access('data/df_constitution.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting constitution calculation")
-        p = Process(target=extract_constitution_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating constitution")
+    """p2 = Process(target=extract_topology_descriptors, args=(df, column))
+    p2.start()"""
 
-    if os.path.exists('data/df_topology.tsv') and os.access('data/df_topology.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting topology calculation")
-        p = Process(target=extract_topology_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating topology")
+    p3 = Process(target=extract_con_descriptors, args=(df, column))
+    p3.start()
 
-    if os.path.exists('data/df_con.tsv') and os.access('data/df_con.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting con calculation")
-        p = Process(target=extract_con_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating con")
+    p4 = Process(target=extract_kappa_descriptors, args=(df, column))
+    p4.start()
 
-    if os.path.exists('data/df_kappa.tsv') and os.access('data/df_kappa.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting kappa calculation")
-        p = Process(target=extract_kappa_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating kappa")
+    """p5 = Process(target=extract_burden_descriptors, args=(df, column))
+    p5.start()"""
 
-    if os.path.exists('data/df_burden.tsv') and os.access('data/df_burden.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting burden calculation")
-        p = Process(target=extract_burden_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating burden")
+    p6 = Process(target=extract_estate_descriptors, args=(df, column))
+    p6.start()
 
-    if os.path.exists('data/df_estate.tsv') and os.access('data/df_estate.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting estate calculation")
-        p = Process(target=extract_estate_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating estate")
+    p7 = Process(target=extract_basak_descriptors, args=(df, column))
+    p7.start()
 
-    if os.path.exists('data/df_basak.tsv') and os.access('data/df_basak.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting basak calculation")
-        p = Process(target=extract_basak_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating basak")
+    p8 = Process(target=extract_moran_descriptors, args=(df, column))
+    p8.start()
 
-    if os.path.exists('data/df_moran.tsv') and os.access('data/df_moran.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting moran calculation")
-        p = Process(target=extract_moran_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating moran")
+    p9 = Process(target=extract_geary_descriptors, args=(df, column))
+    p9.start()
 
-    if os.path.exists('data/df_geary.tsv') and os.access('data/df_geary.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting geary calculation")
-        p = Process(target=extract_geary_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating geary")
+    p10 = Process(target=extract_property_descriptors, args=(df, column))
+    p10.start()
 
-    if os.path.exists('data/df_property.tsv') and os.access('data/df_property.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting property calculation")
-        p = Process(target=extract_property_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating property")
+    p11 = Process(target=extract_charge_descriptors, args=(df, column))
+    p11.start()
 
-    if os.path.exists('data/df_charge.tsv') and os.access('data/df_charge.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting charge calculation")
-        p = Process(target=extract_charge_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating charge")
+    p12 = Process(target=extract_moe_descriptors, args=(df, column))
+    p12.start()
 
-    if os.path.exists('data/df_moe.tsv') and os.access('data/df_moe.tsv', os.R_OK):
-        print "File exists and is readable"
-    else:
-        print("starting moe calculation")
-        p = Process(target=extract_moe_descriptors, args=(df, column))
-        p.start()
-        p.join()
-        print("done calculating moe")
+    p1.join()
+    """p2.join()"""
+    p3.join()
+    p4.join()
+    """p5.join()"""
+    p6.join()
+    p7.join()
+    p8.join()
+    p9.join()
+    p10.join()
+    p11.join()
+    p12.join()
 
-    df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa)\
-        .join(df_burden).join(df_estate).join(df_basak).join(df_moran_df)\
-        .join(df_geary).join(df_property).join(df_charge).join(df_moe)
+    return
 
-    # Transform all column values to mean 0 and unit variance
-    df_descriptor = transform_dataframe(df_descriptor)
 
-    return df_descriptor
+def check_files():
+    a = 0
+    with open('data/chemical_notation_data/compounds_smiles.txt', 'r') as f:
+        data = f.readlines()
+        i = 1
+        for line in data:
+            words = line.split()
+            i += 1
+        if i == 389561:
+            a += 1
+
+    file_string = ['charge', 'con', 'constitution', 'estate', 'kappa', 'moe', 'property']
+    for string in file_string:
+        with open('data/df_%s.tsv' % string, 'r') as f:
+            for i, l in enumerate(f):
+                pass
+            i += 1
+            if i == 389561:
+                a += 1
+
+    if a == 2:
+        print "File check done"
 
 
 def transform_dataframe(dataframe):
