@@ -23,21 +23,6 @@ __status__ = "Development"
 FS_PICKLE = 'fs_results.pkl'
 TARGET_COLUMN = 'Activity_Score'
 
-# To find the number of compounds tested; expected 389561
-with open('data/chemical_notation_data/compounds_smiles.txt', 'r') as f:
-    data = f.readlines()
-    i = 1
-    for line in data:
-        words = line.split()
-        i += 1
-    print i
-
-# Test for the length of descriptor files; expected 389561
-with open('data/df_constitution.tsv', 'r') as f:
-    for i, l in enumerate(f):
-        pass
-    print i + 1
-
 
 def main():
     """
@@ -49,6 +34,7 @@ def main():
     # Importing inhibitor notation data
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
+    utils.check_files()
     df_compounds_smiles = utils.create_dataframe('data/chemical_notation_'
                                                  'data/compounds_smiles.txt',
                                                  'smiles')
@@ -56,20 +42,26 @@ def main():
     df_compounds = df_compounds.sort_values(by='CID')
 
     # Importing inhibitor activity data
-    activity = pd.read_csv('data/activity_data/AID_743255_datatable.csv', dtype=object)
+    activity = pd.read_csv('data/activity_data/AID_743255_datatable.csv')
     activity = utils.clean_activity_dataframe(activity)
 
     # Merging activity data and compound notation data
     df = activity.merge(df_compounds)
     df = df.sort_values(by='CID')
-    df = df.sample(frac=1).reset_index(drop=True)
+    df = df.reset_index(drop=True)
 
     # Drop non-descriptor columns before feature space reduction
     df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
 
     # Extracting molecular descriptors for all compounds
     print("sending to descriptor calculation")
-    df_descriptor = utils.extract_all_descriptors(df, 'SMILES')
+    utils.extract_all_descriptors(df, 'SMILES')
+    df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa) \
+        .join(df_burden).join(df_estate).join(df_basak).join(df_moran_df) \
+        .join(df_geary).join(df_property).join(df_charge).join(df_moe)
+
+    # Transform all column values to mean 0 and unit variance
+    df_descriptor = utils.transform_dataframe(df_descriptor)
 
     # Feature selection and space reduction
     x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector = \
