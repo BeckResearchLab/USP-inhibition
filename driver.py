@@ -11,7 +11,7 @@ import pandas as pd
 import models
 import pickle
 import post_process
-from sklearn.cross_validation import train_test_split
+import sklearn
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -20,7 +20,6 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
-FS_PICKLE = 'fs_results.pkl'
 TARGET_COLUMN = 'Activity_Score'
 
 
@@ -54,7 +53,7 @@ def main():
     df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
 
     # Extracting molecular descriptors for all compounds
-    print("sending to descriptor calculation")
+    print("Sending data for descriptor calculation")
     utils.extract_all_descriptors(df, 'SMILES')
     df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa) \
         .join(df_burden).join(df_estate).join(df_basak).join(df_moran_df) \
@@ -64,17 +63,7 @@ def main():
     df_descriptor = utils.transform_dataframe(df_descriptor)
 
     # Feature selection and space reduction
-    x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector = \
-        utils.select_features(df_descriptor, df_target)
-
-    # Pickling feature reduction outputs
-    with open(FS_PICKLE, 'wb') as result:
-        pickle.dump(x_var_threshold, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_kbest, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_trees, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_percentile, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_alpha, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(selector, result, pickle.HIGHEST_PROTOCOL)
+    utils.select_features(df_descriptor, df_target)
 
     # Import optimal feature space from pickle
 
@@ -93,21 +82,15 @@ def main():
                          % TARGET_COLUMN)
 
     # Train, validation and test split
-    df_train, df_test = train_test_split(df, test_size=0.25)
-    df_train, df_val = train_test_split(df_train, test_size=0.333333)
-    x_train, x_val, x_test = df_train, df_val, df_test
+    df_train, df_test = sklearn.cross_validation.train_test_split(df, test_size=0.25)
 
     # Remove the classification column from the dataframe
-    x_train = x_train.drop(TARGET_COLUMN, 1)
-    x_val = x_val.drop(TARGET_COLUMN, 1)
-    x_test = x_test.drop(TARGET_COLUMN, 1)
+    x_train = df_train.drop(TARGET_COLUMN, 1)
+    x_test = df_test.drop(TARGET_COLUMN, 1)
     y_train = pd.DataFrame(df_train[TARGET_COLUMN])
-    y_val = pd.DataFrame(df_val[TARGET_COLUMN])
     y_test = pd.DataFrame(df_test[TARGET_COLUMN])
 
-    models.build_nn(x_train, y_train, x_val, y_val)
-    models.build_svm(x_train, y_train, x_val, y_val)
-    models.build_tree(x_train, y_train, x_val, y_val)
+    models.run_models(x_train, y_train, x_test, y_test)
 
     post_process.results()
 
