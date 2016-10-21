@@ -28,7 +28,15 @@ def results():
     with open(NN_PICKLE, 'rb') as result:
         grid = pickle.load(result)
         net = pickle.load(result)
+        mean_abs = pickle.load(result)
+        mean_sq = pickle.load(result)
+        median_abs = pickle.load(result)
+        r2 = pickle.load(result)
+        exp_var_score = pickle.load(result)
         accuracy = pickle.load(result)
+
+    grid.save_params_to('/tmp/grid.params')
+    net.save_params_to('/tmp/net.params')
 
     print("A list of named tuples of scores for each set of parameter "
           "combinations in param_grid for the NN model:")
@@ -44,10 +52,18 @@ def results():
     print("Scorer function used on the held out data to choose the best "
           "parameters for the NN model:")
     print(grid.scorer_)
+    print("Mean absolute error regression loss for NN model:")
+    print mean_abs
+    print("Mean squared error regression loss for NN model:")
+    print mean_sq
+    print("Median absolute error regression loss for NN model:")
+    print median_abs
+    print("R^2 (coefficient of determination) regression score function for NN model:")
+    print r2
+    print("Explained variance regression score function for NN model:")
+    print exp_var_score
     print("Accuracy prediction score for the NN model:")
-    print(accuracy)
-    grid.save_params_to('/tmp/grid.params')
-    net.save_params_to('/tmp/net.params')
+    print accuracy
 
     with open(SVM_PICKLE, 'rb') as result:
         mean_abs = pickle.load(result)
@@ -55,6 +71,7 @@ def results():
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
+        accuracy = pickle.load(result)
 
     print("Mean absolute error regression loss for SVM model:")
     print mean_abs
@@ -66,6 +83,8 @@ def results():
     print r2
     print("Explained variance regression score function for SVM model:")
     print exp_var_score
+    print("Accuracy prediction score for the SVM model:")
+    print accuracy
 
     with open(DT_PICKLE, 'rb') as result:
         mean_abs = pickle.load(result)
@@ -73,6 +92,7 @@ def results():
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
+        accuracy = pickle.load(result)
 
     print("Mean absolute error regression loss for tree model:")
     print mean_abs
@@ -84,6 +104,8 @@ def results():
     print r2
     print("Explained variance regression score function for tree model:")
     print exp_var_score
+    print("Accuracy prediction score for the tree model:")
+    print accuracy
 
     with open(RR_PICKLE, 'rb') as result:
         mean_abs = pickle.load(result)
@@ -91,6 +113,7 @@ def results():
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
+        accuracy = pickle.load(result)
         ridge_alpha = pickle.load(result)
 
     print("Mean absolute error regression loss for ridge regression model:")
@@ -103,5 +126,8 @@ def results():
     print r2
     print("Explained variance regression score function for ridge regression model:")
     print exp_var_score
+    print("Accuracy prediction score for the ridge regression model:")
+    print accuracy
     print("Cross-validated value of the alpha parameter for ridge regression model:")
     print ridge_alpha
+
