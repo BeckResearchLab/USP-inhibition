@@ -107,6 +107,7 @@ def main():
 
     models.build_nn(x_train, y_train, x_val, y_val)
     models.build_svm(x_train, y_train, x_val, y_val)
+    models.build_tree(x_train, y_train, x_val, y_val)
 
     post_process.results()
 
