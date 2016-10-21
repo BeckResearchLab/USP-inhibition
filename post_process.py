@@ -16,6 +16,7 @@ __status__ = "Development"
 NN_PICKLE = 'nn_data.pkl'
 SVM_PICKLE = 'svm_data.pkl'
 DT_PICKLE = 'dt_data.pkl'
+RR_PICKLE = 'rr_data.pkl'
 
 
 def results():
@@ -30,20 +31,20 @@ def results():
         accuracy = pickle.load(result)
 
     print("A list of named tuples of scores for each set of parameter "
-          "combinations in param_grid:")
+          "combinations in param_grid for the NN model:")
     print("[parameters, mean_validation_score over CV folds, the list of "
           "scores for each fold]")
     print(grid.grid_scores_)
-    print("Estimator that was chosen by the search with the highest score:")
+    print("Estimator that was chosen by the search with the highest score for the NN model:")
     print(grid.best_estimator_)
-    print("Score of best_estimator on the held out data:")
+    print("Score of best_estimator on the held out data for the NN model:")
     print(grid.best_score_)
-    print("Parameter setting that gave the best results on the held out data:")
+    print("Parameter setting that gave the best results on the held out data for the NN model:")
     print(grid.best_params_)
     print("Scorer function used on the held out data to choose the best "
-          "parameters for the model:")
+          "parameters for the NN model:")
     print(grid.scorer_)
-    print("Accuracy prediction score:")
+    print("Accuracy prediction score for the NN model:")
     print(accuracy)
     grid.save_params_to('/tmp/grid.params')
     net.save_params_to('/tmp/net.params')
@@ -83,3 +84,24 @@ def results():
     print r2
     print("Explained variance regression score function for tree model:")
     print exp_var_score
+
+    with open(RR_PICKLE, 'rb') as result:
+        mean_abs = pickle.load(result)
+        mean_sq = pickle.load(result)
+        median_abs = pickle.load(result)
+        r2 = pickle.load(result)
+        exp_var_score = pickle.load(result)
+        ridge_alpha = pickle.load(result)
+
+    print("Mean absolute error regression loss for ridge regression model:")
+    print mean_abs
+    print("Mean squared error regression loss for ridge regression model:")
+    print mean_sq
+    print("Median absolute error regression loss for ridge regression model:")
+    print median_abs
+    print("R^2 (coefficient of determination) regression score function for ridge regression model:")
+    print r2
+    print("Explained variance regression score function for ridge regression model:")
+    print exp_var_score
+    print("Cross-validated value of the alpha parameter for ridge regression model:")
+    print ridge_alpha
