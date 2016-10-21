@@ -15,6 +15,7 @@ __status__ = "Development"
 
 NN_PICKLE = 'nn_data.pkl'
 SVM_PICKLE = 'svm_data.pkl'
+DT_PICKLE = 'dt_data.pkl'
 
 
 def results():
@@ -54,13 +55,31 @@ def results():
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
 
-    print("Mean absolute error regression loss:")
+    print("Mean absolute error regression loss for SVM model:")
     print mean_abs
-    print("Mean squared error regression loss:")
+    print("Mean squared error regression loss for SVM model:")
     print mean_sq
-    print("Median absolute error regression loss:")
+    print("Median absolute error regression loss for SVM model:")
     print median_abs
-    print("R^2 (coefficient of determination) regression score function:")
+    print("R^2 (coefficient of determination) regression score function for SVM model:")
     print r2
-    print("Explained variance regression score function:")
+    print("Explained variance regression score function for SVM model:")
+    print exp_var_score
+
+    with open(DT_PICKLE, 'rb') as result:
+        mean_abs = pickle.load(result)
+        mean_sq = pickle.load(result)
+        median_abs = pickle.load(result)
+        r2 = pickle.load(result)
+        exp_var_score = pickle.load(result)
+
+    print("Mean absolute error regression loss for tree model:")
+    print mean_abs
+    print("Mean squared error regression loss for tree model:")
+    print mean_sq
+    print("Median absolute error regression loss for tree model:")
+    print median_abs
+    print("R^2 (coefficient of determination) regression score function for tree model:")
+    print r2
+    print("Explained variance regression score function for tree model:")
     print exp_var_score
