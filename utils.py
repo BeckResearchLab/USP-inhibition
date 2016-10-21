@@ -14,9 +14,7 @@ from pychem import charge, moe, constitution
 from pychem import topology, connectivity as con, kappa
 from pychem.pychem import Chem
 from sklearn.decomposition import PCA
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.feature_selection import RFECV
+from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 from sklearn.grid_search import GridSearchCV
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.preprocessing import RobustScaler
@@ -28,6 +26,8 @@ __license__ = "BSD 3-Clause License"
 __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
+
+FS_PICKLE = 'fs_results.pkl'
 
 
 def create_dict(filename, mol):
@@ -145,7 +145,7 @@ def select_features(x, y):
                                  names), reverse=True)
 
     # Removing features with low variance
-    var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
+    var_threshold = VarianceThreshold(threshold=(.8 * (1 - .8)))
     x_var_threshold = var_threshold.fit_transform(x)
 
     # Kbest-based feature selection using regression
@@ -154,7 +154,7 @@ def select_features(x, y):
     x_kbest = f_selection.SelectKBest(score_func=f_regress, k=2).fit_transform(x, y)
 
     # Tree-based feature selection
-    clf = ExtraTreesClassifier.fit(x, y)
+    clf = ExtraTreesRegressor.fit(x, y)
     x_trees = f_selection.SelectFromModel(clf, prefit=True).transform(x)
 
     # Percentile-based feature selection using regression
@@ -182,19 +182,32 @@ def select_features(x, y):
     # Do grid search over k, n_components and C:
     pipeline = Pipeline([("features", x_features), ("svm", svm)])
 
-    param_grid = dict(features__pca__n_components=[1, 2, 3],
-                      features__univ_kbest__k=[1, 2],
-                      svm__C=[0.1, 1, 10])
+    grid = dict(features__pca__n_components=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                features__univ_kbest__k=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                svm__C=[0.01, 0.1, 1.0, 10.0])
 
-    grid_search = GridSearchCV(pipeline, param_grid=param_grid, verbose=10)
+    grid_search = GridSearchCV(pipeline, param_grid=grid, verbose=10)
     grid_search.fit(x, y)
-    print(grid_search.best_estimator_)
 
     estimator = SVR(kernel="linear")
-    selector = RFECV(estimator, step=1, cv=5)
+    selector = f_selection.RFECV(estimator, step=1, cv=5)
     selector = selector.fit(x, y)
 
-    return rf_sorted_score, x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, selector.support_
+    # Pickling feature reduction outputs
+    with open(FS_PICKLE, 'wb') as result:
+        pickle.dump(rf_sorted_score, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_var_threshold, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_kbest, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_trees, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_percentile, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_alpha, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(grid_search.best_estimator_, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(selector, result, pickle.HIGHEST_PROTOCOL)
+
+    print rf_sorted_score, x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, grid_search.best_estimator_, \
+        selector.support_
+
+    return
 
 
 def extract_constitution_descriptors(dataframe, column):
@@ -219,14 +232,14 @@ def extract_constitution_descriptors(dataframe, column):
             dic = constitution.GetConstitutional(mol)
             diction.append(dic)
         df_constitution = pd.DataFrame(diction, columns=["nphos", "ndb", "nsb", "ncoi",
-                                                     "ncarb", "nsulph", "ncof",
-                                                     "nnitro", "ncobr", "naro",
-                                                     "ndonr", "noxy", "nhet",
-                                                     "nhev", "nhal", "naccr",
-                                                     "nta", "ntb", "nring", "nrot",
-                                                     "Weight", "PC2", "PC3", "PC1",
-                                                     "PC6", "PC4", "PC5", "AWeight",
-                                                     "ncocl", "nhyd"])
+                                                         "ncarb", "nsulph", "ncof",
+                                                         "nnitro", "ncobr", "naro",
+                                                         "ndonr", "noxy", "nhet",
+                                                         "nhev", "nhal", "naccr",
+                                                         "nta", "ntb", "nring", "nrot",
+                                                         "Weight", "PC2", "PC3", "PC1",
+                                                         "PC6", "PC4", "PC5", "AWeight",
+                                                         "ncocl", "nhyd"])
 
         df_constitution.to_csv('data/df_constitution.tsv', sep='\t')
         print("done calculating constitution")
@@ -796,7 +809,6 @@ def check_files():
         data = f.readlines()
         i = 1
         for line in data:
-            words = line.split()
             i += 1
         if i == 389561:
             a += 1
