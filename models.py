@@ -12,7 +12,7 @@ from lasagne import nonlinearities
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
-from sklearn import svm, metrics, tree, grid_search, linear_model
+import sklearn
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -89,18 +89,35 @@ def build_nn(x_train, y_train, x_test, y_test):
                   'hidden1_nonlinearity': 
                   [nonlinearities.sigmoid, nonlinearities.softmax],
                   'update_learning_rate': [0.01, 0.1, 0.5]}
-    grid = grid_search.GridSearchCV(net, param_grid, verbose=0,
-                                    n_jobs=3, cv=3)
+    grid = sklearn.grid_search.GridSearchCV(net, param_grid, verbose=0,
+                                            n_jobs=3, cv=3)
     grid.fit(x_train, y_train)
 
     y_pred = grid.predict(x_test)
+    # Mean absolute error regression loss
+    mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
+    # Mean squared error regression loss
+    mean_sq = sklearn.metrics.mean_squared_error(y_test, y_pred)
+    # Median absolute error regression loss
+    median_abs = sklearn.metrics.median_absolute_error(y_test, y_pred)
+    # R^2 (coefficient of determination) regression score function
+    r2 = sklearn.metrics.r2_score(y_test, y_pred)
+    # Explained variance regression score function
+    exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
     # Accuracy prediction score
-    accuracy = metrics.accuracy_score(y_test, y_pred)
+    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(NN_PICKLE, 'wb') as results:
         pickle.dump(grid, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(net, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
+
+    return
 
 
 def build_svm(x_train, y_train, x_test, y_test):
@@ -114,20 +131,22 @@ def build_svm(x_train, y_train, x_test, y_test):
     :return: None
     """
 
-    clf = svm.SVR()
+    clf = sklearn.svm.SVR()
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
     # Mean absolute error regression loss
-    mean_abs = metrics.mean_absolute_error(y_test, y_pred)
+    mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
     # Mean squared error regression loss
-    mean_sq = metrics.mean_squared_error(y_test, y_pred)
+    mean_sq = sklearn.metrics.mean_squared_error(y_test, y_pred)
     # Median absolute error regression loss
-    median_abs = metrics.median_absolute_error(y_test, y_pred)
+    median_abs = sklearn.metrics.median_absolute_error(y_test, y_pred)
     # R^2 (coefficient of determination) regression score function
-    r2 = metrics.r2_score(y_test, y_pred)
+    r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
-    exp_var_score = metrics.explained_variance_score(y_test, y_pred)
+    exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
+    # Accuracy prediction score
+    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(SVM_PICKLE, 'wb') as results:
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -135,6 +154,9 @@ def build_svm(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
+
+    return
 
 
 def build_tree(x_train, y_train, x_test, y_test):
@@ -147,20 +169,22 @@ def build_tree(x_train, y_train, x_test, y_test):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    clf = tree.DecisionTreeRegressor()
+    clf = sklearn.tree.DecisionTreeRegressor()
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
     # Mean absolute error regression loss
-    mean_abs = metrics.mean_absolute_error(y_test, y_pred)
+    mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
     # Mean squared error regression loss
-    mean_sq = metrics.mean_squared_error(y_test, y_pred)
+    mean_sq = sklearn.metrics.mean_squared_error(y_test, y_pred)
     # Median absolute error regression loss
-    median_abs = metrics.median_absolute_error(y_test, y_pred)
+    median_abs = sklearn.metrics.median_absolute_error(y_test, y_pred)
     # R^2 (coefficient of determination) regression score function
-    r2 = metrics.r2_score(y_test, y_pred)
+    r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
-    exp_var_score = metrics.explained_variance_score(y_test, y_pred)
+    exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
+    # Accuracy prediction score
+    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(DT_PICKLE, 'wb') as results:
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -168,6 +192,9 @@ def build_tree(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
+
+    return
 
 
 def build_ridge(x_train, y_train, x_test, y_test):
@@ -180,20 +207,22 @@ def build_ridge(x_train, y_train, x_test, y_test):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    clf = linear_model.RidgeCV(alphas=[0.01, 0.1, 1.0, 10.0])
+    clf = sklearn.linear_model.RidgeCV(alphas=[0.01, 0.1, 1.0, 10.0])
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
     # Mean absolute error regression loss
-    mean_abs = metrics.mean_absolute_error(y_test, y_pred)
+    mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
     # Mean squared error regression loss
-    mean_sq = metrics.mean_squared_error(y_test, y_pred)
+    mean_sq = sklearn.metrics.mean_squared_error(y_test, y_pred)
     # Median absolute error regression loss
-    median_abs = metrics.median_absolute_error(y_test, y_pred)
+    median_abs = sklearn.metrics.median_absolute_error(y_test, y_pred)
     # R^2 (coefficient of determination) regression score function
-    r2 = metrics.r2_score(y_test, y_pred)
+    r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
-    exp_var_score = metrics.explained_variance_score(y_test, y_pred)
+    exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
+    # Accuracy prediction score
+    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
     # Optimal ridge regression alpha value from CV
     ridge_alpha = clf.alpha_
 
@@ -203,4 +232,7 @@ def build_ridge(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ridge_alpha, results, pickle.HIGHEST_PROTOCOL)
+
+    return
