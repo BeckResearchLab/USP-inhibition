@@ -5,13 +5,14 @@ Construct a neural network model, support vector and decision trees regression m
 """
 
 import pickle
+from multiprocessing import Process
 
 import numpy as np
 from lasagne import nonlinearities
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
-from sklearn import svm, metrics, tree, grid_search
+from sklearn import svm, metrics, tree, grid_search, linear_model
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -24,16 +25,44 @@ NODES = 10
 NN_PICKLE = 'nn_data.pkl'
 SVM_PICKLE = 'svm_data.pkl'
 DT_PICKLE = 'dt_data.pkl'
+RR_PICKLE = 'rr_data.pkl'
 
 
-def build_nn(x_train, y_train, x_val, y_val):
+def run_models(x_train, y_train, x_test, y_test):
+    """
+    Function to drive all models in parallel.
+
+    :param x_train: features dataframe for model training
+    :param y_train: target dataframe for model training
+    :param x_test: features dataframe for model testing
+    :param y_test: target dataframe for model testing
+    :return: None
+    """
+    p1 = Process(target=build_nn, args=(x_train, y_train, x_test, y_test))
+    p1.start()
+    p2 = Process(target=build_svm, args=(x_train, y_train, x_test, y_test))
+    p2.start()
+    p3 = Process(target=build_tree, args=(x_train, y_train, x_test, y_test))
+    p3.start()
+    p4 = Process(target=build_ridge, args=(x_train, y_train, x_test, y_test))
+    p4.start()
+
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+
+    return
+
+
+def build_nn(x_train, y_train, x_test, y_test):
     """
     Construct a regression neural network model from input dataframe
 
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
-    :param x_val: features dataframe for model validation
-    :param y_val: target dataframe for model validation
+    :param x_test: features dataframe for model testing
+    :param y_test: target dataframe for model testing
     :return: None
     """
 
@@ -64,9 +93,9 @@ def build_nn(x_train, y_train, x_val, y_val):
                                     n_jobs=3, cv=3)
     grid.fit(x_train, y_train)
 
-    y_pred = grid.predict(x_val)
+    y_pred = grid.predict(x_test)
     # Accuracy prediction score
-    accuracy = metrics.accuracy_score(y_val, y_pred)
+    accuracy = metrics.accuracy_score(y_test, y_pred)
 
     with open(NN_PICKLE, 'wb') as results:
         pickle.dump(grid, results, pickle.HIGHEST_PROTOCOL)
@@ -74,31 +103,31 @@ def build_nn(x_train, y_train, x_val, y_val):
         pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
 
 
-def build_svm(x_train, y_train, x_val, y_val):
+def build_svm(x_train, y_train, x_test, y_test):
     """
     Construct a support vector regression model from input dataframe
 
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
-    :param x_val: features dataframe for model validation
-    :param y_val: target dataframe for model validation
+    :param x_test: features dataframe for model testing
+    :param y_test: target dataframe for model testing
     :return: None
     """
 
     clf = svm.SVR()
     clf.fit(x_train, y_train)
-    y_pred = clf.predict(x_val)
+    y_pred = clf.predict(x_test)
 
     # Mean absolute error regression loss
-    mean_abs = metrics.mean_absolute_error(y_val, y_pred)
+    mean_abs = metrics.mean_absolute_error(y_test, y_pred)
     # Mean squared error regression loss
-    mean_sq = metrics.mean_squared_error(y_val, y_pred)
+    mean_sq = metrics.mean_squared_error(y_test, y_pred)
     # Median absolute error regression loss
-    median_abs = metrics.median_absolute_error(y_val, y_pred)
+    median_abs = metrics.median_absolute_error(y_test, y_pred)
     # R^2 (coefficient of determination) regression score function
-    r2 = metrics.r2_score(y_val, y_pred)
+    r2 = metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
-    exp_var_score = metrics.explained_variance_score(y_val, y_pred)
+    exp_var_score = metrics.explained_variance_score(y_test, y_pred)
 
     with open(SVM_PICKLE, 'wb') as results:
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -108,30 +137,30 @@ def build_svm(x_train, y_train, x_val, y_val):
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
 
 
-def build_tree(x_train, y_train, x_val, y_val):
+def build_tree(x_train, y_train, x_test, y_test):
     """
     Construct a decision trees regression model from input dataframe
 
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
-    :param x_val: features dataframe for model validation
-    :param y_val: target dataframe for model validation
+    :param x_test: features dataframe for model testing
+    :param y_test: target dataframe for model testing
     :return: None
     """
     clf = tree.DecisionTreeRegressor()
     clf.fit(x_train, y_train)
-    y_pred = clf.predict(x_val)
+    y_pred = clf.predict(x_test)
 
     # Mean absolute error regression loss
-    mean_abs = metrics.mean_absolute_error(y_val, y_pred)
+    mean_abs = metrics.mean_absolute_error(y_test, y_pred)
     # Mean squared error regression loss
-    mean_sq = metrics.mean_squared_error(y_val, y_pred)
+    mean_sq = metrics.mean_squared_error(y_test, y_pred)
     # Median absolute error regression loss
-    median_abs = metrics.median_absolute_error(y_val, y_pred)
+    median_abs = metrics.median_absolute_error(y_test, y_pred)
     # R^2 (coefficient of determination) regression score function
-    r2 = metrics.r2_score(y_val, y_pred)
+    r2 = metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
-    exp_var_score = metrics.explained_variance_score(y_val, y_pred)
+    exp_var_score = metrics.explained_variance_score(y_test, y_pred)
 
     with open(DT_PICKLE, 'wb') as results:
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -139,3 +168,39 @@ def build_tree(x_train, y_train, x_val, y_val):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
+
+
+def build_ridge(x_train, y_train, x_test, y_test):
+    """
+    Construct a ridge regression model from input dataframe
+
+    :param x_train: features dataframe for model training
+    :param y_train: target dataframe for model training
+    :param x_test: features dataframe for model testing
+    :param y_test: target dataframe for model testing
+    :return: None
+    """
+    clf = linear_model.RidgeCV(alphas=[0.01, 0.1, 1.0, 10.0])
+    clf.fit(x_train, y_train)
+    y_pred = clf.predict(x_test)
+
+    # Mean absolute error regression loss
+    mean_abs = metrics.mean_absolute_error(y_test, y_pred)
+    # Mean squared error regression loss
+    mean_sq = metrics.mean_squared_error(y_test, y_pred)
+    # Median absolute error regression loss
+    median_abs = metrics.median_absolute_error(y_test, y_pred)
+    # R^2 (coefficient of determination) regression score function
+    r2 = metrics.r2_score(y_test, y_pred)
+    # Explained variance regression score function
+    exp_var_score = metrics.explained_variance_score(y_test, y_pred)
+    # Optimal ridge regression alpha value from CV
+    ridge_alpha = clf.alpha_
+
+    with open(RR_PICKLE, 'wb') as results:
+        pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ridge_alpha, results, pickle.HIGHEST_PROTOCOL)
