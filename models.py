@@ -26,6 +26,7 @@ NN_PICKLE = 'nn_data.pkl'
 SVM_PICKLE = 'svm_data.pkl'
 DT_PICKLE = 'dt_data.pkl'
 RR_PICKLE = 'rr_data.pkl'
+BRR_PICKLE = 'brr_data.pkl'
 
 
 def run_models(x_train, y_train, x_test, y_test):
@@ -46,11 +47,14 @@ def run_models(x_train, y_train, x_test, y_test):
     p3.start()
     p4 = Process(target=build_ridge, args=(x_train, y_train, x_test, y_test))
     p4.start()
+    p5 = Process(target=build_bayesian_rr, args=(x_train, y_train, x_test, y_test))
+    p5.start()
 
     p1.join()
     p2.join()
     p3.join()
     p4.join()
+    p5.join()
 
     return
 
@@ -227,6 +231,47 @@ def build_ridge(x_train, y_train, x_test, y_test):
     ridge_alpha = clf.alpha_
 
     with open(RR_PICKLE, 'wb') as results:
+        pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ridge_alpha, results, pickle.HIGHEST_PROTOCOL)
+
+    return
+
+
+def build_bayesian_rr(x_train, y_train, x_test, y_test):
+    """
+    Construct a Bayesian ridge regression model from input dataframe
+
+    :param x_train: features dataframe for model training
+    :param y_train: target dataframe for model training
+    :param x_test: features dataframe for model testing
+    :param y_test: target dataframe for model testing
+    :return: None
+    """
+    clf = sklearn.linear_model.BayesianRidge()
+    clf.fit(x_train, y_train)
+    y_pred = clf.predict(x_test)
+
+    # Mean absolute error regression loss
+    mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
+    # Mean squared error regression loss
+    mean_sq = sklearn.metrics.mean_squared_error(y_test, y_pred)
+    # Median absolute error regression loss
+    median_abs = sklearn.metrics.median_absolute_error(y_test, y_pred)
+    # R^2 (coefficient of determination) regression score function
+    r2 = sklearn.metrics.r2_score(y_test, y_pred)
+    # Explained variance regression score function
+    exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
+    # Accuracy prediction score
+    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
+    # Optimal ridge regression alpha value from CV
+    ridge_alpha = clf.alpha_
+
+    with open(BRR_PICKLE, 'wb') as results:
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
