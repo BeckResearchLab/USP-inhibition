@@ -4,6 +4,7 @@
 Tasks performed after model building: Metric analysis and display
 """
 
+import os
 import pickle
 
 __author__ = "Pearl Philip"
@@ -17,6 +18,7 @@ NN_PICKLE = 'nn_data.pkl'
 SVM_PICKLE = 'svm_data.pkl'
 DT_PICKLE = 'dt_data.pkl'
 RR_PICKLE = 'rr_data.pkl'
+BRR_PICKLE = 'brr_data.pkl'
 
 
 def results():
@@ -130,4 +132,29 @@ def results():
     print accuracy
     print("Cross-validated value of the alpha parameter for ridge regression model:")
     print ridge_alpha
+
+    with open(BRR_PICKLE, 'rb') as result:
+        mean_abs = pickle.load(result)
+        mean_sq = pickle.load(result)
+        median_abs = pickle.load(result)
+        r2 = pickle.load(result)
+        exp_var_score = pickle.load(result)
+        accuracy = pickle.load(result)
+        ridge_alpha = pickle.load(result)
+
+    print("Mean absolute error regression loss for Bayesian ridge regression model:")
+    print mean_abs
+    print("Mean squared error regression loss for Bayesian ridge regression model:")
+    print mean_sq
+    print("Median absolute error regression loss for Bayesian ridge regression model:")
+    print median_abs
+    print("R^2 (coefficient of determination) regression score function for Bayesian ridge regression model:")
+    print r2
+    print("Explained variance regression score function for Bayesian ridge regression model:")
+    print exp_var_score
+    print("Accuracy prediction score for the Bayesian ridge regression model:")
+    print accuracy
+    print("Cross-validated value of the alpha parameter for Bayesian ridge regression model:")
+    print ridge_alpha
+
 
