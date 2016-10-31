@@ -54,10 +54,21 @@ def main():
 
     # Extracting molecular descriptors for all compounds
     print("Sending data for descriptor calculation")
-    utils.extract_all_descriptors(df, 'SMILES')
-    df_descriptor = df_constitution.join(df_topology).join(df_con).join(df_kappa) \
-        .join(df_burden).join(df_estate).join(df_basak).join(df_moran_df) \
-        .join(df_geary).join(df_property).join(df_charge).join(df_moe)
+    # utils.extract_all_descriptors(df, 'SMILES')
+
+    # Importing feature sets
+    df_constitution = pd.DataFrame.from_csv('data/df_constitution.tsv', sep='\t')
+    df_charge = pd.DataFrame.from_csv('data/df_charge.tsv', sep='\t')
+    df_basak = pd.DataFrame.from_csv('data/df_basak.tsv', sep='\t')
+    df_con = pd.DataFrame.from_csv('data/df_con.tsv', sep='\t')
+    df_kappa = pd.DataFrame.from_csv('data/df_kappa.tsv', sep='\t')
+    df_property = pd.DataFrame.from_csv('data/df_property.tsv', sep='\t')
+    df_moe = pd.DataFrame.from_csv('data/df_moe.tsv', sep='\t')
+    df_estate = pd.DataFrame.from_csv('data/df_estate.tsv', sep='\t')
+
+    df_descriptor = df_constitution.join(df_con).join(df_kappa).\
+        join(df_estate).join(df_basak).join(df_property).join(df_charge).\
+        join(df_moe)
 
     # Transform all column values to mean 0 and unit variance
     df_descriptor = utils.transform_dataframe(df_descriptor)
