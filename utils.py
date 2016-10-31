@@ -262,8 +262,12 @@ def extract_topology_descriptors(dataframe, column):
     else:
         print("starting topology calculation")
         diction = []
+        i = 0
         for line in dataframe[column][:]:
             smiles = line
+            i += 1
+            print "topology"
+            print i
             mol = Chem.MolFromSmiles(smiles)
             dic = topology.GetTopology(mol)
             diction.append(dic)
@@ -371,8 +375,12 @@ def extract_burden_descriptors(dataframe, column):
     else:
         print("starting burden calculation")
         diction = []
+        i = 0
         for line in dataframe[column][:]:
             smiles = line
+            i += 1
+            print "burden"
+            print i
             mol = Chem.MolFromSmiles(smiles)
             dic = bcut.GetBurden(mol)
             diction.append(dic)
@@ -562,8 +570,12 @@ def extract_moran_descriptors(dataframe, column):
     else:
         print("starting moran calculation")
         diction = []
+        i = 0
         for line in dataframe[column][:]:
             smiles = line
+            i += 1
+            print "moran"
+            print i
             mol = Chem.MolFromSmiles(smiles)
             dic = moran.GetMoranAuto(mol)
             diction.append(dic)
@@ -600,8 +612,12 @@ def extract_geary_descriptors(dataframe, column):
     else:
         print("starting geary calculation")
         diction = []
+        i = 0
         for line in dataframe[column][:]:
             smiles = line
+            i += 1
+            print "geary"
+            print i
             mol = Chem.MolFromSmiles(smiles)
             dic = geary.GetGearyAuto(mol)
             diction.append(dic)
@@ -754,8 +770,8 @@ def extract_all_descriptors(df, column):
     p1 = Process(target=extract_constitution_descriptors, args=(df, column))
     p1.start()
 
-    """p2 = Process(target=extract_topology_descriptors, args=(df, column))
-    p2.start()"""
+    p2 = Process(target=extract_topology_descriptors, args=(df, column))
+    p2.start()
 
     p3 = Process(target=extract_con_descriptors, args=(df, column))
     p3.start()
@@ -763,8 +779,8 @@ def extract_all_descriptors(df, column):
     p4 = Process(target=extract_kappa_descriptors, args=(df, column))
     p4.start()
 
-    """p5 = Process(target=extract_burden_descriptors, args=(df, column))
-    p5.start()"""
+    p5 = Process(target=extract_burden_descriptors, args=(df, column))
+    p5.start()
 
     p6 = Process(target=extract_estate_descriptors, args=(df, column))
     p6.start()
@@ -788,10 +804,10 @@ def extract_all_descriptors(df, column):
     p12.start()
 
     p1.join()
-    """p2.join()"""
+    p2.join()
     p3.join()
     p4.join()
-    """p5.join()"""
+    p5.join()
     p6.join()
     p7.join()
     p8.join()
