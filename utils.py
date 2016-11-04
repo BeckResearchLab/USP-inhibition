@@ -136,7 +136,8 @@ def select_features(x, y):
     :param y: dataframe of target property
     :return: Outputs of feature selection process
     """
-
+    x = pd.DataFrame(x)
+    
     # Random forest feature importance - Mean decrease impurity
     names = x.columns.values.tolist()
     rf = RandomForestRegressor()
@@ -145,7 +146,7 @@ def select_features(x, y):
                                  names), reverse=True)
 
     # Removing features with low variance
-    var_threshold = VarianceThreshold(threshold=(.8 * (1 - .8)))
+    var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
     x_var_threshold = var_threshold.fit_transform(x)
 
     # Kbest-based feature selection using regression
@@ -168,13 +169,8 @@ def select_features(x, y):
     # This data set is way to high-dimensional. Better do PCA:
     pca = PCA(n_components=2)
 
-    # Maybe some original features where good, too?
-    kbest = f_selection.SelectKBest(score_func=f_regress, k=2)
-
     # Build estimator from PCA and Univariate selection:
     combined_features = FeatureUnion([("pca", pca), ("univ_kbest", kbest)])
-
-    # Use combined features to transform dataframe:
     x_features = combined_features.fit(x, y).transform(x)
 
     svm = SVC(kernel="linear")
@@ -220,7 +216,7 @@ def extract_constitution_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_constitution.tsv') and os.access('data/df_constitution.tsv', os.R_OK):
+    if os.path.exists('data/df_constitution.csv') and os.access('data/df_constitution.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -241,7 +237,7 @@ def extract_constitution_descriptors(dataframe, column):
                                                          "PC6", "PC4", "PC5", "AWeight",
                                                          "ncocl", "nhyd"])
 
-        df_constitution.to_csv('data/df_constitution.tsv', sep='\t')
+        df_constitution.to_csv('data/df_constitution.csv')
         print("done calculating constitution")
         return
 
@@ -256,7 +252,7 @@ def extract_topology_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_topology.tsv') and os.access('data/df_topology.tsv', os.R_OK):
+    if os.path.exists('data/df_topology.csv') and os.access('data/df_topology.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -284,7 +280,7 @@ def extract_topology_descriptors(dataframe, column):
                                                      'Sito', 'Tigdi', 'Pol',
                                                      'Hato', 'Xu'])
 
-        df_topology.to_csv('data/df_topology.tsv', sep='\t')
+        df_topology.to_csv('data/df_topology.csv')
         print("done calculating topology")
         return
 
@@ -299,7 +295,7 @@ def extract_con_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_con.tsv') and os.access('data/df_con.tsv', os.R_OK):
+    if os.path.exists('data/df_con.csv') and os.access('data/df_con.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -324,7 +320,7 @@ def extract_con_descriptors(dataframe, column):
                                                 'Chiv5ch', 'Chiv3ch', 'Chiv10',
                                                 'Chiv6ch', 'Chi10', 'Chi4ch',
                                                 'Chiv4ch', 'mChi1', 'Chi6ch'])
-        df_con.to_csv('data/df_con.tsv', sep='\t')
+        df_con.to_csv('data/df_con.csv')
         print("done calculating con")
         return
 
@@ -339,7 +335,7 @@ def extract_kappa_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_kappa.tsv') and os.access('data/df_kappa.tsv', os.R_OK):
+    if os.path.exists('data/df_kappa.csv') and os.access('data/df_kappa.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -354,7 +350,7 @@ def extract_kappa_descriptors(dataframe, column):
                                                   'kappa2', 'kappam1', 'kappam3',
                                                   'kappam2'])
 
-        df_kappa.to_csv('data/df_kappa.tsv', sep='\t')
+        df_kappa.to_csv('data/df_kappa.csv')
         print("done calculating kappa")
         return
 
@@ -369,7 +365,7 @@ def extract_burden_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_burden.tsv') and os.access('data/df_burden.tsv', os.R_OK):
+    if os.path.exists('data/df_burden.csv') and os.access('data/df_burden.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -411,7 +407,7 @@ def extract_burden_descriptors(dataframe, column):
                                                    'bcutm13', 'bcutm12',
                                                    'bcutm11', 'bcutm10'])
 
-        df_burden.to_csv('data/df_burden.tsv', sep='\t')
+        df_burden.to_csv('data/df_burden.csv')
         print("done calculating burden")
         return
 
@@ -426,7 +422,7 @@ def extract_estate_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_estate.tsv') and os.access('data/df_estate.tsv', os.R_OK):
+    if os.path.exists('data/df_estate.csv') and os.access('data/df_estate.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -513,7 +509,7 @@ def extract_estate_descriptors(dataframe, column):
                                                    'Smin12', 'Smin13', 'Smin14',
                                                    'Smin15', 'Smax46', 'Smin17',
                                                    'Smin18', 'Smin19'])
-        df_estate.to_csv('data/df_estate.tsv', sep='\t')
+        df_estate.to_csv('data/df_estate.csv')
         print("done calculating estate")
         return
 
@@ -528,7 +524,7 @@ def extract_basak_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_basak.tsv') and os.access('data/df_basak.tsv', os.R_OK):
+    if os.path.exists('data/df_basak.csv') and os.access('data/df_basak.csv', os.R_OK):
         print("File exists and is readable")
         return
     else:
@@ -549,7 +545,7 @@ def extract_basak_descriptors(dataframe, column):
                                                   'IC0', 'CIC1', 'IC6', 'IC5',
                                                   'IC4'])
 
-        df_basak.to_csv('data/df_basak.tsv', sep='\t')
+        df_basak.to_csv('data/df_basak.csv')
         print("done calculating basak")
         return
 
@@ -564,7 +560,7 @@ def extract_moran_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_moran.tsv') and os.access('data/df_moran.tsv', os.R_OK):
+    if os.path.exists('data/df_moran.csv') and os.access('data/df_moran.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -591,7 +587,7 @@ def extract_moran_descriptors(dataframe, column):
                                                   'MATSe8', 'MATSp3', 'MATSp7',
                                                   'MATSp5', 'MATSp2'])
 
-        df_moran.to_csv('data/df_moran.tsv', sep='\t')
+        df_moran.to_csv('data/df_moran.csv')
         print("done calculating moran")
         return
 
@@ -606,7 +602,7 @@ def extract_geary_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_geary.tsv') and os.access('data/df_geary.tsv', os.R_OK):
+    if os.path.exists('data/df_geary.csv') and os.access('data/df_geary.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -633,7 +629,7 @@ def extract_geary_descriptors(dataframe, column):
                                                   'GATSm6', 'GATSm7', 'GATSm4',
                                                   'GATSm5', 'GATSm8'])
 
-        df_geary.to_csv('data/df_geary.tsv', sep='\t')
+        df_geary.to_csv('data/df_geary.csv')
         print("done calculating geary")
         return
 
@@ -648,7 +644,7 @@ def extract_property_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_property.tsv') and os.access('data/df_property.tsv', os.R_OK):
+    if os.path.exists('data/df_property.csv') and os.access('data/df_property.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -662,7 +658,7 @@ def extract_property_descriptors(dataframe, column):
         df_property = pd.DataFrame(diction, columns=['TPSA', 'Hy', 'LogP',
                                                      'LogP2', 'UI', 'MR'])
 
-        df_property.to_csv('data/df_property.tsv', sep='\t')
+        df_property.to_csv('data/df_property.csv')
         print("done calculating property")
         return
 
@@ -677,7 +673,7 @@ def extract_charge_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_charge.tsv') and os.access('data/df_charge.tsv', os.R_OK):
+    if os.path.exists('data/df_charge.csv') and os.access('data/df_charge.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -697,7 +693,7 @@ def extract_charge_descriptors(dataframe, column):
                                                    'QNmax', 'Rnc', 'Rpc', 'Qmin',
                                                    'Tac', 'Mnc'])
 
-        df_charge.to_csv('data/df_charge.tsv', sep='\t')
+        df_charge.to_csv('data/df_charge.csv')
         print("done calculating charge")
         return
 
@@ -712,7 +708,7 @@ def extract_moe_descriptors(dataframe, column):
      in the dataframe.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_moe.tsv') and os.access('data/df_moe.tsv', os.R_OK):
+    if os.path.exists('data/df_moe.csv') and os.access('data/df_moe.csv', os.R_OK):
         print "File exists and is readable"
         return
     else:
@@ -752,7 +748,7 @@ def extract_moe_descriptors(dataframe, column):
                                                 'slogPVSA8', 'slogPVSA9',
                                                 'VSAEstate9', 'VSAEstate10'])
 
-        df_moe.to_csv('data/df_moe.tsv', sep='\t')
+        df_moe.to_csv('data/df_moe.csv')
         print("done calculating moe")
         return
 
@@ -827,19 +823,21 @@ def check_files():
         for line in data:
             i += 1
         if i == 389561:
-            a += 1
+            print "Compound information file check done"
 
-    file_string = ['charge', 'con', 'constitution', 'estate', 'kappa', 'moe', 'property']
+    file_string = ['charge', 'con', 'constitution', 'estate', 'kappa', 'moe',
+                   'property', 'basak', 'burden', 'geary', 'moran', 'topology']
     for string in file_string:
-        with open('data/df_%s.tsv' % string, 'r') as f:
-            for i, l in enumerate(f):
-                pass
-            i += 1
-            if i == 389561:
-                a += 1
-
-    if a == 2:
-        print "File check done"
+        if os.path.exists('data/df_%s.csv' % string) and os.access(
+                        'data/df_%s.csv' % string, os.R_OK):
+            df = pd.DataFrame.from_csv('data/df_%s.csv' % string)
+            row = df.shape[0]
+            if row == 389560:
+                print "df_%s file check done" % string
+            else:
+                print "Incorrect df_%s file length" % string
+        else:
+            print "df_%s file does not exist" % string
 
 
 def transform_dataframe(dataframe):
@@ -854,8 +852,6 @@ def transform_dataframe(dataframe):
     Output types: pd.Dataframe
 
     """
-    cols = [col for col in dataframe.columns]
     robust_scaler = RobustScaler()
-    df = robust_scaler.fit_transform(dataframe[cols])
-    dataframe.columns = df
-    return dataframe
+    df = robust_scaler.fit_transform(dataframe)
+    return df
