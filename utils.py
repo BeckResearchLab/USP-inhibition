@@ -151,43 +151,44 @@ def select_features(x, y):
 
     # Kbest-based feature selection using regression
     f_regress = f_selection.f_regression(x, y, center=False)
-    # For classification: x_kbest = f_selection.SelectKBest(f_selection.chi2, k=2).fit_transform(x, y)
     x_kbest = f_selection.SelectKBest(score_func=f_regress, k=2).fit_transform(x, y)
 
     # Tree-based feature selection
     clf = ExtraTreesRegressor.fit(x, y)
-    x_trees = f_selection.SelectFromModel(clf, prefit=True).transform(x)
+    x_trees = f_selection.SelectFromModel(clf, prefit=True)
 
     # Percentile-based feature selection using regression
-    x_percentile = f_selection.SelectPercentile(score_func=f_regress,
-                                                percentile=10).fit_transform(x, y)
+    percent = f_selection.SelectPercentile(score_func=f_regress, percentile=10)
 
     # "False positive rate"-based feature selection using regression
-    x_alpha = f_selection.SelectFpr(score_func=f_regress,
-                                    alpha=0.05).fit_transform(x, y)
+    fpr = f_selection.SelectFpr(score_func=f_regress, alpha=0.05)
 
     # This data set is way to high-dimensional. Better do PCA:
     pca = PCA(n_components=2)
 
+    #
+    estimator = SVR(kernel="linear")
+    selector = f_selection.RFECV(estimator, step=1, cv=5)
+
     # Build estimator from PCA and Univariate selection:
-    combined_features = FeatureUnion([("pca", pca), ("univ_kbest", kbest)])
-    x_features = combined_features.fit(x, y).transform(x)
+    combined_features = FeatureUnion([("pca", pca), ("univ_kbest", kbest), ("false_positive_rate", fpr),
+                                      ("percentile_select", percent), ("RFECV_selector", selector)])
+    x_union_features = combined_features.fit_transform(x, y)
 
     svm = SVC(kernel="linear")
 
-    # Do grid search over k, n_components and C:
-    pipeline = Pipeline([("features", x_features), ("svm", svm)])
+    # Do grid search over all parameters:
+    pipeline = Pipeline([("features", x_union_features), ("svm", svm)])
 
     grid = dict(features__pca__n_components=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 features__univ_kbest__k=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                features_false_positive_rate_alpha=[],
+                features_percentile_select_percentile=[],
+                features_RFECV_selector_cv=[],
                 svm__C=[0.01, 0.1, 1.0, 10.0])
 
     grid_search = GridSearchCV(pipeline, param_grid=grid, verbose=10)
     grid_search.fit(x, y)
-
-    estimator = SVR(kernel="linear")
-    selector = f_selection.RFECV(estimator, step=1, cv=5)
-    selector = selector.fit(x, y)
 
     # Pickling feature reduction outputs
     with open(FS_PICKLE, 'wb') as result:
