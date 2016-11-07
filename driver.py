@@ -21,6 +21,7 @@ __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
 TARGET_COLUMN = 'Activity_Score'
+XY_PICKLE = 'xy_data.pkl'
 
 
 def main():
@@ -57,18 +58,18 @@ def main():
     # utils.extract_all_descriptors(df, 'SMILES')
 
     # Importing feature sets
-    df_constitution = pd.DataFrame.from_csv('data/df_constitution.tsv', sep='\t')
-    df_charge = pd.DataFrame.from_csv('data/df_charge.tsv', sep='\t')
-    df_basak = pd.DataFrame.from_csv('data/df_basak.tsv', sep='\t')
-    df_con = pd.DataFrame.from_csv('data/df_con.tsv', sep='\t')
-    df_kappa = pd.DataFrame.from_csv('data/df_kappa.tsv', sep='\t')
-    df_property = pd.DataFrame.from_csv('data/df_property.tsv', sep='\t')
-    df_moe = pd.DataFrame.from_csv('data/df_moe.tsv', sep='\t')
-    df_estate = pd.DataFrame.from_csv('data/df_estate.tsv', sep='\t')
+    df_charge = pd.DataFrame.from_csv('data/df_charge.csv')
+    df_basak = pd.DataFrame.from_csv('data/df_basak.csv')
+    df_con = pd.DataFrame.from_csv('data/df_con.csv')
+    df_estate = pd.DataFrame.from_csv('data/df_estate.csv')
+    df_constitution = pd.DataFrame.from_csv('data/df_constitution.csv')
+    df_property = pd.DataFrame.from_csv('data/df_property.csv')
+    df_kappa = pd.DataFrame.from_csv('data/df_kappa.csv')
+    df_moe = pd.DataFrame.from_csv('data/df_moe.csv')
 
-    df_descriptor = df_constitution.join(df_con).join(df_kappa).\
-        join(df_estate).join(df_basak).join(df_property).join(df_charge).\
-        join(df_moe)
+    df_descriptor = df_kappa.join(df_moe).join(df_constitution).\
+        join(df_property).join(df_charge).join(df_estate).join(df_con).join(
+        df_basak)
 
     # Transform all column values to mean 0 and unit variance
     df_descriptor = utils.transform_dataframe(df_descriptor)
@@ -100,6 +101,12 @@ def main():
     x_test = df_test.drop(TARGET_COLUMN, 1)
     y_train = pd.DataFrame(df_train[TARGET_COLUMN])
     y_test = pd.DataFrame(df_test[TARGET_COLUMN])
+
+    with open(XY_PICKLE, 'wb') as results:
+        pickle.dump(x_train, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(x_test, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(y_train, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(y_test, results, pickle.HIGHEST_PROTOCOL)
 
     models.run_models(x_train, y_train, x_test, y_test)
 
