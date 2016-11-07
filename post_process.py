@@ -4,7 +4,7 @@
 Tasks performed after model building: Metric analysis and display
 """
 
-import os
+import matplotlib.pyplot as plt
 import pickle
 
 __author__ = "Pearl Philip"
@@ -19,6 +19,7 @@ SVM_PICKLE = 'svm_data.pkl'
 DT_PICKLE = 'dt_data.pkl'
 RR_PICKLE = 'rr_data.pkl'
 BRR_PICKLE = 'brr_data.pkl'
+XY_PICKLE = 'xy_data.pkl'
 
 
 def results():
@@ -36,6 +37,7 @@ def results():
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
         accuracy = pickle.load(result)
+        y_pred_nn = pickle.load(result)
 
     grid.save_params_to('/tmp/grid.params')
     net.save_params_to('/tmp/net.params')
@@ -74,6 +76,7 @@ def results():
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
         accuracy = pickle.load(result)
+        y_pred_svm = pickle.load(result)
 
     print("Mean absolute error regression loss for SVM model:")
     print mean_abs
@@ -95,6 +98,7 @@ def results():
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
         accuracy = pickle.load(result)
+        y_pred_dt = pickle.load(result)
 
     print("Mean absolute error regression loss for tree model:")
     print mean_abs
@@ -117,6 +121,7 @@ def results():
         exp_var_score = pickle.load(result)
         accuracy = pickle.load(result)
         ridge_alpha = pickle.load(result)
+        y_pred_rr = pickle.load(result)
 
     print("Mean absolute error regression loss for ridge regression model:")
     print mean_abs
@@ -141,6 +146,7 @@ def results():
         exp_var_score = pickle.load(result)
         accuracy = pickle.load(result)
         ridge_alpha = pickle.load(result)
+        y_pred_brr = pickle.load(result)
 
     print("Mean absolute error regression loss for Bayesian ridge regression model:")
     print mean_abs
@@ -156,5 +162,18 @@ def results():
     print accuracy
     print("Cross-validated value of the alpha parameter for Bayesian ridge regression model:")
     print ridge_alpha
+
+    with open(XY_PICKLE, 'rb') as result:
+        y_test = pickle.load(result)
+    plt.plot(y_test, y_pred_nn, label='ANN')
+    plt.plot(y_test, y_pred_svm, label='SVM')
+    plt.plot(y_test, y_pred_dt, label='Decision Trees')
+    plt.plot(y_test, y_pred_rr, label='Ridge Regression')
+    plt.plot(y_test, y_pred_brr, label='Bayesian Ridge Regression')
+    plt.title("Correlation plot")
+    plt.xlabel('Actual Y')
+    plt.ylabel('Predicted Y')
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.show()
 
 
