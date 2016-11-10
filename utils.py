@@ -5,6 +5,7 @@ Perform data manipulation tasks and create inputs for project workflow
 """
 
 import os
+import pickle
 from multiprocessing import Process
 
 import pandas as pd
@@ -129,6 +130,23 @@ def clean_activity_dataframe(activity_df):
     return activity_df
 
 
+def sort_features(x, y):
+    """
+
+    :param x:
+    :param y:
+    :return:
+    """
+
+    # Random forest feature importance - Mean decrease impurity
+    names = x.columns.values.tolist()
+    rf = RandomForestRegressor()
+    rf.fit(x, y)
+    rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_),
+                                 names), reverse=True)
+    return rf_sorted_score
+
+
 def select_features(x, y):
     """
 
@@ -137,42 +155,32 @@ def select_features(x, y):
     :return: Outputs of feature selection process
     """
     x = pd.DataFrame(x)
-    
-    # Random forest feature importance - Mean decrease impurity
-    names = x.columns.values.tolist()
-    rf = RandomForestRegressor()
-    rf.fit(x, y)
-    rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_),
-                                 names), reverse=True)
 
     # Removing features with low variance
     var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
-    x_var_threshold = var_threshold.fit_transform(x)
 
-    # Kbest-based feature selection using regression
+    # Kbest-based and Percentile-based feature selection using regression
     f_regress = f_selection.f_regression(x, y, center=False)
-    x_kbest = f_selection.SelectKBest(score_func=f_regress, k=2).fit_transform(x, y)
-
-    # Tree-based feature selection
-    clf = ExtraTreesRegressor.fit(x, y)
-    x_trees = f_selection.SelectFromModel(clf, prefit=True)
-
-    # Percentile-based feature selection using regression
+    kbest = f_selection.SelectKBest(score_func=f_regress, k=2)
     percent = f_selection.SelectPercentile(score_func=f_regress, percentile=10)
+
+    # Tree-based feature selection using a number of randomized decision trees
+    trees = f_selection.SelectFromModel(ExtraTreesRegressor, prefit=True)
 
     # "False positive rate"-based feature selection using regression
     fpr = f_selection.SelectFpr(score_func=f_regress, alpha=0.05)
 
-    # This data set is way to high-dimensional. Better do PCA:
+    # PCA-component evaluation
     pca = PCA(n_components=2)
 
-    #
+    # Recursive feature elimination and cross-validated feature selection
     estimator = SVR(kernel="linear")
     selector = f_selection.RFECV(estimator, step=1, cv=5)
 
     # Build estimator from PCA and Univariate selection:
-    combined_features = FeatureUnion([("pca", pca), ("univ_kbest", kbest), ("false_positive_rate", fpr),
-                                      ("percentile_select", percent), ("RFECV_selector", selector)])
+    combined_features = FeatureUnion([("pca_based", pca), ("univ_kbest", kbest), ("false_positive_rate", fpr),
+                                      ("percentile_based", percent), ("RFECV_selector", selector),
+                                      ("variance_threshold", var_threshold), ("trees_based", trees)])
     x_union_features = combined_features.fit_transform(x, y)
 
     svm = SVC(kernel="linear")
@@ -180,29 +188,23 @@ def select_features(x, y):
     # Do grid search over all parameters:
     pipeline = Pipeline([("features", x_union_features), ("svm", svm)])
 
-    grid = dict(features__pca__n_components=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                features__univ_kbest__k=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                features_false_positive_rate_alpha=[],
-                features_percentile_select_percentile=[],
-                features_RFECV_selector_cv=[],
+    grid = dict(features__pca_based__n_components=range(1, 101),
+                features__univ_kbest__k=range(1, 101),
+                features_false_positive_rate_alpha=range(0, 1, 0.01),
+                features_percentile_based_percentile=range(1, 20, 1),
+                features_RFECV_selector_cv=range(1, 5),
+                features_variance_threshold_threshold=range(0, 1, 0.01),
                 svm__C=[0.01, 0.1, 1.0, 10.0])
 
-    grid_search = GridSearchCV(pipeline, param_grid=grid, verbose=10)
+    grid_search = GridSearchCV(pipeline, param_grid=grid, verbose=0)
     grid_search.fit(x, y)
 
     # Pickling feature reduction outputs
     with open(FS_PICKLE, 'wb') as result:
         pickle.dump(rf_sorted_score, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_var_threshold, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_kbest, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_trees, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_percentile, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(x_alpha, result, pickle.HIGHEST_PROTOCOL)
         pickle.dump(grid_search.best_estimator_, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(selector, result, pickle.HIGHEST_PROTOCOL)
 
-    print rf_sorted_score, x_var_threshold, x_kbest, x_trees, x_percentile, x_alpha, grid_search.best_estimator_, \
-        selector.support_
+    print grid_search.best_estimator_, selector.support_
 
     return
 
