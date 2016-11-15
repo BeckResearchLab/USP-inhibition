@@ -9,6 +9,7 @@ sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 import utils
 import pandas as pd
 import models
+import numpy as np
 import pickle
 import post_process
 import sklearn
@@ -34,7 +35,8 @@ def main():
     # Importing inhibitor notation data
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
-    utils.check_files()
+
+    #utils.check_files()
     df_compounds_smiles = utils.create_dataframe('data/chemical_notation_'
                                                  'data/compounds_smiles.txt',
                                                  'smiles')
@@ -54,7 +56,7 @@ def main():
     df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
 
     # Extracting molecular descriptors for all compounds
-    print("Sending data for descriptor calculation")
+    # print("Sending data for descriptor calculation")
     # utils.extract_all_descriptors(df, 'SMILES')
 
     # Importing feature sets
@@ -67,17 +69,27 @@ def main():
     df_kappa = pd.DataFrame.from_csv('data/df_kappa.csv')
     df_moe = pd.DataFrame.from_csv('data/df_moe.csv')
 
+    print("Joining dataframes")
     df_descriptor = df_kappa.join(df_moe).join(df_constitution).\
         join(df_property).join(df_charge).join(df_estate).join(df_con).join(
         df_basak)
+    print("Joining dataframes done")
 
-    # Transform all column values to mean 0 and unit variance
-    df_descriptor = utils.transform_dataframe(df_descriptor)
+    print("Checking dataframe for NaN, infinite or too large values")
+    print(np.any(np.isnan(df_descriptor)))
+    print(np.all(np.isfinite(df_descriptor)))
+
+    df_descriptor = df_descriptor.fillna(0)
+
+    """# Transform all column values to mean 0 and unit variance
+    print("Transforming dataframe using mean and variance")
+    df_descriptor = utils.transform_dataframe(df_descriptor)"""
+    print("Transforming dataframe using mean and variance done")
 
     # Feature selection and space reduction
-    utils.select_features(df_descriptor, df_target)
-
-    # Import optimal feature space from pickle
+    print("Selecting best features in dataframe")
+    x_features = utils.select_features(df_descriptor, df_target)
+    print("Selecting best features in dataframe done")
 
     # Data to training task
     # Type check inputs for sanity
