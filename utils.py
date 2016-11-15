@@ -133,9 +133,9 @@ def clean_activity_dataframe(activity_df):
 def sort_features(x, y):
     """
 
-    :param x:
-    :param y:
-    :return:
+    :param x: dataframe of features
+    :param y: dataframe of target property
+    :return: Sorted score of all features
     """
 
     # Random forest feature importance - Mean decrease impurity
@@ -197,16 +197,16 @@ def select_features(x, y):
                 svm__C=[0.01, 0.1, 1.0, 10.0])
 
     grid_search = GridSearchCV(pipeline, param_grid=grid, verbose=0)
-    grid_search.fit(x, y)
+    x_features = grid_search.fit_transform(x, y)
 
     # Pickling feature reduction outputs
     with open(FS_PICKLE, 'wb') as result:
         pickle.dump(rf_sorted_score, result, pickle.HIGHEST_PROTOCOL)
         pickle.dump(grid_search.best_estimator_, result, pickle.HIGHEST_PROTOCOL)
 
-    print grid_search.best_estimator_, selector.support_
+    print grid_search.best_estimator_
 
-    return
+    return x_features
 
 
 def extract_constitution_descriptors(dataframe, column):
