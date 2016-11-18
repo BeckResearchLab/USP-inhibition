@@ -19,6 +19,7 @@ SVM_PICKLE = 'svm_data.pkl'
 DT_PICKLE = 'dt_data.pkl'
 RR_PICKLE = 'rr_data.pkl'
 BRR_PICKLE = 'brr_data.pkl'
+LASSO_PICKLE = 'lasso_data.pkl'
 XY_PICKLE = 'xy_data.pkl'
 
 
@@ -163,6 +164,31 @@ def results():
     print("Cross-validated value of the alpha parameter for Bayesian ridge regression model:")
     print ridge_alpha
 
+    with open(LASSO_PICKLE, 'rb') as result:
+        mean_abs = pickle.load(result)
+        mean_sq = pickle.load(result)
+        median_abs = pickle.load(result)
+        r2 = pickle.load(result)
+        exp_var_score = pickle.load(result)
+        accuracy = pickle.load(result)
+        lasso_alpha = pickle.load(result)
+        y_pred_lasso = pickle.load(result)
+
+    print("Mean absolute error regression loss for Lasso model:")
+    print mean_abs
+    print("Mean squared error regression loss for Lasso model:")
+    print mean_sq
+    print("Median absolute error regression loss for Lasso model:")
+    print median_abs
+    print("R^2 (coefficient of determination) regression score function for Lasso model:")
+    print r2
+    print("Explained variance regression score function for Lasso model:")
+    print exp_var_score
+    print("Accuracy prediction score for the Lasso model:")
+    print accuracy
+    print("Cross-validated value of the alpha parameter for Lasso model:")
+    print lasso_alpha
+
     with open(XY_PICKLE, 'rb') as result:
         y_test = pickle.load(result)
     plt.plot(y_test, y_pred_nn, label='ANN')
@@ -170,11 +196,10 @@ def results():
     plt.plot(y_test, y_pred_dt, label='Decision Trees')
     plt.plot(y_test, y_pred_rr, label='Ridge Regression')
     plt.plot(y_test, y_pred_brr, label='Bayesian Ridge Regression')
+    plt.plot(y_test, y_pred_lasso, label='Lasso')
     plt.title("Correlation plot")
     plt.xlabel('Actual Y')
     plt.ylabel('Predicted Y')
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.style.use('ggplot')
     plt.show()
-
-
