@@ -174,6 +174,7 @@ def results():
     plt.xlabel('Actual Y')
     plt.ylabel('Predicted Y')
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.style.use('ggplot')
     plt.show()
 
 
