@@ -8,6 +8,7 @@ import os
 import pickle
 from multiprocessing import Process
 
+import numpy as np
 import pandas as pd
 import sklearn.feature_selection as f_selection
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
@@ -841,6 +842,20 @@ def check_files():
                 print "Incorrect df_%s file length" % string
         else:
             print "df_%s file does not exist" % string
+
+
+def remove_nan_infinite(dataframe):
+    """
+
+    :param dataframe: Dataframe undergoing further transformation and containing NaN and infinite values
+    :return dataframe: Corrected dataframe with no NaN or infinite values
+    """
+
+    if np.any(np.isnan(dataframe)) == True and np.all(np.isfinite(dataframe)) == False:
+        dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
+        dataframe.fillna(0, inplace=True)
+
+    return dataframe
 
 
 def transform_dataframe(dataframe):
