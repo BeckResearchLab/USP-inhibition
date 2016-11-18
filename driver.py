@@ -36,21 +36,21 @@ def main():
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
 
-    #utils.check_files()
+    utils.check_files()
     df_compounds_smiles = utils.create_dataframe('data/chemical_notation_'
                                                  'data/compounds_smiles.txt',
                                                  'smiles')
-    df_compounds = df_compounds_smiles.rename(columns={'ID': 'CID'})
-    df_compounds = df_compounds.sort_values(by='CID')
+    df_compounds_smiles.rename(columns={'ID': 'CID'}, inplace=True)
+    df_compounds_smiles.sort_values(by='CID', inplace=True)
 
     # Importing inhibitor activity data
     activity = pd.read_csv('data/activity_data/AID_743255_datatable.csv')
     activity = utils.clean_activity_dataframe(activity)
 
     # Merging activity data and compound notation data
-    df = activity.merge(df_compounds)
-    df = df.sort_values(by='CID')
-    df = df.reset_index(drop=True)
+    df = activity.merge(df_compounds_smiles)
+    df.sort_values(by='CID', inplace=True)
+    df.reset_index(drop=True, inplace=True)
 
     # Drop non-descriptor columns before feature space reduction
     df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
@@ -76,20 +76,19 @@ def main():
     print("Joining dataframes done")
 
     print("Checking dataframe for NaN, infinite or too large values")
-    print(np.any(np.isnan(df_descriptor)))
-    print(np.all(np.isfinite(df_descriptor)))
+    df_descriptor = utils.remove_nan_infinite(df_descriptor)
 
-    df_descriptor = df_descriptor.fillna(0)
-
-    """# Transform all column values to mean 0 and unit variance
+    # Transform all column values to mean 0 and unit variance
     print("Transforming dataframe using mean and variance")
-    df_descriptor = utils.transform_dataframe(df_descriptor)"""
+    df_descriptor = utils.transform_dataframe(df_descriptor)
     print("Transforming dataframe using mean and variance done")
 
     # Feature selection and space reduction
     print("Selecting best features in dataframe")
-    x_features = utils.select_features(df_descriptor, df_target)
+    df_features = utils.select_features(df_descriptor, df_target)
     print("Selecting best features in dataframe done")
+
+    df = df_features.join(df_target)
 
     # Data to training task
     # Type check inputs for sanity
