@@ -14,7 +14,6 @@ import sklearn.feature_selection as f_selection
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
 from pychem import charge, moe, constitution
 from pychem import topology, connectivity as con, kappa
-from pychem.pychem import Chem
 from sklearn.decomposition import PCA
 from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 from sklearn.grid_search import GridSearchCV
@@ -57,7 +56,7 @@ def create_dict(filename, mol):
                 # This removes the 'InChI=' prefix to the InChI string
                 z = (dict([(int(words[0]), [words[1][6:]])]))
             else:
-                print 'Invalid molecular notation. Choose from smiles or inchi.'
+                print('Invalid molecular notation. Choose from smiles or inchi.')
             # Appending dictionary            
             df.update(z)
         return df
@@ -89,7 +88,7 @@ def create_dataframe(filename, mol):
                 # This removes the 'InChI=' prefix to the InChI string
                 z = [int(words[0]), words[1][6:]]
             else:
-                print 'Invalid molecular notation. Choose from smiles or inchi.'
+                print('Invalid molecular notation. Choose from smiles or inchi.')
             # Appending dictionary            
             df.append(z)
         df = pd.DataFrame(df)
@@ -205,7 +204,7 @@ def select_features(x, y):
         pickle.dump(rf_sorted_score, result, pickle.HIGHEST_PROTOCOL)
         pickle.dump(grid_search.best_estimator_, result, pickle.HIGHEST_PROTOCOL)
 
-    print grid_search.best_estimator_
+    print(grid_search.best_estimator_)
 
     return x_features
 
@@ -221,7 +220,7 @@ def extract_constitution_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_constitution.csv') and os.access('data/df_constitution.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting constitution calculation")
@@ -257,7 +256,7 @@ def extract_topology_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_topology.csv') and os.access('data/df_topology.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting topology calculation")
@@ -266,8 +265,8 @@ def extract_topology_descriptors(dataframe, column):
         for line in dataframe[column][:]:
             smiles = line
             i += 1
-            print "topology"
-            print i
+            print("topology")
+            print(i)
             mol = Chem.MolFromSmiles(smiles)
             dic = topology.GetTopology(mol)
             diction.append(dic)
@@ -300,7 +299,7 @@ def extract_con_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_con.csv') and os.access('data/df_con.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting con calculation")
@@ -340,7 +339,7 @@ def extract_kappa_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_kappa.csv') and os.access('data/df_kappa.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting kappa calculation")
@@ -370,7 +369,7 @@ def extract_burden_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_burden.csv') and os.access('data/df_burden.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting burden calculation")
@@ -379,8 +378,8 @@ def extract_burden_descriptors(dataframe, column):
         for line in dataframe[column][:]:
             smiles = line
             i += 1
-            print "burden"
-            print i
+            print("burden")
+            print(i)
             mol = Chem.MolFromSmiles(smiles)
             dic = bcut.GetBurden(mol)
             diction.append(dic)
@@ -427,7 +426,7 @@ def extract_estate_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_estate.csv') and os.access('data/df_estate.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting estate calculation")
@@ -538,7 +537,7 @@ def extract_basak_descriptors(dataframe, column):
         for line in dataframe[column][:]:
             smiles = line
             i += 1
-            print i
+            print(i)
             mol = Chem.MolFromSmiles(smiles)
             dic = basak.Getbasak(mol)
             diction.append(dic)
@@ -565,7 +564,7 @@ def extract_moran_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_moran.csv') and os.access('data/df_moran.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting moran calculation")
@@ -574,8 +573,8 @@ def extract_moran_descriptors(dataframe, column):
         for line in dataframe[column][:]:
             smiles = line
             i += 1
-            print "moran"
-            print i
+            print("moran")
+            print(i)
             mol = Chem.MolFromSmiles(smiles)
             dic = moran.GetMoranAuto(mol)
             diction.append(dic)
@@ -607,7 +606,7 @@ def extract_geary_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_geary.csv') and os.access('data/df_geary.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting geary calculation")
@@ -616,8 +615,8 @@ def extract_geary_descriptors(dataframe, column):
         for line in dataframe[column][:]:
             smiles = line
             i += 1
-            print "geary"
-            print i
+            print("geary")
+            print(i)
             mol = Chem.MolFromSmiles(smiles)
             dic = geary.GetGearyAuto(mol)
             diction.append(dic)
@@ -649,7 +648,7 @@ def extract_property_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_property.csv') and os.access('data/df_property.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting property calculation")
@@ -678,7 +677,7 @@ def extract_charge_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_charge.csv') and os.access('data/df_charge.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting charge calculation")
@@ -713,7 +712,7 @@ def extract_moe_descriptors(dataframe, column):
     :return: Descriptor dataframe
     """
     if os.path.exists('data/df_moe.csv') and os.access('data/df_moe.csv', os.R_OK):
-        print "File exists and is readable"
+        print("File exists and is readable")
         return
     else:
         print("starting moe calculation")
@@ -827,7 +826,7 @@ def check_files():
         for line in data:
             i += 1
         if i == 389561:
-            print "Compound information file check done"
+            print("Compound information file check done")
 
     file_string = ['charge', 'con', 'constitution', 'estate', 'kappa', 'moe',
                    'property', 'basak', 'burden', 'geary', 'moran', 'topology']
@@ -837,11 +836,11 @@ def check_files():
             df = pd.DataFrame.from_csv('data/df_%s.csv' % string)
             row = df.shape[0]
             if row == 389560:
-                print "df_%s file check done" % string
+                print("df_%s file check done" % string)
             else:
-                print "Incorrect df_%s file length" % string
+                print("Incorrect df_%s file length" % string)
         else:
-            print "df_%s file does not exist" % string
+            print("df_%s file does not exist" % string)
 
 
 def remove_nan_infinite(dataframe):

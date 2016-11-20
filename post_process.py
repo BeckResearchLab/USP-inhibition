@@ -58,17 +58,17 @@ def results():
           "parameters for the NN model:")
     print(grid.scorer_)
     print("Mean absolute error regression loss for NN model:")
-    print mean_abs
+    print(mean_abs)
     print("Mean squared error regression loss for NN model:")
-    print mean_sq
+    print(mean_sq)
     print("Median absolute error regression loss for NN model:")
-    print median_abs
+    print(median_abs)
     print("R^2 (coefficient of determination) regression score function for NN model:")
-    print r2
+    print(r2)
     print("Explained variance regression score function for NN model:")
-    print exp_var_score
+    print(exp_var_score)
     print("Accuracy prediction score for the NN model:")
-    print accuracy
+    print(accuracy)
 
     with open(SVM_PICKLE, 'rb') as result:
         mean_abs = pickle.load(result)
@@ -80,17 +80,17 @@ def results():
         y_pred_svm = pickle.load(result)
 
     print("Mean absolute error regression loss for SVM model:")
-    print mean_abs
+    print(mean_abs)
     print("Mean squared error regression loss for SVM model:")
-    print mean_sq
+    print(mean_sq)
     print("Median absolute error regression loss for SVM model:")
-    print median_abs
+    print(median_abs)
     print("R^2 (coefficient of determination) regression score function for SVM model:")
-    print r2
+    print(r2)
     print("Explained variance regression score function for SVM model:")
-    print exp_var_score
+    print(exp_var_score)
     print("Accuracy prediction score for the SVM model:")
-    print accuracy
+    print(accuracy)
 
     with open(DT_PICKLE, 'rb') as result:
         mean_abs = pickle.load(result)
@@ -102,17 +102,17 @@ def results():
         y_pred_dt = pickle.load(result)
 
     print("Mean absolute error regression loss for tree model:")
-    print mean_abs
+    print(mean_abs)
     print("Mean squared error regression loss for tree model:")
-    print mean_sq
+    print(mean_sq)
     print("Median absolute error regression loss for tree model:")
-    print median_abs
+    print(median_abs)
     print("R^2 (coefficient of determination) regression score function for tree model:")
-    print r2
+    print(r2)
     print("Explained variance regression score function for tree model:")
-    print exp_var_score
+    print(exp_var_score)
     print("Accuracy prediction score for the tree model:")
-    print accuracy
+    print(accuracy)
 
     with open(RR_PICKLE, 'rb') as result:
         mean_abs = pickle.load(result)
@@ -125,19 +125,19 @@ def results():
         y_pred_rr = pickle.load(result)
 
     print("Mean absolute error regression loss for ridge regression model:")
-    print mean_abs
+    print(mean_abs)
     print("Mean squared error regression loss for ridge regression model:")
-    print mean_sq
+    print(mean_sq)
     print("Median absolute error regression loss for ridge regression model:")
-    print median_abs
+    print(median_abs)
     print("R^2 (coefficient of determination) regression score function for ridge regression model:")
-    print r2
+    print(r2)
     print("Explained variance regression score function for ridge regression model:")
-    print exp_var_score
+    print(exp_var_score)
     print("Accuracy prediction score for the ridge regression model:")
-    print accuracy
+    print(accuracy)
     print("Cross-validated value of the alpha parameter for ridge regression model:")
-    print ridge_alpha
+    print(ridge_alpha)
 
     with open(BRR_PICKLE, 'rb') as result:
         mean_abs = pickle.load(result)
@@ -150,19 +150,19 @@ def results():
         y_pred_brr = pickle.load(result)
 
     print("Mean absolute error regression loss for Bayesian ridge regression model:")
-    print mean_abs
+    print(mean_abs)
     print("Mean squared error regression loss for Bayesian ridge regression model:")
-    print mean_sq
+    print(mean_sq)
     print("Median absolute error regression loss for Bayesian ridge regression model:")
-    print median_abs
+    print(median_abs)
     print("R^2 (coefficient of determination) regression score function for Bayesian ridge regression model:")
-    print r2
+    print(r2)
     print("Explained variance regression score function for Bayesian ridge regression model:")
-    print exp_var_score
+    print(exp_var_score)
     print("Accuracy prediction score for the Bayesian ridge regression model:")
-    print accuracy
+    print(accuracy)
     print("Cross-validated value of the alpha parameter for Bayesian ridge regression model:")
-    print ridge_alpha
+    print(ridge_alpha)
 
     with open(LASSO_PICKLE, 'rb') as result:
         mean_abs = pickle.load(result)
@@ -175,19 +175,19 @@ def results():
         y_pred_lasso = pickle.load(result)
 
     print("Mean absolute error regression loss for Lasso model:")
-    print mean_abs
+    print(mean_abs)
     print("Mean squared error regression loss for Lasso model:")
-    print mean_sq
+    print(mean_sq)
     print("Median absolute error regression loss for Lasso model:")
-    print median_abs
+    print(median_abs)
     print("R^2 (coefficient of determination) regression score function for Lasso model:")
-    print r2
+    print(r2)
     print("Explained variance regression score function for Lasso model:")
-    print exp_var_score
+    print(exp_var_score)
     print("Accuracy prediction score for the Lasso model:")
-    print accuracy
+    print(accuracy)
     print("Cross-validated value of the alpha parameter for Lasso model:")
-    print lasso_alpha
+    print(lasso_alpha)
 
     with open(XY_PICKLE, 'rb') as result:
         y_test = pickle.load(result)
