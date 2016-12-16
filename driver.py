@@ -37,7 +37,6 @@ def main():
     # The SMILES and InChI logs of the same material have identical indices
     # Creating and joining the SMILES and InChI dataframes along the same index
 
-    utils.check_files()
     compounds_smiles_file = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                             'pphilip-usp-inhibition/compounds_smiles.txt')
     df_compounds_smiles = utils.create_dataframe(compounds_smiles_file,
@@ -48,7 +47,7 @@ def main():
     # Importing inhibitor activity data
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/AID_743255_datatable.csv')
-    activity = pd.DataFrame(csv.reader(response))
+    activity = pd.DataFrame(list(csv.reader(response)))
     activity = utils.clean_activity_dataframe(activity)
 
     # Merging activity data and compound notation data
@@ -67,28 +66,28 @@ def main():
     # Importing feature sets
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/df_charge.csv')
-    df_charge = pd.DataFrame(csv.reader(response))
+    df_charge = pd.DataFrame(list(csv.reader(response)))
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/df_basak.csv')
-    df_basak = pd.DataFrame(csv.reader(response))
+    df_basak = pd.DataFrame(list(csv.reader(response)))
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/df_con.csv')
-    df_con = pd.DataFrame(csv.reader(response))
+    df_con = pd.DataFrame(list(csv.reader(response)))
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/df_estate.csv')
-    df_estate = pd.DataFrame(csv.reader(response))
+    df_estate = pd.DataFrame(list(csv.reader(response)))
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/df_constitution.csv')
-    df_constitution = pd.DataFrame(csv.reader(response))
+    df_constitution = pd.DataFrame(list(csv.reader(response)))
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/df_property.csv')
-    df_property = pd.DataFrame(csv.reader(response))
+    df_property = pd.DataFrame(list(csv.reader(response)))
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/df_kappa.csv')
-    df_kappa = pd.DataFrame(csv.reader(response))
+    df_kappa = pd.DataFrame(list(csv.reader(response)))
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/df_moe.csv')
-    df_moe = pd.DataFrame(csv.reader(response))
+    df_moe = pd.DataFrame(list(csv.reader(response)))
 
     print("Joining dataframes")
     df_descriptor = df_kappa.join(df_moe).join(df_constitution).\
