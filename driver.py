@@ -9,10 +9,11 @@ sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 import utils
 import pandas as pd
 import models
-import numpy as np
 import pickle
 import post_process
 import sklearn
+import csv
+import urllib2
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -37,14 +38,17 @@ def main():
     # Creating and joining the SMILES and InChI dataframes along the same index
 
     utils.check_files()
-    df_compounds_smiles = utils.create_dataframe('data/chemical_notation_'
-                                                 'data/compounds_smiles.txt',
+    compounds_smiles_file = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                                            'pphilip-usp-inhibition/compounds_smiles.txt')
+    df_compounds_smiles = utils.create_dataframe(compounds_smiles_file,
                                                  'smiles')
     df_compounds_smiles.rename(columns={'ID': 'CID'}, inplace=True)
     df_compounds_smiles.sort_values(by='CID', inplace=True)
 
     # Importing inhibitor activity data
-    activity = pd.read_csv('data/activity_data/AID_743255_datatable.csv')
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/AID_743255_datatable.csv')
+    activity = pd.DataFrame(csv.reader(response))
     activity = utils.clean_activity_dataframe(activity)
 
     # Merging activity data and compound notation data
@@ -56,37 +60,55 @@ def main():
     df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
 
     # Extracting molecular descriptors for all compounds
-    # print("Sending data for descriptor calculation")
-    # utils.extract_all_descriptors(df, 'SMILES')
+    print("Starting descriptor calculation")
+    utils.extract_all_descriptors(df, 'SMILES')
+    print("Finished descriptor calculation")
 
     # Importing feature sets
-    df_charge = pd.DataFrame.from_csv('data/df_charge.csv')
-    df_basak = pd.DataFrame.from_csv('data/df_basak.csv')
-    df_con = pd.DataFrame.from_csv('data/df_con.csv')
-    df_estate = pd.DataFrame.from_csv('data/df_estate.csv')
-    df_constitution = pd.DataFrame.from_csv('data/df_constitution.csv')
-    df_property = pd.DataFrame.from_csv('data/df_property.csv')
-    df_kappa = pd.DataFrame.from_csv('data/df_kappa.csv')
-    df_moe = pd.DataFrame.from_csv('data/df_moe.csv')
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/df_charge.csv')
+    df_charge = pd.DataFrame(csv.reader(response))
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/df_basak.csv')
+    df_basak = pd.DataFrame(csv.reader(response))
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/df_con.csv')
+    df_con = pd.DataFrame(csv.reader(response))
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/df_estate.csv')
+    df_estate = pd.DataFrame(csv.reader(response))
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/df_constitution.csv')
+    df_constitution = pd.DataFrame(csv.reader(response))
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/df_property.csv')
+    df_property = pd.DataFrame(csv.reader(response))
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/df_kappa.csv')
+    df_kappa = pd.DataFrame(csv.reader(response))
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/df_moe.csv')
+    df_moe = pd.DataFrame(csv.reader(response))
 
     print("Joining dataframes")
     df_descriptor = df_kappa.join(df_moe).join(df_constitution).\
         join(df_property).join(df_charge).join(df_estate).join(df_con).join(
         df_basak)
-    print("Joining dataframes done")
+    print("Joined dataframes")
 
     print("Checking dataframe for NaN, infinite or too large values")
     df_descriptor = utils.remove_nan_infinite(df_descriptor)
+    print("Checked dataframe for NaN, infinite or too large values")
 
     # Transform all column values to mean 0 and unit variance
     print("Transforming dataframe using mean and variance")
     df_descriptor = utils.transform_dataframe(df_descriptor)
-    print("Transforming dataframe using mean and variance done")
+    print("Transformed dataframe using mean and variance")
 
     # Feature selection and space reduction
     print("Selecting best features in dataframe")
     df_features = utils.select_features(df_descriptor, df_target)
-    print("Selecting best features in dataframe done")
+    print("Selected best features in dataframe")
 
     df = df_features.join(df_target)
 
