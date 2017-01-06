@@ -58,8 +58,8 @@ def create_notation_dataframe(filename):
 def create_activity_dataframe(filename):
     """
 
-    :param activity_df:
-    :return:
+    :param filename:
+    :return: activity_df:
     """
 
     activity_df = pd.DataFrame(list(csv.reader(filename)))
@@ -124,7 +124,7 @@ def extract_all_descriptors(df, column):
 
     p3 = Process(target=extract_con_descriptors, args=(df, column, url_list[2]))
     p3.start()
-    
+
     p4 = Process(target=extract_kappa_descriptors, args=(df, column, url_list[3]))
     p4.start()
 
@@ -168,23 +168,29 @@ def extract_all_descriptors(df, column):
     return
 
 
-def extract_constitution_descriptors(dataframe, column):
+def extract_constitution_descriptors(dataframe, column, url):
     """
     Extracting molecular constitution descriptors using PyChem package and
     SMILES strings of compounds.
     :param dataframe: The dataframe containing SMILES info for which
-    constitution descriptors info must be evaluated
+    constitution descriptors info must be evaluated.
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
-    :return: Descriptor dataframe
+    :param url: URL to descriptor file in S3 bucket.
+    :return: Descriptor dataframe.
     """
-    if os.path.exists('data/df_constitution.csv') and os.access('data/df_constitution.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting constitution calculation")
         diction = []
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             mol = Chem.MolFromSmiles(smiles)
             dic = constitution.GetConstitutional(mol)
@@ -204,7 +210,7 @@ def extract_constitution_descriptors(dataframe, column):
         return
 
 
-def extract_topology_descriptors(dataframe, column):
+def extract_topology_descriptors(dataframe, column, url):
     """
     Extracting molecular topology descriptors using PyChem package and
     SMILES strings of compounds.
@@ -212,16 +218,22 @@ def extract_topology_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_topology.csv') and os.access('data/df_topology.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting topology calculation")
         diction = []
         i = 0
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             i += 1
             print("topology")
@@ -247,23 +259,29 @@ def extract_topology_descriptors(dataframe, column):
         return
 
 
-def extract_con_descriptors(dataframe, column):
+def extract_con_descriptors(dataframe, column, url):
     """
     Extracting molecular connectivity descriptors using PyChem package and
     SMILES strings of compounds.
     :param dataframe: The dataframe containing SMILES info for which
-    connectivity descriptors info must be evaluated
+    connectivity descriptors info must be evaluated.
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
-    :return: Descriptor dataframe
+    :param url: URL to descriptor file in S3 bucket.
+    :return: Descriptor dataframe.
     """
-    if os.path.exists('data/df_con.csv') and os.access('data/df_con.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting con calculation")
         diction = []
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             mol = Chem.MolFromSmiles(smiles)
             dic = con.GetConnectivity(mol)
@@ -287,23 +305,29 @@ def extract_con_descriptors(dataframe, column):
         return
 
 
-def extract_kappa_descriptors(dataframe, column):
+def extract_kappa_descriptors(dataframe, column, url):
     """
     Extracting molecular kappa descriptors using PyChem package and
     SMILES strings of compounds.
     :param dataframe: The dataframe containing SMILES info for which Kappa
-    descriptors info must be evaluated
+    descriptors info must be evaluated.
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
-    :return: Descriptor dataframe
+    :param url: URL to descriptor file in S3 bucket.
+    :return: Descriptor dataframe.
     """
-    if os.path.exists('data/df_kappa.csv') and os.access('data/df_kappa.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting kappa calculation")
         diction = []
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             mol = Chem.MolFromSmiles(smiles)
             dic = kappa.GetKappa(mol)
@@ -317,7 +341,7 @@ def extract_kappa_descriptors(dataframe, column):
         return
 
 
-def extract_burden_descriptors(dataframe, column):
+def extract_burden_descriptors(dataframe, column, url):
     """
     Extracting molecular burden descriptors using PyChem package and
     SMILES strings of compounds.
@@ -325,16 +349,22 @@ def extract_burden_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_burden.csv') and os.access('data/df_burden.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting burden calculation")
         diction = []
         i = 0
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             i += 1
             print("burden")
@@ -374,7 +404,7 @@ def extract_burden_descriptors(dataframe, column):
         return
 
 
-def extract_estate_descriptors(dataframe, column):
+def extract_estate_descriptors(dataframe, column, url):
     """
     Extracting molecular E-state descriptors using PyChem package and
     SMILES strings of compounds.
@@ -382,15 +412,21 @@ def extract_estate_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_estate.csv') and os.access('data/df_estate.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting estate calculation")
         diction = []
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             mol = Chem.MolFromSmiles(smiles)
             dic = estate.GetEstate(mol)
@@ -476,7 +512,7 @@ def extract_estate_descriptors(dataframe, column):
         return
 
 
-def extract_basak_descriptors(dataframe, column):
+def extract_basak_descriptors(dataframe, column, url):
     """
     Extracting molecular basak descriptors using PyChem package and
     SMILES strings of compounds.
@@ -484,16 +520,22 @@ def extract_basak_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_basak.csv') and os.access('data/df_basak.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting basak calculation")
         diction = []
         i = 0
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             i += 1
             print(i)
@@ -512,7 +554,7 @@ def extract_basak_descriptors(dataframe, column):
         return
 
 
-def extract_moran_descriptors(dataframe, column):
+def extract_moran_descriptors(dataframe, column, url):
     """
     Extracting molecular moran descriptors using PyChem package and
     SMILES strings of compounds.
@@ -520,16 +562,22 @@ def extract_moran_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_moran.csv') and os.access('data/df_moran.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting moran calculation")
         diction = []
         i = 0
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             i += 1
             print("moran")
@@ -554,7 +602,7 @@ def extract_moran_descriptors(dataframe, column):
         return
 
 
-def extract_geary_descriptors(dataframe, column):
+def extract_geary_descriptors(dataframe, column, url):
     """
     Extracting molecular geary descriptors using PyChem package and
     SMILES strings of compounds.
@@ -562,16 +610,22 @@ def extract_geary_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_geary.csv') and os.access('data/df_geary.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting geary calculation")
         diction = []
         i = 0
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             i += 1
             print("geary")
@@ -596,7 +650,7 @@ def extract_geary_descriptors(dataframe, column):
         return
 
 
-def extract_property_descriptors(dataframe, column):
+def extract_property_descriptors(dataframe, column, url):
     """
     Extracting molecular property descriptors using PyChem package and
     SMILES strings of compounds.
@@ -604,12 +658,18 @@ def extract_property_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_property.csv') and os.access('data/df_property.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting property calculation")
         diction = []
         for line in dataframe[column]:
@@ -625,7 +685,7 @@ def extract_property_descriptors(dataframe, column):
         return
 
 
-def extract_charge_descriptors(dataframe, column):
+def extract_charge_descriptors(dataframe, column, url):
     """
     Extracting molecular charge descriptors using PyChem package and
     SMILES strings of compounds.
@@ -633,15 +693,21 @@ def extract_charge_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_charge.csv') and os.access('data/df_charge.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting charge calculation")
         diction = []
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             mol = Chem.MolFromSmiles(smiles)
             dic = charge.GetCharge(mol)
@@ -660,7 +726,7 @@ def extract_charge_descriptors(dataframe, column):
         return
 
 
-def extract_moe_descriptors(dataframe, column):
+def extract_moe_descriptors(dataframe, column, url):
     """
     Extracting molecular MOE-type descriptors using PyChem package and
     SMILES strings of compounds.
@@ -668,15 +734,21 @@ def extract_moe_descriptors(dataframe, column):
     descriptors info must be evaluated
     :param column: the column containing SMILES info for the compounds
      in the dataframe.
+    :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe
     """
-    if os.path.exists('data/df_moe.csv') and os.access('data/df_moe.csv', os.R_OK):
-        print("File exists and is readable")
+    try:
+        r = urlopen(url)
+    except URLError as e:
+        r = e
+    if r.code < 400:
+        # File already exists in URL
         return
     else:
+        # File does not exist in URL
         print("starting moe calculation")
         diction = []
-        for line in dataframe[column][:]:
+        for line in dataframe[column]:
             smiles = line
             mol = Chem.MolFromSmiles(smiles)
             dic = moe.GetMOE(mol)
