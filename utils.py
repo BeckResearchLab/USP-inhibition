@@ -93,83 +93,79 @@ def create_activity_dataframe(filename):
     return activity_df
 
 
-def sort_features(x, y):
+def extract_all_descriptors(df, column):
     """
-
-    :param x: dataframe of features
-    :param y: dataframe of target property
-    :return: Sorted score of all features
+    Extracting all molecular descriptors using PyChem package and
+    SMILES strings of compounds.
+    :param df: The dataframe containing SMILES info for which
+                      all descriptors info must be evaluated.
+    :param column:  The column containing SMILES info for the compounds in
+                    the dataframe.
+    :return: Descriptor dataframe
     """
+    url_list = ['https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_constitution.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_topology.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_con.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_kappa.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_burden.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_estate.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_basak.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moran.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_geary.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_property.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_charge.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moe.csv']
 
-    # Random forest feature importance - Mean decrease impurity
-    names = x.columns.values.tolist()
-    rf = RandomForestRegressor()
-    rf.fit(x, y)
-    rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_),
-                                 names), reverse=True)
-    return rf_sorted_score
+    p1 = Process(target=extract_constitution_descriptors, args=(df, column, url_list[0]))
+    p1.start()
 
+    p2 = Process(target=extract_topology_descriptors, args=(df, column, url_list[1]))
+    p2.start()
 
-def select_features(x, y):
-    """
+    p3 = Process(target=extract_con_descriptors, args=(df, column, url_list[2]))
+    p3.start()
+    
+    p4 = Process(target=extract_kappa_descriptors, args=(df, column, url_list[3]))
+    p4.start()
 
-    :param x: dataframe of features
-    :param y: dataframe of target property
-    :return: Outputs of feature selection process
-    """
-    x = pd.DataFrame(x)
+    p5 = Process(target=extract_burden_descriptors, args=(df, column, url_list[4]))
+    p5.start()
 
-    # Removing features with low variance
-    var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
+    p6 = Process(target=extract_estate_descriptors, args=(df, column, url_list[5]))
+    p6.start()
 
-    # Kbest-based and Percentile-based feature selection using regression
-    f_regress = f_selection.f_regression(x, y, center=False)
-    kbest = f_selection.SelectKBest(score_func=f_regress, k=2)
-    percent = f_selection.SelectPercentile(score_func=f_regress, percentile=10)
+    p7 = Process(target=extract_basak_descriptors, args=(df, column, url_list[6]))
+    p7.start()
 
-    # Tree-based feature selection using a number of randomized decision trees
-    trees = f_selection.SelectFromModel(ExtraTreesRegressor, prefit=True)
+    p8 = Process(target=extract_moran_descriptors, args=(df, column, url_list[7]))
+    p8.start()
 
-    # "False positive rate"-based feature selection using regression
-    fpr = f_selection.SelectFpr(score_func=f_regress, alpha=0.05)
+    p9 = Process(target=extract_geary_descriptors, args=(df, column, url_list[8]))
+    p9.start()
 
-    # PCA-component evaluation
-    pca = PCA(n_components=2)
+    p10 = Process(target=extract_property_descriptors, args=(df, column, url_list[9]))
+    p10.start()
 
-    # Recursive feature elimination and cross-validated feature selection
-    estimator = SVR(kernel="linear")
-    selector = f_selection.RFECV(estimator, step=1, cv=5)
+    p11 = Process(target=extract_charge_descriptors, args=(df, column, url_list[10]))
+    p11.start()
 
-    # Build estimator from PCA and Univariate selection:
-    combined_features = FeatureUnion([("pca_based", pca), ("univ_kbest", kbest), ("false_positive_rate", fpr),
-                                      ("percentile_based", percent), ("RFECV_selector", selector),
-                                      ("variance_threshold", var_threshold), ("trees_based", trees)])
-    x_union_features = combined_features.fit_transform(x, y)
+    p12 = Process(target=extract_moe_descriptors, args=(df, column, url_list[11]))
+    p12.start()
 
-    svm = SVC(kernel="linear")
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+    p5.join()
+    p6.join()
+    p7.join()
+    p8.join()
+    p9.join()
+    p10.join()
+    p11.join()
+    p12.join()
 
-    # Do grid search over all parameters:
-    pipeline = Pipeline([("features", x_union_features), ("svm", svm)])
-
-    grid = dict(features__pca_based__n_components=range(1, 101),
-                features__univ_kbest__k=range(1, 101),
-                features_false_positive_rate_alpha=range(0, 1, 0.01),
-                features_percentile_based_percentile=range(1, 20, 1),
-                features_RFECV_selector_cv=range(1, 5),
-                features_variance_threshold_threshold=range(0, 1, 0.01),
-                svm__C=[0.01, 0.1, 1.0, 10.0])
-
-    grid_search = GridSearchCV(pipeline, param_grid=grid, verbose=0)
-    x_features = grid_search.fit_transform(x, y)
-
-    # Pickling feature reduction outputs
-    with open(FS_PICKLE, 'wb') as result:
-        pickle.dump(rf_sorted_score, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(grid_search.best_estimator_, result, pickle.HIGHEST_PROTOCOL)
-
-    print(grid_search.best_estimator_)
-
-    return x_features
+    return
 
 
 def extract_constitution_descriptors(dataframe, column):
@@ -719,66 +715,83 @@ def extract_moe_descriptors(dataframe, column):
         return
 
 
-def extract_all_descriptors(df, column):
+def sort_features(x, y):
     """
-    Extracting all molecular descriptors using PyChem package and
-    SMILES strings of compounds.
-    :param df: The dataframe containing SMILES info for which
-                      all descriptors info must be evaluated.
-    :param column:  The column containing SMILES info for the compounds in
-                    the dataframe.
-    :return: Descriptor dataframe
+
+    :param x: dataframe of features
+    :param y: dataframe of target property
+    :return: Sorted score of all features
     """
-    p1 = Process(target=extract_constitution_descriptors, args=(df, column))
-    p1.start()
 
-    p2 = Process(target=extract_topology_descriptors, args=(df, column))
-    p2.start()
+    # Random forest feature importance - Mean decrease impurity
+    names = x.columns.values.tolist()
+    rf = RandomForestRegressor()
+    rf.fit(x, y)
+    rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_),
+                                 names), reverse=True)
+    return rf_sorted_score
 
-    p3 = Process(target=extract_con_descriptors, args=(df, column))
-    p3.start()
 
-    p4 = Process(target=extract_kappa_descriptors, args=(df, column))
-    p4.start()
+def select_features(x, y):
+    """
 
-    p5 = Process(target=extract_burden_descriptors, args=(df, column))
-    p5.start()
+    :param x: dataframe of features
+    :param y: dataframe of target property
+    :return: Outputs of feature selection process
+    """
+    x = pd.DataFrame(x)
 
-    p6 = Process(target=extract_estate_descriptors, args=(df, column))
-    p6.start()
+    # Removing features with low variance
+    var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
 
-    p7 = Process(target=extract_basak_descriptors, args=(df, column))
-    p7.start()
+    # Kbest-based and Percentile-based feature selection using regression
+    f_regress = f_selection.f_regression(x, y, center=False)
+    kbest = f_selection.SelectKBest(score_func=f_regress, k=2)
+    percent = f_selection.SelectPercentile(score_func=f_regress, percentile=10)
 
-    p8 = Process(target=extract_moran_descriptors, args=(df, column))
-    p8.start()
+    # Tree-based feature selection using a number of randomized decision trees
+    trees = f_selection.SelectFromModel(ExtraTreesRegressor, prefit=True)
 
-    p9 = Process(target=extract_geary_descriptors, args=(df, column))
-    p9.start()
+    # "False positive rate"-based feature selection using regression
+    fpr = f_selection.SelectFpr(score_func=f_regress, alpha=0.05)
 
-    p10 = Process(target=extract_property_descriptors, args=(df, column))
-    p10.start()
+    # PCA-component evaluation
+    pca = PCA(n_components=2)
 
-    p11 = Process(target=extract_charge_descriptors, args=(df, column))
-    p11.start()
+    # Recursive feature elimination and cross-validated feature selection
+    estimator = SVR(kernel="linear")
+    selector = f_selection.RFECV(estimator, step=1, cv=5)
 
-    p12 = Process(target=extract_moe_descriptors, args=(df, column))
-    p12.start()
+    # Build estimator from PCA and Univariate selection:
+    combined_features = FeatureUnion([("pca_based", pca), ("univ_kbest", kbest), ("false_positive_rate", fpr),
+                                      ("percentile_based", percent), ("RFECV_selector", selector),
+                                      ("variance_threshold", var_threshold), ("trees_based", trees)])
+    x_union_features = combined_features.fit_transform(x, y)
 
-    p1.join()
-    p2.join()
-    p3.join()
-    p4.join()
-    p5.join()
-    p6.join()
-    p7.join()
-    p8.join()
-    p9.join()
-    p10.join()
-    p11.join()
-    p12.join()
+    svm = SVC(kernel="linear")
 
-    return
+    # Do grid search over all parameters:
+    pipeline = Pipeline([("features", x_union_features), ("svm", svm)])
+
+    grid = dict(features__pca_based__n_components=range(1, 101),
+                features__univ_kbest__k=range(1, 101),
+                features_false_positive_rate_alpha=range(0, 1, 0.01),
+                features_percentile_based_percentile=range(1, 20, 1),
+                features_RFECV_selector_cv=range(1, 5),
+                features_variance_threshold_threshold=range(0, 1, 0.01),
+                svm__C=[0.01, 0.1, 1.0, 10.0])
+
+    grid_search = GridSearchCV(pipeline, param_grid=grid, verbose=0)
+    x_features = grid_search.fit_transform(x, y)
+
+    # Pickling feature reduction outputs
+    with open(FS_PICKLE, 'wb') as result:
+        pickle.dump(rf_sorted_score, result, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(grid_search.best_estimator_, result, pickle.HIGHEST_PROTOCOL)
+
+    print(grid_search.best_estimator_)
+
+    return x_features
 
 
 def check_files():
