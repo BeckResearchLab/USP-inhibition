@@ -4,6 +4,7 @@
 Perform data manipulation tasks and create inputs for project workflow
 """
 
+import csv
 import os
 import pickle
 from multiprocessing import Process
@@ -31,7 +32,7 @@ __status__ = "Development"
 FS_PICKLE = 'fs_results.pkl'
 
 
-def create_dataframe(filename):
+def create_notation_dataframe(filename):
     """
     Returns Pandas dataframe of sample ID and molecular notation
     
@@ -42,30 +43,31 @@ def create_dataframe(filename):
     Outputs: dataframe of molecular notation indexed by sample ID
     Output types: Pandas DataFrame
     """
-    with open(filename, 'r') as f:
-        # Reads the file line by line
-        data = f.readlines()
-        # Null dataframe
-        df = []
-        for line in data:
-            # Splits the line into it's key and molecular string  
-            words = line.split()
-            z = [int(words[0]), words[1]]
-            df.append(z)
-        df = pd.DataFrame(df)
-        df.columns = ['ID', 'SMILES']
-        return df
+    df = []
+    for line in filename:
+        # Splits the line into it's key and molecular string
+        words = line.split()
+        z = [int(words[0]), words[1]]
+        df.append(z)
+    df = pd.DataFrame(df)
+    df.columns = ['ID', 'SMILES']
+    df.sort_values(by='ID', inplace=True)
+    return df
 
 
-def clean_activity_dataframe(activity_df):
+def create_activity_dataframe(filename):
     """
 
     :param activity_df:
     :return:
     """
+
+    activity_df = pd.DataFrame(list(csv.reader(filename)))
+    activity_df.columns = activity_df.iloc[0]
     # Eliminates first five text rows of csv
     for j in range(6):
         activity_df = activity_df.drop(j, axis=0)
+
     activity_df = activity_df.drop(['PUBCHEM_ACTIVITY_URL',
                                     'PUBCHEM_RESULT_TAG',
                                     'PUBCHEM_ACTIVITY_SCORE', 'PUBCHEM_SID',
