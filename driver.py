@@ -6,14 +6,14 @@ Primary execution file for USP-Inhibition project
 import sys
 sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
-import utils
-import pandas as pd
+import csv
 import models
+import pandas as pd
 import pickle
 import post_process
 import sklearn
-import csv
 import urllib2
+import utils
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -34,29 +34,22 @@ def main():
     :return: Post process results
     """
     # Importing inhibitor notation data
-    # The SMILES and InChI logs of the same material have identical indices
-    # Creating and joining the SMILES and InChI dataframes along the same index
-
-    compounds_smiles_file = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                                            'pphilip-usp-inhibition/compounds_smiles.txt')
-    df_compounds_smiles = utils.create_dataframe(compounds_smiles_file,
-                                                 'smiles')
-    df_compounds_smiles.rename(columns={'ID': 'CID'}, inplace=True)
-    df_compounds_smiles.sort_values(by='CID', inplace=True)
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/compounds_smiles.txt')
+    df_compounds_smiles = utils.create_notation_dataframe(response)
 
     # Importing inhibitor activity data
     response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
                                'pphilip-usp-inhibition/AID_743255_datatable.csv')
-    activity = pd.DataFrame(list(csv.reader(response)))
-    activity = utils.clean_activity_dataframe(activity)
+    activity = utils.create_activity_dataframe(response)
 
     # Merging activity data and compound notation data
     df = activity.merge(df_compounds_smiles)
-    df.sort_values(by='CID', inplace=True)
+    df.sort_values(by='ID', inplace=True)
     df.reset_index(drop=True, inplace=True)
 
     # Drop non-descriptor columns before feature space reduction
-    df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
+    df_target = df.drop(['SMILES', 'ID', 'Phenotype'], axis=1)
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
