@@ -21,6 +21,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.preprocessing import RobustScaler
 from sklearn.svm import SVC, SVR
+from urllib2 import URLError, urlopen
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
