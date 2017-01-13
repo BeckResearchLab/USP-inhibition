@@ -15,12 +15,14 @@ import sklearn.feature_selection as f_selection
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
 from pychem import charge, moe, constitution
 from pychem import topology, connectivity as con, kappa
+from pychem.pychem import Chem
 from sklearn.decomposition import PCA
 from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 from sklearn.grid_search import GridSearchCV
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.preprocessing import RobustScaler
 from sklearn.svm import SVC, SVR
+import urllib2
 from urllib2 import URLError, urlopen
 
 __author__ = "Pearl Philip"
@@ -788,6 +790,42 @@ def extract_moe_descriptors(dataframe, column, url):
         return
 
 
+def join_dataframes():
+    url_list = ['https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_constitution.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_con.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_kappa.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_estate.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_basak.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_property.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_charge.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moe.csv']
+
+    url_exist_list = []
+    for url in url_list:
+        try:
+            r = urlopen(url)
+        except URLError as e:
+            r = e
+        if r.code < 400:
+            url_exist_list.append(url)
+        else:
+            return None
+    i = 0
+    df = [None] * len(url_exist_list)
+    for url in url_exist_list:
+        response = urllib2.urlopen(url)
+        df[i] = pd.DataFrame(list(csv.reader(response)))
+        df[i].drop(0, axis=1, inplace=True)
+        df[i].columns = df[i].iloc[0]
+        df[i].drop(0, axis=0, inplace=True)
+        df[i].reset_index(drop=True, inplace=True)
+        i += 1
+
+    joined_df = df[0].join(df[1]).join(df[2]).join(df[3]).join(df[4]).join(df[5]).join(df[6]).join(df[7])
+
+    return joined_df
+
+
 def sort_features(x, y):
     """
 
@@ -899,9 +937,8 @@ def remove_nan_infinite(dataframe):
     :return dataframe: Corrected dataframe with no NaN or infinite values
     """
 
-    if np.any(np.isnan(dataframe)) == True and np.all(np.isfinite(dataframe)) == False:
-        dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
-        dataframe.fillna(0, inplace=True)
+    dataframe.replace([np.inf, -np.inf], np.nan)
+    dataframe.fillna(0, inplace=True)
 
     return dataframe
 
