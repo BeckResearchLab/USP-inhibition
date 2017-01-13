@@ -47,59 +47,33 @@ def main():
     df = activity.merge(df_compounds_smiles)
     df.sort_values(by='ID', inplace=True)
     df.reset_index(drop=True, inplace=True)
+    print df
 
     # Drop non-descriptor columns before feature space reduction
-    df_target = df.drop(['SMILES', 'ID', 'Phenotype'], axis=1)
+    df_target = df.drop(['SMILES', 'Phenotype'], axis=1)
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
     utils.extract_all_descriptors(df, 'SMILES')
     print("Finished descriptor calculation")
 
-    # Importing feature sets
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/df_charge.csv')
-    df_charge = pd.DataFrame(list(csv.reader(response)))
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/df_basak.csv')
-    df_basak = pd.DataFrame(list(csv.reader(response)))
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/df_con.csv')
-    df_con = pd.DataFrame(list(csv.reader(response)))
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/df_estate.csv')
-    df_estate = pd.DataFrame(list(csv.reader(response)))
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/df_constitution.csv')
-    df_constitution = pd.DataFrame(list(csv.reader(response)))
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/df_property.csv')
-    df_property = pd.DataFrame(list(csv.reader(response)))
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/df_kappa.csv')
-    df_kappa = pd.DataFrame(list(csv.reader(response)))
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/df_moe.csv')
-    df_moe = pd.DataFrame(list(csv.reader(response)))
-
     print("Joining dataframes")
-    df_descriptor = df_kappa.join(df_moe).join(df_constitution).\
-        join(df_property).join(df_charge).join(df_estate).join(df_con).join(
-        df_basak)
+    df = utils.join_dataframes()
+    print df
     print("Joined dataframes")
 
-    print("Checking dataframe for NaN, infinite or too large values")
-    df_descriptor = utils.remove_nan_infinite(df_descriptor)
-    print("Checked dataframe for NaN, infinite or too large values")
+    print("Checking dataframe for NaN and infinite values")
+    df = utils.remove_nan_infinite(df)
+    print("Checked dataframe for NaN and infinite values")
 
     # Transform all column values to mean 0 and unit variance
     print("Transforming dataframe using mean and variance")
-    df_descriptor = utils.transform_dataframe(df_descriptor)
+    df = utils.transform_dataframe(df)
     print("Transformed dataframe using mean and variance")
 
     # Feature selection and space reduction
     print("Selecting best features in dataframe")
-    df_features = utils.select_features(df_descriptor, df_target)
+    df_features = utils.select_features(df, df_target)
     print("Selected best features in dataframe")
 
     df = df_features.join(df_target)
