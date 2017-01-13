@@ -7,11 +7,15 @@ Perform data manipulation tasks and create inputs for project workflow
 import csv
 import os
 import pickle
+import urllib2
 from multiprocessing import Process
+from urllib2 import URLError, urlopen
 
+import boto
 import numpy as np
 import pandas as pd
 import sklearn.feature_selection as f_selection
+from boto.s3.key import Key
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
 from pychem import charge, moe, constitution
 from pychem import topology, connectivity as con, kappa
@@ -22,8 +26,6 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.preprocessing import RobustScaler
 from sklearn.svm import SVC, SVR
-import urllib2
-from urllib2 import URLError, urlopen
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -33,6 +35,9 @@ __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
 FS_PICKLE = 'fs_results.pkl'
+AWS_ACCESS_KEY = 'your_access_key'
+AWS_ACCESS_SECRET_KEY = 'your_secret_key'
+BUCKET = 'your-bucket'
 
 
 def create_notation_dataframe(filename):
@@ -171,6 +176,45 @@ def extract_all_descriptors(df, column):
     return
 
 
+def upload_to_s3(aws_access_key_id, aws_secret_access_key, file_to_s3, bucket, key, callback=None, md5=None,
+                 reduced_redundancy=False, content_type=None):
+    """
+    Uploads the given file to the AWS S3 bucket and key specified.
+
+    callback is a function of the form:
+
+    def callback(complete, total)
+
+    The callback should accept two integer parameters, the first representing the number of bytes that have been
+    successfully transmitted to S3 and the second representing the size of the to be transmitted object.
+
+    Returns boolean indicating success/failure of upload.
+    """
+    try:
+        size = os.fstat(file_to_s3.fileno()).st_size
+    except:
+        # Not all file objects implement fileno(),
+        # so we fall back on this
+        file_to_s3.seek(0, os.SEEK_END)
+        size = file_to_s3.tell()
+
+    conn = boto.connect_s3(aws_access_key_id, aws_secret_access_key)
+    bucket = conn.get_bucket(bucket, validate=True)
+    k = Key(bucket)
+    k.key = key
+    if content_type:
+        k.set_metadata('Content-Type', content_type)
+    sent = k.set_contents_from_file(file_to_s3, cb=callback, md5=md5, reduced_redundancy=reduced_redundancy,
+                                    rewind=True)
+
+    # Rewind for later use
+    file_to_s3.seek(0)
+
+    if sent == size:
+        return True
+    return False
+
+
 def extract_constitution_descriptors(dataframe, column, url):
     """
     Extracting molecular constitution descriptors using PyChem package and
@@ -209,6 +253,15 @@ def extract_constitution_descriptors(dataframe, column, url):
                                                          "ncocl", "nhyd"])
 
         df_constitution.to_csv('data/df_constitution.csv')
+        file_to_s3 = open('data/df_constitution.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating constitution")
         return
 
@@ -258,6 +311,15 @@ def extract_topology_descriptors(dataframe, column, url):
                                                      'Hato', 'Xu'])
 
         df_topology.to_csv('data/df_topology.csv')
+        file_to_s3 = open('data/df_topology.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating topology")
         return
 
@@ -304,6 +366,15 @@ def extract_con_descriptors(dataframe, column, url):
                                                 'Chiv6ch', 'Chi10', 'Chi4ch',
                                                 'Chiv4ch', 'mChi1', 'Chi6ch'])
         df_con.to_csv('data/df_con.csv')
+        file_to_s3 = open('data/df_con.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating con")
         return
 
@@ -340,6 +411,15 @@ def extract_kappa_descriptors(dataframe, column, url):
                                                   'kappam2'])
 
         df_kappa.to_csv('data/df_kappa.csv')
+        file_to_s3 = open('data/df_kappa.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating kappa")
         return
 
@@ -403,6 +483,15 @@ def extract_burden_descriptors(dataframe, column, url):
                                                    'bcutm11', 'bcutm10'])
 
         df_burden.to_csv('data/df_burden.csv')
+        file_to_s3 = open('data/df_burden.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating burden")
         return
 
@@ -511,6 +600,15 @@ def extract_estate_descriptors(dataframe, column, url):
                                                    'Smin15', 'Smax46', 'Smin17',
                                                    'Smin18', 'Smin19'])
         df_estate.to_csv('data/df_estate.csv')
+        file_to_s3 = open('data/df_estate.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating estate")
         return
 
@@ -553,6 +651,15 @@ def extract_basak_descriptors(dataframe, column, url):
                                                   'IC4'])
 
         df_basak.to_csv('data/df_basak.csv')
+        file_to_s3 = open('data/df_basak.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating basak")
         return
 
@@ -601,6 +708,15 @@ def extract_moran_descriptors(dataframe, column, url):
                                                   'MATSp5', 'MATSp2'])
 
         df_moran.to_csv('data/df_moran.csv')
+        file_to_s3 = open('data/df_moran.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating moran")
         return
 
@@ -649,6 +765,15 @@ def extract_geary_descriptors(dataframe, column, url):
                                                   'GATSm5', 'GATSm8'])
 
         df_geary.to_csv('data/df_geary.csv')
+        file_to_s3 = open('data/df_geary.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating geary")
         return
 
@@ -684,6 +809,15 @@ def extract_property_descriptors(dataframe, column, url):
                                                      'LogP2', 'UI', 'MR'])
 
         df_property.to_csv('data/df_property.csv')
+        file_to_s3 = open('data/df_property.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating property")
         return
 
@@ -725,6 +859,15 @@ def extract_charge_descriptors(dataframe, column, url):
                                                    'Tac', 'Mnc'])
 
         df_charge.to_csv('data/df_charge.csv')
+        file_to_s3 = open('data/df_charge.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating charge")
         return
 
@@ -786,6 +929,15 @@ def extract_moe_descriptors(dataframe, column, url):
                                                 'VSAEstate9', 'VSAEstate10'])
 
         df_moe.to_csv('data/df_moe.csv')
+        file_to_s3 = open('data/df_moe.csv', 'r+')
+
+        key = file_to_s3.name
+
+        if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print 'File has been uploaded to S3'
+        else:
+            print 'File could not be uploaded to S3'
+
         print("done calculating moe")
         return
 
