@@ -258,9 +258,9 @@ def extract_constitution_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating constitution")
         return
@@ -316,9 +316,9 @@ def extract_topology_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating topology")
         return
@@ -371,9 +371,9 @@ def extract_con_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating con")
         return
@@ -416,9 +416,9 @@ def extract_kappa_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating kappa")
         return
@@ -488,9 +488,9 @@ def extract_burden_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating burden")
         return
@@ -605,9 +605,9 @@ def extract_estate_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating estate")
         return
@@ -656,9 +656,9 @@ def extract_basak_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating basak")
         return
@@ -713,9 +713,9 @@ def extract_moran_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating moran")
         return
@@ -770,9 +770,9 @@ def extract_geary_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating geary")
         return
@@ -814,9 +814,9 @@ def extract_property_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating property")
         return
@@ -864,9 +864,9 @@ def extract_charge_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating charge")
         return
@@ -934,9 +934,9 @@ def extract_moe_descriptors(dataframe, column, url):
         key = file_to_s3.name
 
         if upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
-            print 'File has been uploaded to S3'
+            print("File has been uploaded to S3")
         else:
-            print 'File could not be uploaded to S3'
+            print("File could not be uploaded to S3")
 
         print("done calculating moe")
         return
@@ -1058,13 +1058,11 @@ def select_features(x, y):
 
 
 def check_files():
-    a = 0
+
     with open('data/chemical_notation_data/compounds_smiles.txt', 'r') as f:
-        data = f.readlines()
-        i = 1
-        for line in data:
-            i += 1
-        if i == 389561:
+        for i, l in enumerate(f):
+            pass
+        if i + 1 == 389561:
             print("Compound information file check done")
 
     file_string = ['charge', 'con', 'constitution', 'estate', 'kappa', 'moe',
