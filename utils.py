@@ -58,24 +58,21 @@ def create_notation_dataframe(filename):
         z = [int(words[0]), words[1]]
         df.append(z)
     df = pd.DataFrame(df)
-    df.columns = ['ID', 'SMILES']
-    df.sort_values(by='ID', inplace=True)
+    df.columns = ['CID', 'SMILES']
+    df.sort_values(by='CID', inplace=True)
     return df
 
 
-def create_activity_dataframe(filename):
+def create_activity_dataframe(dataframe):
     """
 
-    :param filename:
+    :param dataframe:
     :return: activity_df:
     """
 
-    activity_df = pd.DataFrame(list(csv.reader(filename)))
-    activity_df.columns = activity_df.iloc[0]
     # Eliminates first five text rows of csv
-    for j in range(6):
-        activity_df = activity_df.drop(j, axis=0)
-
+    for j in range(5):
+        activity_df = dataframe.drop(j, axis=0)
     activity_df = activity_df.drop(['PUBCHEM_ACTIVITY_URL',
                                     'PUBCHEM_RESULT_TAG',
                                     'PUBCHEM_ACTIVITY_SCORE', 'PUBCHEM_SID',
@@ -92,12 +89,13 @@ def create_activity_dataframe(filename):
                                     'Activity at 11.40 uM',
                                     'Activity at 57.10 uM',
                                     'PUBCHEM_ACTIVITY_OUTCOME'], axis=1)
-    activity_df.rename(columns={'PUBCHEM_CID': 'ID'}, inplace=True)
+    activity_df.rename(columns={'PUBCHEM_CID': 'CID'}, inplace=True)
+
     # Eliminates duplicate compound rows
-    activity_df['dupes'] = activity_df.duplicated('ID')
+    activity_df['dupes'] = activity_df.duplicated('CID')
     activity_df = activity_df[activity_df['dupes'] == 0].drop(['dupes'],
                                                               axis=1)
-    activity_df = activity_df.sort_values(by='ID')
+    activity_df = activity_df.sort_values(by='CID')
     return activity_df
 
 
@@ -1004,55 +1002,8 @@ def select_features(x, y):
     """
     x = pd.DataFrame(x)
 
-    # Removing features with low variance
-    var_threshold = f_selection.VarianceThreshold(threshold=(.8 * (1 - .8)))
-
-    # Kbest-based and Percentile-based feature selection using regression
-    f_regress = f_selection.f_regression(x, y, center=False)
-    kbest = f_selection.SelectKBest(score_func=f_regress, k=2)
-    percent = f_selection.SelectPercentile(score_func=f_regress, percentile=10)
-
-    # Tree-based feature selection using a number of randomized decision trees
-    trees = f_selection.SelectFromModel(ExtraTreesRegressor, prefit=True)
-
     # "False positive rate"-based feature selection using regression
     fpr = f_selection.SelectFpr(score_func=f_regress, alpha=0.05)
-
-    # PCA-component evaluation
-    pca = PCA(n_components=2)
-
-    # Recursive feature elimination and cross-validated feature selection
-    estimator = SVR(kernel="linear")
-    selector = f_selection.RFECV(estimator, step=1, cv=5)
-
-    # Build estimator from PCA and Univariate selection:
-    combined_features = FeatureUnion([("pca_based", pca), ("univ_kbest", kbest), ("false_positive_rate", fpr),
-                                      ("percentile_based", percent), ("RFECV_selector", selector),
-                                      ("variance_threshold", var_threshold), ("trees_based", trees)])
-    x_union_features = combined_features.fit_transform(x, y)
-
-    svm = SVC(kernel="linear")
-
-    # Do grid search over all parameters:
-    pipeline = Pipeline([("features", x_union_features), ("svm", svm)])
-
-    grid = dict(features__pca_based__n_components=range(1, 101),
-                features__univ_kbest__k=range(1, 101),
-                features_false_positive_rate_alpha=range(0, 1, 0.01),
-                features_percentile_based_percentile=range(1, 20, 1),
-                features_RFECV_selector_cv=range(1, 5),
-                features_variance_threshold_threshold=range(0, 1, 0.01),
-                svm__C=[0.01, 0.1, 1.0, 10.0])
-
-    grid_search = GridSearchCV(pipeline, param_grid=grid, verbose=0)
-    x_features = grid_search.fit_transform(x, y)
-
-    # Pickling feature reduction outputs
-    with open(FS_PICKLE, 'wb') as result:
-        pickle.dump(rf_sorted_score, result, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(grid_search.best_estimator_, result, pickle.HIGHEST_PROTOCOL)
-
-    print(grid_search.best_estimator_)
 
     return x_features
 
