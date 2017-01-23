@@ -39,18 +39,16 @@ def main():
     df_compounds_smiles = utils.create_notation_dataframe(response)
 
     # Importing inhibitor activity data
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/AID_743255_datatable.csv')
+    response = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/AID_743255_datatable.csv')
     activity = utils.create_activity_dataframe(response)
 
     # Merging activity data and compound notation data
     df = activity.merge(df_compounds_smiles)
-    df.sort_values(by='ID', inplace=True)
+    df.sort_values(by='CID', inplace=True)
     df.reset_index(drop=True, inplace=True)
-    print df
 
     # Drop non-descriptor columns before feature space reduction
-    df_target = df.drop(['SMILES', 'Phenotype'], axis=1)
+    df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
@@ -59,7 +57,6 @@ def main():
 
     print("Joining dataframes")
     df = utils.join_dataframes()
-    print df
     print("Joined dataframes")
 
     print("Checking dataframe for NaN and infinite values")
@@ -68,16 +65,16 @@ def main():
 
     # Transform all column values to mean 0 and unit variance
     print("Transforming dataframe using mean and variance")
-    df = utils.transform_dataframe(df)
+    df = sklearn.preprocessing.scale(df)
     print("Transformed dataframe using mean and variance")
 
     # Feature selection and space reduction
     print("Selecting best features in dataframe")
-    df_features = utils.select_features(df, df_target)
+    #df_features = utils.select_features(df, df_target)
     print("Selected best features in dataframe")
 
-    df = df_features.join(df_target)
-
+    df = df.join(df_target)
+    print df
     # Data to training task
     # Type check inputs for sanity
     if df is None:
