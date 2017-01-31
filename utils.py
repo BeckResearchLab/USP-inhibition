@@ -976,7 +976,7 @@ def join_dataframes():
     return joined_df
 
 
-def sort_features(x, y):
+def choose_features(x, y):
     """
 
     :param x: dataframe of features
@@ -990,7 +990,7 @@ def sort_features(x, y):
     rf.fit(x, y)
     rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_),
                                  names), reverse=True)
-    return rf_sorted_score
+    print rf_sorted_score
 
 
 def select_features(x, y):
@@ -1038,7 +1038,7 @@ def remove_nan_infinite(dataframe):
     :return dataframe: Corrected dataframe with no NaN or infinite values
     """
 
-    dataframe.replace([np.inf, -np.inf], np.nan)
+    dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
     dataframe.fillna(0, inplace=True)
 
     return dataframe
