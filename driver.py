@@ -7,6 +7,7 @@ import sys
 sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
 import csv
+import genalgo
 import models
 import pandas as pd
 import pickle
@@ -52,7 +53,7 @@ def main():
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
-    utils.extract_all_descriptors(df, 'SMILES')
+    # utils.extract_all_descriptors(df, 'SMILES')
     print("Finished descriptor calculation")
 
     print("Joining dataframes")
@@ -61,16 +62,19 @@ def main():
 
     print("Checking dataframe for NaN and infinite values")
     df = utils.remove_nan_infinite(df)
+    df_target = utils.remove_nan_infinite(df_target)
     print("Checked dataframe for NaN and infinite values")
 
     # Transform all column values to mean 0 and unit variance
     print("Transforming dataframe using mean and variance")
     df = sklearn.preprocessing.scale(df)
+    df_target = sklearn.preprocessing.scale(df_target)
+    df_target.to_csv('data/df_target.csv')
     print("Transformed dataframe using mean and variance")
 
     # Feature selection and space reduction
     print("Selecting best features in dataframe")
-    #df_features = utils.select_features(df, df_target)
+    utils.choose_features(df, df_target)
     print("Selected best features in dataframe")
 
     df = df.join(df_target)
@@ -104,9 +108,16 @@ def main():
         pickle.dump(y_train, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_test, results, pickle.HIGHEST_PROTOCOL)
 
+    print("Running models")
     models.run_models(x_train, y_train, x_test, y_test)
+    print("Ran models")
 
+    print("Printing results")
     post_process.results()
+    print("Printed results")
 
+    # print("Finding ideal drug molecule using genetic algorithm"
+    # ideal_mol_features = genalgo.
+    # print("Found ideal drug molecule using genetic algorithm"
 if __name__ == "__main__":
     main()
