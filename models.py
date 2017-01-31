@@ -97,11 +97,10 @@ def build_nn(x_train, y_train, x_test, y_test):
                   'hidden1_nonlinearity': 
                   [nonlinearities.sigmoid, nonlinearities.softmax],
                   'update_learning_rate': [0.01, 0.1, 0.5]}
-    grid = sklearn.grid_search.GridSearchCV(net, param_grid, verbose=0,
-                                            n_jobs=3, cv=3)
-    grid.fit(x_train, y_train)
+    clf = sklearn.grid_search.GridSearchCV(net, param_grid, verbose=0, n_jobs=3, cv=3)
+    clf.fit(x_train, y_train)
 
-    y_pred = grid.predict(x_test)
+    y_pred = clf.predict(x_test)
     # Mean absolute error regression loss
     mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
     # Mean squared error regression loss
@@ -116,7 +115,7 @@ def build_nn(x_train, y_train, x_test, y_test):
     accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(NN_PICKLE, 'wb') as results:
-        pickle.dump(grid, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(net, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
@@ -158,6 +157,7 @@ def build_svm(x_train, y_train, x_test, y_test):
     accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(SVM_PICKLE, 'wb') as results:
+        pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -197,6 +197,7 @@ def build_tree(x_train, y_train, x_test, y_test):
     accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(DT_PICKLE, 'wb') as results:
+        pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -238,6 +239,7 @@ def build_ridge(x_train, y_train, x_test, y_test):
     ridge_alpha = clf.alpha_
 
     with open(RR_PICKLE, 'wb') as results:
+        pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -280,6 +282,7 @@ def build_bayesian_rr(x_train, y_train, x_test, y_test):
     ridge_alpha = clf.alpha_
 
     with open(BRR_PICKLE, 'wb') as results:
+        pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -323,6 +326,7 @@ def build_lasso(x_train, y_train, x_test, y_test):
     lasso_alpha = clf.alpha_
 
     with open(LASSO_PICKLE, 'wb') as results:
+        pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
