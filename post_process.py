@@ -30,7 +30,7 @@ def results():
     :return: None
     """
     with open(NN_PICKLE, 'rb') as result:
-        grid = pickle.load(result)
+        clf = pickle.load(result)
         net = pickle.load(result)
         mean_abs = pickle.load(result)
         mean_sq = pickle.load(result)
@@ -40,23 +40,23 @@ def results():
         accuracy = pickle.load(result)
         y_pred_nn = pickle.load(result)
 
-    grid.save_params_to('/tmp/grid.params')
+    clf.save_params_to('/tmp/clf.params')
     net.save_params_to('/tmp/net.params')
 
     print("A list of named tuples of scores for each set of parameter "
           "combinations in param_grid for the NN model:")
     print("[parameters, mean_validation_score over CV folds, the list of "
           "scores for each fold]")
-    print(grid.grid_scores_)
+    print(clf.grid_scores_)
     print("Estimator that was chosen by the search with the highest score for the NN model:")
-    print(grid.best_estimator_)
+    print(clf.best_estimator_)
     print("Score of best_estimator on the held out data for the NN model:")
-    print(grid.best_score_)
+    print(clf.best_score_)
     print("Parameter setting that gave the best results on the held out data for the NN model:")
-    print(grid.best_params_)
+    print(clf.best_params_)
     print("Scorer function used on the held out data to choose the best "
           "parameters for the NN model:")
-    print(grid.scorer_)
+    print(clf.scorer_)
     print("Mean absolute error regression loss for NN model:")
     print(mean_abs)
     print("Mean squared error regression loss for NN model:")
