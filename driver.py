@@ -9,6 +9,7 @@ sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 import csv
 import genalgo
 import models
+import numpy as np
 import pandas as pd
 import pickle
 import post_process
@@ -50,6 +51,7 @@ def main():
 
     # Drop non-descriptor columns before feature space reduction
     df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
+    df_target.to_csv('data/df_target.csv')
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
@@ -59,6 +61,10 @@ def main():
     print("Joining dataframes")
     df = utils.join_dataframes()
     print("Joined dataframes")
+    df.to_csv('data/df.csv')
+
+    df = pd.DataFrame.from_csv('data/df.csv')
+    df_target = pd.DataFrame.from_csv('data/df_target.csv')
 
     print("Checking dataframe for NaN and infinite values")
     df = utils.remove_nan_infinite(df)
@@ -69,7 +75,6 @@ def main():
     print("Transforming dataframe using mean and variance")
     df = sklearn.preprocessing.scale(df)
     df_target = sklearn.preprocessing.scale(df_target)
-    df_target.to_csv('data/df_target.csv')
     print("Transformed dataframe using mean and variance")
 
     # Feature selection and space reduction
@@ -108,9 +113,9 @@ def main():
         pickle.dump(y_train, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_test, results, pickle.HIGHEST_PROTOCOL)
 
-    print("Running models")
+    print("Generating models")
     models.run_models(x_train, y_train, x_test, y_test)
-    print("Ran models")
+    print("Generated models and saved results")
 
     print("Printing results")
     post_process.results()
