@@ -986,27 +986,15 @@ def choose_features(x, y):
 
     # Random forest feature importance - Mean decrease impurity
     x = pd.DataFrame(x)
-    names = x.columns.values.tolist()
-    rf = RandomForestRegressor()
-    rf.fit(x, y.values.ravel())
-    rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_), names), reverse=True)
-    print rf_sorted_score
+    y = pd.DataFrame(y)
 
+    clf = RandomForestRegressor()
+    clf.fit(x, y.values.ravel())
+    sfm = SelectFromModel(clf, threshold=0.15)
+    sfm.fit(x, y)
+    desired_x = sfm.transform(x)
 
-def select_features(x, y):
-    """
-
-    :param x: dataframe of features
-    :param y: dataframe of target property
-    :return: Outputs of feature selection process
-    """
-    x = pd.DataFrame(x)
-
-    # "False positive rate"-based feature selection using regression
-    fpr = f_selection.SelectFpr(score_func=f_regress, alpha=0.05)
-
-    return x_features
-
+    return desired_x
 
 def check_files():
 
