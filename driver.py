@@ -35,9 +35,9 @@ def main():
     @:param: None
     :return: Post process results
     """
+    """
     # Importing inhibitor notation data
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/compounds_smiles.txt')
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/compounds_smiles.txt')
     df_compounds_smiles = utils.create_notation_dataframe(response)
 
     # Importing inhibitor activity data
@@ -50,40 +50,43 @@ def main():
     df.reset_index(drop=True, inplace=True)
 
     # Drop non-descriptor columns before feature space reduction
-    df_target = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
-    df_target.to_csv('data/df_target.csv')
+    df_y = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
+    df_y.to_csv('data/df_y.csv')
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
-    # utils.extract_all_descriptors(df, 'SMILES')
+    utils.extract_all_descriptors(df, 'SMILES')
     print("Finished descriptor calculation")
 
     print("Joining dataframes")
     df = utils.join_dataframes()
     print("Joined dataframes")
-    df.to_csv('data/df.csv')
+    df.to_csv('data/df_x.csv')"""
 
-    df = pd.DataFrame.from_csv('data/df.csv')
-    df_target = pd.DataFrame.from_csv('data/df_target.csv')
+    df_x = pd.DataFrame.from_csv('data/df_x_preprocessing.csv')
+    df_y = pd.DataFrame.from_csv('data/df_y_preprocessing.csv')
 
     print("Checking dataframe for NaN and infinite values")
-    df = utils.remove_nan_infinite(df)
-    df_target = utils.remove_nan_infinite(df_target)
+    df_x = utils.remove_nan_infinite(df_x)
+    df_y = utils.remove_nan_infinite(df_y)
     print("Checked dataframe for NaN and infinite values")
 
     # Transform all column values to mean 0 and unit variance
     print("Transforming dataframe using mean and variance")
-    df = sklearn.preprocessing.scale(df)
-    df_target = sklearn.preprocessing.scale(df_target)
+    df_x = sklearn.preprocessing.scale(df_x)
+    df_y = sklearn.preprocessing.scale(df_y)
     print("Transformed dataframe using mean and variance")
 
     # Feature selection and space reduction
     print("Selecting best features in dataframe")
-    utils.choose_features(df, df_target)
+    df_x = utils.choose_features(df_x, df_y)
     print("Selected best features in dataframe")
 
-    df = df.join(df_target)
-    print df
+    df_x = pd.DataFrame(df_x)
+    df_x.to_csv('data/df_x_postprocessing.csv')
+    df_y.to_csv('data/df_y_postprocessing.csv')
+    df = df_x.join(df_y)
+
     # Data to training task
     # Type check inputs for sanity
     if df is None:
@@ -95,8 +98,7 @@ def main():
     if not isinstance(TARGET_COLUMN, basestring):
         raise TypeError('target_column is not a string')
     if TARGET_COLUMN not in df.columns:
-        raise ValueError('target_column (%s) is not a valid column name'
-                         % TARGET_COLUMN)
+        raise ValueError('target_column (%s) is not a valid column name' % TARGET_COLUMN)
 
     # Train, validation and test split
     df_train, df_test = sklearn.cross_validation.train_test_split(df, test_size=0.25)
