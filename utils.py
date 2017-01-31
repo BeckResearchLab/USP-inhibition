@@ -985,11 +985,11 @@ def choose_features(x, y):
     """
 
     # Random forest feature importance - Mean decrease impurity
+    x = pd.DataFrame(x)
     names = x.columns.values.tolist()
     rf = RandomForestRegressor()
-    rf.fit(x, y)
-    rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_),
-                                 names), reverse=True)
+    rf.fit(x, y.values.ravel())
+    rf_sorted_score = sorted(zip(map(lambda d: round(d, 4), rf.feature_importances_), names), reverse=True)
     print rf_sorted_score
 
 
@@ -1043,19 +1043,3 @@ def remove_nan_infinite(dataframe):
 
     return dataframe
 
-
-def transform_dataframe(dataframe):
-
-    """
-    Function to read and standardize the dataframe with a
-    mean 0 and unit variance on every column
-
-    Parameters:
-        dataframe : Input pandas dataframe
-    Input types: pd.Dataframe
-    Output types: pd.Dataframe
-
-    """
-    robust_scaler = RobustScaler()
-    df = robust_scaler.fit_transform(dataframe)
-    return df
