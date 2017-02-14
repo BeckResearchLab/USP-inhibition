@@ -16,7 +16,7 @@ except ImportError:
 import boto
 import numpy as np
 import pandas as pd
-import sklearn.feature_selection as f_selection
+import sklearn
 from boto.s3.key import Key
 from joblib import Parallel, delayed
 from pychem import getmol
@@ -33,9 +33,9 @@ __status__ = "Development"
 
 def create_dataframe(dataframe):
     """
-
-    :param dataframe:
-    :return: df:
+    Performing useful transformations on the acquired data for use in subsequent algorithm.
+    :param dataframe: Dataframe downloaded from NCBI database.
+    :return: df: Cleaned and sorted dataframe.
     """
 
     # Eliminates first five text rows of csv
@@ -133,6 +133,11 @@ def upload_to_s3(aws_access_key_id, aws_secret_access_key, file_to_s3, bucket, k
 
 
 def join_dataframes():
+    """
+    Joins the dataframes of existing descriptor files from their urls into a single dataframe.
+    :return: Dataframe after joining
+    """
+
     url_list = ['https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_constitution.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_con.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_kappa.csv',
@@ -140,7 +145,12 @@ def join_dataframes():
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_basak.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_property.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_charge.csv',
-                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moe.csv']
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moe.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_burden.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_geary.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moran.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_topology.csv'
+                ]
 
     url_exist_list = []
     for url in url_list:
@@ -170,19 +180,18 @@ def join_dataframes():
 
 def choose_features(x, y):
     """
-
-    :param x: dataframe of features
-    :param y: dataframe of target property
-    :return: Sorted score of all features
+    Selecting the features of high importance to reduce feature space.
+    :param x: Dataframe of features
+    :param y: Dataframe of target property
+    :return desired x: Dataframe of short-listed features
     """
 
-    # Random forest feature importance - Mean decrease impurity
+    # Random forest feature importance
     x = pd.DataFrame(x)
     y = pd.DataFrame(y)
 
     clf = RandomForestRegressor()
-    clf.fit(x, y.values.ravel())
-    sfm = SelectFromModel(clf, threshold=0.15)
+    sfm = sklearn.feature_selection.SelectFromModel(clf, threshold=0.15)
     sfm.fit(x, y)
     desired_x = sfm.transform(x)
 
@@ -191,9 +200,8 @@ def choose_features(x, y):
 
 def remove_nan_infinite(dataframe):
     """
-
-    :param dataframe: Dataframe undergoing further transformation and containing NaN and infinite values
-    :return dataframe: Corrected dataframe with no NaN or infinite values
+    :param dataframe: Dataframe containing NaN and infinite values
+    :return dataframe: Dataframe with no NaN or infinite values
     """
 
     dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
