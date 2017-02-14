@@ -5,7 +5,10 @@ Perform data manipulation tasks and create inputs for project workflow
 """
 
 from multiprocessing import Process
-from urllib2 import URLError, urlopen
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
 
 import pandas as pd
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
