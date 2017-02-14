@@ -35,33 +35,28 @@ def main():
     @:param: None
     :return: Post process results
     """
-    """
-    # Importing inhibitor notation data
-    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/compounds_smiles.txt')
-    df_compounds_smiles = utils.create_notation_dataframe(response)
 
     # Importing inhibitor activity data
-    response = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/AID_743255_datatable.csv')
-    activity = utils.create_activity_dataframe(response)
-
-    # Merging activity data and compound notation data
-    df = activity.merge(df_compounds_smiles)
-    df.sort_values(by='CID', inplace=True)
-    df.reset_index(drop=True, inplace=True)
+    response = pd.read_csv('https://pubchem.ncbi.nlm.nih.gov/pcajax/pcget.cgi?query=download&record_type='
+                           'datatable&response_type=save&aid=743255&version=1.1')
+    df = utils.create_dataframe(response)
 
     # Drop non-descriptor columns before feature space reduction
-    df_y = df.drop(['SMILES', 'CID', 'Phenotype'], axis=1)
-    df_y.to_csv('data/df_y.csv')
+    df_x = df.drop(['Activity_Score', 'CID'], axis=1)
+
+    # Creating target column
+    df_y = df.drop(['SMILES', 'CID'], axis=1)
+    df_y.to_csv('data/df_y_preprocessing.csv')
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
-    utils.extract_all_descriptors(df, 'SMILES')
+    utils.extract_all_descriptors(df_x, 'SMILES')
     print("Finished descriptor calculation")
 
     print("Joining dataframes")
     df = utils.join_dataframes()
     print("Joined dataframes")
-    df.to_csv('data/df_x.csv')"""
+    df.to_csv('data/df_x_preprocessing.csv')
 
     df_x = pd.DataFrame.from_csv('data/df_x_preprocessing.csv')
     df_y = pd.DataFrame.from_csv('data/df_y_preprocessing.csv')
@@ -126,5 +121,7 @@ def main():
     # print("Finding ideal drug molecule using genetic algorithm"
     # ideal_mol_features = genalgo.
     # print("Found ideal drug molecule using genetic algorithm"
+
+
 if __name__ == "__main__":
     main()
