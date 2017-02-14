@@ -6,10 +6,8 @@ Primary execution file for USP-Inhibition project
 import sys
 sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
-import csv
-import genalgo
+import descriptors
 import models
-import numpy as np
 import pandas as pd
 import pickle
 import post_process
@@ -53,7 +51,7 @@ def main():
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
-    utils.extract_all_descriptors(df_x, 'SMILES')
+    descriptors.extract_all_descriptors(df_x, 'SMILES')
     print("Finished descriptor calculation")
 
     print("Joining dataframes")
