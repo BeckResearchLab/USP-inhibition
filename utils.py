@@ -7,8 +7,10 @@ Perform data manipulation tasks and create inputs for project workflow
 import csv
 import os
 import pickle
-import urllib2
-from urllib2 import URLError, urlopen
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
 
 import boto
 import numpy as np
@@ -59,7 +61,7 @@ def create_dataframe(dataframe):
     for cid in df['CID']:
         string = getmol.GetMolFromNCBI(cid='%d' % cid)
         smiles.append(string)
-        print i
+        print(i)
         i += 1
     df['SMILES'] = smiles
     df.sort_values(by='CID', inplace=True)
