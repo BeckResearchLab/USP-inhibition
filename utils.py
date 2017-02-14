@@ -5,6 +5,7 @@ Perform data manipulation tasks and create inputs for project workflow
 """
 
 import csv
+import multiprocessing
 import os
 import pickle
 try:
@@ -17,8 +18,10 @@ import numpy as np
 import pandas as pd
 import sklearn.feature_selection as f_selection
 from boto.s3.key import Key
+from joblib import Parallel, delayed
 from pychem import getmol
 from sklearn.ensemble import RandomForestRegressor
+
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -57,17 +60,37 @@ def create_dataframe(dataframe):
 
     # Extract SMILES strings from CID values
     smiles = []
-    i = 1
+    i = 0
+    """
+    DF_SMILES = []
+    global DF_SMILES
+    for cid in df['CID']:
+        p[i] = multiprocessing.Process(target=get_smiles, args=cid)
+        p[i].start()
+        print i
+        i += 1
+
+    for j in range(i):
+        p[j].join()
+    """
+
     for cid in df['CID']:
         string = getmol.GetMolFromNCBI(cid='%d' % cid)
         smiles.append(string)
         print(i)
         i += 1
+
     df['SMILES'] = smiles
+    df.to_csv('data/NCBIdata.csv')
     df.sort_values(by='CID', inplace=True)
     df.reset_index(drop=True, inplace=True)
-    df.to_csv('data/NCBIdata.csv')
     return
+
+
+def get_smiles(cid):
+    string = getmol.GetMolFromNCBI(cid='%d' % cid)
+    row = [cid, string]
+    DF_SMILES.append(row)
 
 
 def upload_to_s3(aws_access_key_id, aws_secret_access_key, file_to_s3, bucket, key, callback=None, md5=None,
