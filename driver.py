@@ -14,7 +14,10 @@ import pandas as pd
 import pickle
 import post_process
 import sklearn
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
 import utils
 
 __author__ = "Pearl Philip"
