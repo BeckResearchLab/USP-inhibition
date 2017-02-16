@@ -37,10 +37,24 @@ def main():
     :return: Post process results
     """
 
+    # Importing dataset from NCBI database to create dataframe
+    """response = pd.read_csv('https://pubchem.ncbi.nlm.nih.gov/pcajax/pcget.cgi?query=download&record_type='
+                           'datatable&response_type=save&aid=743255&version=1.1')"""
+
+    # Importing inhibitor notation data
+    response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/compounds_smiles.txt')
+    df_smiles = utils.create_notation_dataframe(response)
+    print df_smiles
+
     # Importing inhibitor activity data
-    response = pd.read_csv('https://pubchem.ncbi.nlm.nih.gov/pcajax/pcget.cgi?query=download&record_type='
-                           'datatable&response_type=save&aid=743255&version=1.1')
-    df = utils.create_dataframe(response)
+    response = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/AID_743255_datatable.csv')
+    df_activity = utils.create_activity_dataframe(response)
+    print df_activity
+
+    df = df_activity.merge(df_smiles)
+    df.sort_values(by='CID', inplace=True)
+    df.reset_index(drop=True, inplace=True)
+    print df
 
     # Drop non-descriptor columns before feature space reduction
     df_x = df.drop(['Activity_Score', 'CID'], axis=1)
