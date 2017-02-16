@@ -49,11 +49,11 @@ def extract_all_descriptors(df, column):
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_geary.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_property.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_charge.csv',
-                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moe.csv'
-                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_geometric.csv'
-                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_cpsa.csv'
-                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_rdf.csv'
-                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_morse.csv'
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moe.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_geometric.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_cpsa.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_rdf.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_morse.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_whim.csv']
 
     p1 = Process(target=extract_constitution_descriptors, args=(df, column, url_list[0]))
@@ -98,14 +98,14 @@ def extract_all_descriptors(df, column):
     p14 = Process(target=extract_cpsa_descriptors, args=(df, column, url_list[13]))
     p14.start()
 
-    p15 = Process(target=extract_rdf_descriptors, args=(df, column, url_list[14]))
+    '''p15 = Process(target=extract_rdf_descriptors, args=(df, column, url_list[14]))
     p15.start()
 
     p16 = Process(target=extract_morse_descriptors, args=(df, column, url_list[15]))
     p16.start()
 
     p17 = Process(target=extract_whim_descriptors, args=(df, column, url_list[16]))
-    p17.start()
+    p17.start()'''
 
     p1.join()
     p2.join()
@@ -121,9 +121,9 @@ def extract_all_descriptors(df, column):
     p12.join()
     p13.join()
     p14.join()
-    p15.join()
+    '''p15.join()
     p16.join()
-    p17.join()
+    p17.join()'''
 
     return
 
@@ -140,8 +140,8 @@ def extract_constitution_descriptors(dataframe, column, url):
     :return: Descriptor dataframe.
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -191,8 +191,8 @@ def extract_topology_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -249,8 +249,8 @@ def extract_con_descriptors(dataframe, column, url):
     :return: Descriptor dataframe.
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -304,8 +304,8 @@ def extract_kappa_descriptors(dataframe, column, url):
     :return: Descriptor dataframe.
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -349,8 +349,8 @@ def extract_burden_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -421,8 +421,8 @@ def extract_estate_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -538,8 +538,8 @@ def extract_basak_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -589,8 +589,8 @@ def extract_moran_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -646,8 +646,8 @@ def extract_geary_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -703,8 +703,8 @@ def extract_property_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -747,8 +747,8 @@ def extract_charge_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -797,8 +797,8 @@ def extract_moe_descriptors(dataframe, column, url):
     :return: Descriptor dataframe
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -867,18 +867,22 @@ def extract_geometric_descriptors(dataframe, column, url):
     :return: Descriptor dataframe.
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
         return
     else:
+        i = 0
         # File does not exist in URL
         print("Starting geometric calculation")
         diction = []
         for line in dataframe[column]:
             smiles = line
+            i += 1
+            print("geometric")
+            print(i)
             mol = Chem.MolFromSmiles(smiles)
             dic = geometric.GetGeometric(mol)
             diction.append(dic)
@@ -912,8 +916,8 @@ def extract_cpsa_descriptors(dataframe, column, url):
     :return: Descriptor dataframe.
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -922,8 +926,12 @@ def extract_cpsa_descriptors(dataframe, column, url):
         # File does not exist in URL
         print("Starting cpsa calculation")
         diction = []
+        i = 0
         for line in dataframe[column]:
             smiles = line
+            i += 1
+            print("cpsa")
+            print(i)
             mol = Chem.MolFromSmiles(smiles)
             dic = cpsa.GetCPSA(mol)
             diction.append(dic)
@@ -964,8 +972,8 @@ def extract_rdf_descriptors(dataframe, column, url):
     :return: Descriptor dataframe.
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -1007,8 +1015,8 @@ def extract_morse_descriptors(dataframe, column, url):
     :return: Descriptor dataframe.
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
@@ -1050,8 +1058,8 @@ def extract_whim_descriptors(dataframe, column, url):
     :return: Descriptor dataframe.
     """
     try:
-        r = urlopen(url)
-    except URLError as e:
+        r = urllib2.urlopen(url)
+    except urllib2.URLError as e:
         r = e
     if r.code < 400:
         # File already exists in URL
