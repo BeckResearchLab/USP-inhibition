@@ -81,7 +81,7 @@ def create_activity_dataframe(dataframe):
     df['dupes'] = df.duplicated('CID')
     df = df[df['dupes'] == 0].drop(['dupes'], axis=1)
     df = df.sort_values(by='CID')
-
+    df.drop(276743)
     """"# Extract SMILES strings from CID values
     smiles = []
     i = 0
