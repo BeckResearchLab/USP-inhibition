@@ -31,7 +31,30 @@ __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
 
-def create_dataframe(dataframe):
+def create_notation_dataframe(filename):
+    """
+    Returns Pandas dataframe of sample ID and molecular notation
+
+    Inputs: filename
+    filename - path to file containing molecular notation indexed by sample ID
+    Input types: str
+
+    Outputs: dataframe of molecular notation indexed by sample ID
+    Output types: Pandas DataFrame
+    """
+    df = []
+    for line in filename:
+        # Splits the line into it's key and molecular string
+        words = line.split()
+        z = [int(words[0]), words[1]]
+        df.append(z)
+    df = pd.DataFrame(df)
+    df.columns = ['CID', 'SMILES']
+    df.sort_values(by='CID', inplace=True)
+    return df
+
+
+def create_activity_dataframe(dataframe):
     """
     Performing useful transformations on the acquired data for use in subsequent algorithm.
     :param dataframe: Dataframe downloaded from NCBI database.
@@ -50,7 +73,8 @@ def create_dataframe(dataframe):
                   'Fit_CurveClass', 'Excluded_Points', 'Compound QC',
                   'Max_Response', 'Phenotype', 'Activity at 0.457 uM',
                   'Activity at 2.290 uM', 'Activity at 11.40 uM',
-                  'Activity at 57.10 uM', 'PUBCHEM_ACTIVITY_OUTCOME'], axis=1)
+                  'Activity at 57.10 uM', 'PUBCHEM_ACTIVITY_OUTCOME',
+                  'Fit_InfiniteActivity'], axis=1)
     df.rename(columns={'PUBCHEM_CID': 'CID'}, inplace=True)
 
     # Eliminates duplicate compound rows
@@ -58,39 +82,17 @@ def create_dataframe(dataframe):
     df = df[df['dupes'] == 0].drop(['dupes'], axis=1)
     df = df.sort_values(by='CID')
 
-    # Extract SMILES strings from CID values
+    """"# Extract SMILES strings from CID values
     smiles = []
     i = 0
-    """
-    DF_SMILES = []
-    global DF_SMILES
-    for cid in df['CID']:
-        p[i] = multiprocessing.Process(target=get_smiles, args=cid)
-        p[i].start()
-        print i
-        i += 1
-
-    for j in range(i):
-        p[j].join()
-    """
-
     for cid in df['CID']:
         string = getmol.GetMolFromNCBI(cid='%d' % cid)
         smiles.append(string)
         print(i)
         i += 1
-
     df['SMILES'] = smiles
-    df.to_csv('data/NCBIdata.csv')
-    df.sort_values(by='CID', inplace=True)
-    df.reset_index(drop=True, inplace=True)
-    return
-
-
-def get_smiles(cid):
-    string = getmol.GetMolFromNCBI(cid='%d' % cid)
-    row = [cid, string]
-    DF_SMILES.append(row)
+    df.to_csv('data/NCBIdata.csv')"""
+    return df
 
 
 def upload_to_s3(aws_access_key_id, aws_secret_access_key, file_to_s3, bucket, key, callback=None, md5=None,
