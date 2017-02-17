@@ -58,20 +58,17 @@ def main():
 
     # Creating target column
     df_y = df.drop(['SMILES', 'CID'], axis=1)
-    df_y.to_csv('data/df_y_preprocessing.csv')
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
-    descriptors.extract_all_descriptors(df_x, 'SMILES')
+    #descriptors.extract_all_descriptors(df_x, 'SMILES')
     print("Finished descriptor calculation")
 
     print("Joining dataframes")
-    df = utils.join_dataframes()
+    df_x = utils.join_dataframes()
     print("Joined dataframes")
-    df.to_csv('data/df_x_preprocessing.csv')
-
-    df_x = pd.DataFrame.from_csv('data/df_x_preprocessing.csv')
-    df_y = pd.DataFrame.from_csv('data/df_y_preprocessing.csv')
+    df_x.to_csv('data/df_x_preprocessing.csv')
+    df_y.to_csv('data/df_y_preprocessing.csv')
 
     print("Checking dataframe for NaN and infinite values")
     df_x = utils.remove_nan_infinite(df_x)
