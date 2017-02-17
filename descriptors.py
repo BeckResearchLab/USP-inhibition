@@ -23,9 +23,10 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
-AWS_ACCESS_KEY = 'your_access_key'
-AWS_ACCESS_SECRET_KEY = 'your_secret_key'
-BUCKET = 'your-bucket'
+access_keys = pd.read_csv('keys/accessKeys.csv')
+AWS_ACCESS_KEY = access_keys['Access key ID'][0]
+AWS_ACCESS_SECRET_KEY = access_keys['Secret access key'][0]
+BUCKET = 'pphilip-usp-inhibition'
 
 
 def extract_all_descriptors(df, column):
@@ -944,7 +945,7 @@ def extract_cpsa_descriptors(dataframe, column, url):
                                                  'WNSA2', 'WNSA3', 'WPSA1',
                                                  'WPSA2', 'WPSA3', 'TASA',
                                                  'PSA', 'FrTATP', 'RASA',
-                                                 'RPSA','RNCS','RPCS'])
+                                                 'RPSA', 'RNCS', 'RPCS'])
 
         df_cpsa.to_csv('data/df_cpsa.csv')
         file_to_s3 = open('data/df_cpsa.csv', 'r+')
