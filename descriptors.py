@@ -24,7 +24,7 @@ __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
 access_keys = pd.read_csv('keys/accessKeys.csv')
-AWS_ACCESS_KEY = access_keys['Access key ID'][0]
+AWS_ACCESS_KEY_ID = access_keys['Access key ID'][0]
 AWS_ACCESS_SECRET_KEY = access_keys['Secret access key'][0]
 BUCKET = 'pphilip-usp-inhibition'
 
@@ -171,7 +171,7 @@ def extract_constitution_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -229,7 +229,7 @@ def extract_topology_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -284,7 +284,7 @@ def extract_con_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -329,7 +329,7 @@ def extract_kappa_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -401,7 +401,7 @@ def extract_burden_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -518,7 +518,7 @@ def extract_estate_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -569,7 +569,7 @@ def extract_basak_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -626,7 +626,7 @@ def extract_moran_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -683,7 +683,7 @@ def extract_geary_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -727,7 +727,7 @@ def extract_property_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -777,7 +777,7 @@ def extract_charge_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -847,7 +847,7 @@ def extract_moe_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -896,7 +896,7 @@ def extract_geometric_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -952,7 +952,7 @@ def extract_cpsa_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -995,7 +995,7 @@ def extract_rdf_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -1038,7 +1038,7 @@ def extract_morse_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
@@ -1081,7 +1081,7 @@ def extract_whim_descriptors(dataframe, column, url):
 
         key = file_to_s3.name
 
-        if utils.upload_to_s3(AWS_ACCESS_KEY, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("File has been uploaded to S3")
         else:
             print("File could not be uploaded to S3")
