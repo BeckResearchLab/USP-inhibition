@@ -108,10 +108,10 @@ def main():
     df_train, df_test = sklearn.cross_validation.train_test_split(df, test_size=0.25)
 
     # Remove the classification column from the dataframe
-    x_train = df_train.drop(TARGET_COLUMN, 1)
-    x_test = df_test.drop(TARGET_COLUMN, 1)
-    y_train = pd.DataFrame(df_train[TARGET_COLUMN])
-    y_test = pd.DataFrame(df_test[TARGET_COLUMN])
+    x_train = np.array(df_train.drop(TARGET_COLUMN, 1))
+    x_test = np.array(df_test.drop(TARGET_COLUMN, 1))
+    y_train = np.array(pd.DataFrame(df_train[TARGET_COLUMN]))
+    y_test = np.array(pd.DataFrame(df_test[TARGET_COLUMN]))
 
     with open(XY_PICKLE, 'wb') as results:
         pickle.dump(x_train, results, pickle.HIGHEST_PROTOCOL)
