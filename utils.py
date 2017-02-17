@@ -4,10 +4,7 @@
 Perform data manipulation tasks and create inputs for project workflow
 """
 
-import csv
-import multiprocessing
 import os
-import pickle
 try:
     import urllib.request as urllib2
 except ImportError:
@@ -17,8 +14,8 @@ import boto
 import numpy as np
 import pandas as pd
 import sklearn
+import boto.s3
 from boto.s3.key import Key
-from joblib import Parallel, delayed
 from pychem import getmol
 from sklearn.ensemble import RandomForestRegressor
 
