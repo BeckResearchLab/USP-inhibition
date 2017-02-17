@@ -151,32 +151,37 @@ def join_dataframes():
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_burden.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_geary.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_moran.csv',
-                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_topology.csv'
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_topology.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_geometric.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_cpsa.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_rdf.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_morse.csv',
+                'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_whim.csv'
                 ]
 
     url_exist_list = []
     for url in url_list:
         try:
-            r = urlopen(url)
-        except URLError as e:
+            r = urllib2.urlopen(url)
+        except urllib2.URLError as e:
             r = e
         if r.code < 400:
             url_exist_list.append(url)
         else:
-            return None
+            None
+
     i = 0
-    df = [None] * len(url_exist_list)
+    df = [0] * len(url_exist_list)
     for url in url_exist_list:
-        response = urllib2.urlopen(url)
-        df[i] = pd.DataFrame(list(csv.reader(response)))
-        df[i].drop(0, axis=1, inplace=True)
-        df[i].columns = df[i].iloc[0]
-        df[i].drop(0, axis=0, inplace=True)
+        df[i] = pd.read_csv(url)
+
+        df[i].drop(df[i].columns[0], axis=1, inplace=True)
         df[i].reset_index(drop=True, inplace=True)
         i += 1
 
-    joined_df = df[0].join(df[1]).join(df[2]).join(df[3]).join(df[4]).join(df[5]).join(df[6]).join(df[7])
-
+    joined_df = df[0]
+    for i in df[1:]:
+        joined_df = joined_df.join(i)
     return joined_df
 
 
@@ -189,12 +194,13 @@ def choose_features(x, y):
     """
 
     # Random forest feature importance
-    x = pd.DataFrame(x)
-    y = pd.DataFrame(y)
+    x = np.array(x)
+    y = np.array(y)
 
     clf = RandomForestRegressor()
     sfm = sklearn.feature_selection.SelectFromModel(clf, threshold=0.15)
     sfm.fit(x, y)
+    print 'here'
     desired_x = sfm.transform(x)
 
     return desired_x
