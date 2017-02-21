@@ -32,8 +32,7 @@ LASSO_PICKLE = 'lasso_data.pkl'
 
 def run_models(x_train, y_train, x_test, y_test):
     """
-    Function to drive all models in parallel.
-
+    Driving all machine learning models as parallel processes.
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
     :param x_test: features dataframe for model testing
@@ -65,8 +64,7 @@ def run_models(x_train, y_train, x_test, y_test):
 
 def build_nn(x_train, y_train, x_test, y_test):
     """
-    Construct a regression neural network model from input dataframe
-
+    Constructing a regression neural network model from input dataframe
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
     :param x_test: features dataframe for model testing
@@ -97,6 +95,8 @@ def build_nn(x_train, y_train, x_test, y_test):
                   'hidden1_nonlinearity': 
                   [nonlinearities.sigmoid, nonlinearities.softmax],
                   'update_learning_rate': [0.01, 0.1, 0.5]}
+
+    # Finding the optimal set of params for each variable in the training of the neural network
     clf = sklearn.grid_search.GridSearchCV(net, param_grid, verbose=0, n_jobs=3, cv=3)
     clf.fit(x_train, y_train)
 
@@ -130,8 +130,7 @@ def build_nn(x_train, y_train, x_test, y_test):
 
 def build_svm(x_train, y_train, x_test, y_test):
     """
-    Construct a support vector regression model from input dataframe
-
+    Constructing a support vector regression model from input dataframe
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
     :param x_test: features dataframe for model testing
@@ -171,8 +170,7 @@ def build_svm(x_train, y_train, x_test, y_test):
 
 def build_tree(x_train, y_train, x_test, y_test):
     """
-    Construct a decision trees regression model from input dataframe
-
+    Constructing a decision trees regression model from input dataframe
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
     :param x_test: features dataframe for model testing
@@ -211,8 +209,7 @@ def build_tree(x_train, y_train, x_test, y_test):
 
 def build_ridge(x_train, y_train, x_test, y_test):
     """
-    Construct a ridge regression model from input dataframe
-
+    Constructing a ridge regression model from input dataframe
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
     :param x_test: features dataframe for model testing
@@ -254,8 +251,7 @@ def build_ridge(x_train, y_train, x_test, y_test):
 
 def build_bayesian_rr(x_train, y_train, x_test, y_test):
     """
-    Construct a Bayesian ridge regression model from input dataframe
-
+    Constructing a Bayesian ridge regression model from input dataframe
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
     :param x_test: features dataframe for model testing
@@ -297,8 +293,7 @@ def build_bayesian_rr(x_train, y_train, x_test, y_test):
 
 def build_lasso(x_train, y_train, x_test, y_test):
     """
-    Construct a Lasso linear model with cross validation from input dataframe
-
+    Constructing a Lasso linear model with cross validation from input dataframe
     :param x_train: features dataframe for model training
     :param y_train: target dataframe for model training
     :param x_test: features dataframe for model testing
