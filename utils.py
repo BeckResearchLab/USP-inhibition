@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Perform data manipulation tasks and create inputs for project workflow
+Create inputs and perform data manipulation tasks in project workflow
 """
 
 import os
@@ -30,14 +30,9 @@ __status__ = "Development"
 
 def create_notation_dataframe(filename):
     """
-    Returns Pandas dataframe of sample ID and molecular notation
-
-    Inputs: filename
-    filename - path to file containing molecular notation indexed by sample ID
-    Input types: str
-
-    Outputs: dataframe of molecular notation indexed by sample ID
-    Output types: Pandas DataFrame
+    Returning Pandas dataframe of sample ID and molecular notation.
+    :param filename: File object containing molecular notation indexed by sample ID
+    :return: Dataframe of molecular notation indexed by sample ID.
     """
     df = []
     for line in filename:
@@ -96,21 +91,24 @@ def upload_to_s3(aws_access_key_id, aws_secret_access_key, file_to_s3, bucket, k
                  reduced_redundancy=False, content_type=None):
     """
     Uploads the given file to the AWS S3 bucket and key specified.
-
-    callback is a function of the form:
-
-    def callback(complete, total)
-
-    The callback should accept two integer parameters, the first representing the number of bytes that have been
-    successfully transmitted to S3 and the second representing the size of the to be transmitted object.
-
-    Returns boolean indicating success/failure of upload.
+    :param aws_access_key_id: First part of AWS access key.
+    :param aws_secret_access_key: Second part of AWS access key.
+    :param file_to_s3: File object to be uploaded.
+    :param bucket: S3 bucket name as string.
+    :param key: Name attribute of the file object to be uploaded.
+    :param callback: Function accepts two integer parameters, the first representing the number of bytes that have been
+    successfully transmitted to S3 and the second representing the size of the to be transmitted object. Returns
+    boolean indicating success/failure of upload.
+    :param md5: MD5 checksum value to verify the integrity of the object.
+    :param reduced_redundancy: S3 option that enables customers to reduce their costs
+    by storing noncritical, reproducible data at lower levels of redundancy than S3's standard storage.
+    :param content_type: Set the type of content in file object.
+    :return: Boolean indicating success of upload.
     """
     try:
         size = os.fstat(file_to_s3.fileno()).st_size
     except:
-        # Not all file objects implement fileno(),
-        # so we fall back on this
+        # Not all file objects implement fileno(), so we fall back on this
         file_to_s3.seek(0, os.SEEK_END)
         size = file_to_s3.tell()
 
@@ -120,8 +118,8 @@ def upload_to_s3(aws_access_key_id, aws_secret_access_key, file_to_s3, bucket, k
     k.key = key
     if content_type:
         k.set_metadata('Content-Type', content_type)
-    sent = k.set_contents_from_file(file_to_s3, cb=callback, md5=md5, reduced_redundancy=reduced_redundancy,
-                                    rewind=True)
+    sent = k.set_contents_from_file(file_to_s3, cb=callback, md5=md5,
+                                    reduced_redundancy=reduced_redundancy, rewind=True)
 
     # Rewind for later use
     file_to_s3.seek(0)
@@ -133,8 +131,8 @@ def upload_to_s3(aws_access_key_id, aws_secret_access_key, file_to_s3, bucket, k
 
 def join_dataframes():
     """
-    Joins the dataframes of existing descriptor files from their urls into a single dataframe.
-    :return: Dataframe after joining
+    Joining the dataframes of existing descriptor files from their urls into a single dataframe.
+    :return: Dataframe after join over key column.
     """
 
     url_list = ['https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/df_constitution.csv',
@@ -164,8 +162,6 @@ def join_dataframes():
             r = e
         if r.code < 400:
             url_exist_list.append(url)
-        else:
-            None
 
     i = 0
     df = [0] * len(url_exist_list)
@@ -185,9 +181,9 @@ def join_dataframes():
 def choose_features(x, y):
     """
     Selecting the features of high importance to reduce feature space.
-    :param x: Dataframe of features
-    :param y: Dataframe of target property
-    :return desired x: Dataframe of short-listed features
+    :param x: Dataframe of features.
+    :param y: Dataframe of target property.
+    :return desired x: Dataframe of short-listed features.
     """
 
     # Random forest feature importance
@@ -197,7 +193,6 @@ def choose_features(x, y):
     clf = RandomForestRegressor()
     sfm = sklearn.feature_selection.SelectFromModel(clf, threshold=0.15)
     sfm.fit(x, y)
-    print 'here'
     desired_x = sfm.transform(x)
 
     return desired_x
@@ -205,12 +200,12 @@ def choose_features(x, y):
 
 def remove_nan_infinite(dataframe):
     """
-    :param dataframe: Dataframe containing NaN and infinite values
-    :return dataframe: Dataframe with no NaN or infinite values
+    Removing NaN and infinite values from the dataframe.
+    :param dataframe: Dataframe containing NaN and infinite values.
+    :return dataframe: Dataframe with no NaN or infinite values.
     """
 
     dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
     dataframe.fillna(0, inplace=True)
 
     return dataframe
-
