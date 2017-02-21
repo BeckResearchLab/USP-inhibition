@@ -7,6 +7,7 @@ import sys
 sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 
 import descriptors
+import genalgo
 import models
 import pandas as pd
 import pickle
@@ -31,10 +32,8 @@ XY_PICKLE = 'xy_data.pkl'
 
 def main():
     """
-    Module to execute the entire package from data retrieval to model
-    performance metrics
-    @:param: None
-    :return: Post process results
+    Module to execute the entire package from data retrieval to model results
+    :return: None
     """
 
     # Importing dataset from NCBI database to create dataframe
@@ -123,9 +122,10 @@ def main():
     models.run_models(x_train, y_train, x_test, y_test)
     print("Generated models and saved results")
 
-    # print("Finding ideal drug molecule using genetic algorithm"
-    # ideal_mol_features = genalgo.
-    # print("Found ideal drug molecule using genetic algorithm"
+    print("Finding candidate drug molecule using genetic algorithm")
+    ideal_mol_features = genalgo.main()
+    ideal_mol_features.to_csv('data/genalgo_results.csv')
+    print("Found candidate drug molecule using genetic algorithm")
 
 
 if __name__ == "__main__":
