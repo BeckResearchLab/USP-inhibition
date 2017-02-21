@@ -111,8 +111,6 @@ def build_nn(x_train, y_train, x_test, y_test):
     r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
-    # Accuracy prediction score
-    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(NN_PICKLE, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
@@ -122,7 +120,6 @@ def build_nn(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
     return
@@ -152,8 +149,6 @@ def build_svm(x_train, y_train, x_test, y_test):
     r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
-    # Accuracy prediction score
-    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(SVM_PICKLE, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
@@ -162,7 +157,6 @@ def build_svm(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
     return
@@ -191,8 +185,6 @@ def build_tree(x_train, y_train, x_test, y_test):
     r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
-    # Accuracy prediction score
-    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
 
     with open(DT_PICKLE, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
@@ -201,7 +193,6 @@ def build_tree(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
     return
@@ -230,8 +221,6 @@ def build_ridge(x_train, y_train, x_test, y_test):
     r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
-    # Accuracy prediction score
-    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
     # Optimal ridge regression alpha value from CV
     ridge_alpha = clf.alpha_
 
@@ -242,7 +231,6 @@ def build_ridge(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ridge_alpha, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
@@ -272,8 +260,6 @@ def build_bayesian_rr(x_train, y_train, x_test, y_test):
     r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
-    # Accuracy prediction score
-    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
     # Optimal ridge regression alpha value from CV
     ridge_alpha = clf.alpha_
 
@@ -284,7 +270,6 @@ def build_bayesian_rr(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ridge_alpha, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
@@ -315,8 +300,6 @@ def build_lasso(x_train, y_train, x_test, y_test):
     r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
-    # Accuracy prediction score
-    accuracy = sklearn.metrics.accuracy_score(y_test, y_pred)
     # Optimal ridge regression alpha value from CV
     lasso_alpha = clf.alpha_
 
@@ -327,7 +310,6 @@ def build_lasso(x_train, y_train, x_test, y_test):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(accuracy, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(lasso_alpha, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
