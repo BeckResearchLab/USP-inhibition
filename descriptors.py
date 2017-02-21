@@ -14,7 +14,8 @@ import pandas as pd
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
 from pychem import charge, moe, constitution, topology, kappa, whim
 from pychem import connectivity as con, geometric, cpsa, rdf, morse
-from pychem.pychem import Chem
+from pychem.pychem import Chem, GetARCFile
+import utils
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -93,20 +94,20 @@ def extract_all_descriptors(df, column):
     p12 = Process(target=extract_moe_descriptors, args=(df, column, url_list[11]))
     p12.start()
 
-    p13 = Process(target=extract_geometric_descriptors, args=(df, column, url_list[12]))
-    p13.start()
+    '''p13 = Process(target=extract_geometric_descriptors, args=(df, column, url_list[12]))
+p13.start()
 
-    p14 = Process(target=extract_cpsa_descriptors, args=(df, column, url_list[13]))
-    p14.start()
+p14 = Process(target=extract_cpsa_descriptors, args=(df, column, url_list[13]))
+p14.start()
 
-    '''p15 = Process(target=extract_rdf_descriptors, args=(df, column, url_list[14]))
-    p15.start()
+p15 = Process(target=extract_rdf_descriptors, args=(df, column, url_list[14]))
+p15.start()
 
-    p16 = Process(target=extract_morse_descriptors, args=(df, column, url_list[15]))
-    p16.start()
+p16 = Process(target=extract_morse_descriptors, args=(df, column, url_list[15]))
+p16.start()
 
-    p17 = Process(target=extract_whim_descriptors, args=(df, column, url_list[16]))
-    p17.start()'''
+p17 = Process(target=extract_whim_descriptors, args=(df, column, url_list[16]))
+p17.start()'''
 
     p1.join()
     p2.join()
@@ -120,11 +121,11 @@ def extract_all_descriptors(df, column):
     p10.join()
     p11.join()
     p12.join()
-    p13.join()
-    p14.join()
-    '''p15.join()
-    p16.join()
-    p17.join()'''
+    '''p13.join()
+p14.join()
+p15.join()
+p16.join()
+p17.join()'''
 
     return
 
@@ -867,6 +868,7 @@ def extract_geometric_descriptors(dataframe, column, url):
     :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe.
     """
+    import pybel
     try:
         r = urllib2.urlopen(url)
     except urllib2.URLError as e:
@@ -884,7 +886,8 @@ def extract_geometric_descriptors(dataframe, column, url):
             i += 1
             print("geometric")
             print(i)
-            mol = Chem.MolFromSmiles(smiles)
+            mol = pybel.readstring
+            GetARCFile(mol)
             dic = geometric.GetGeometric(mol)
             diction.append(dic)
         df_geometric = pd.DataFrame(diction, columns=['W3DH', 'W3D', 'Petitj3D', 'GeDi', 'grav1',
@@ -916,6 +919,7 @@ def extract_cpsa_descriptors(dataframe, column, url):
     :param url: URL to descriptor file in S3 bucket.
     :return: Descriptor dataframe.
     """
+    import pybel
     try:
         r = urllib2.urlopen(url)
     except urllib2.URLError as e:
@@ -933,8 +937,9 @@ def extract_cpsa_descriptors(dataframe, column, url):
             i += 1
             print("cpsa")
             print(i)
-            mol = Chem.MolFromSmiles(smiles)
-            dic = cpsa.GetCPSA(mol)
+            mol = pybel.readstring('smi', smiles)
+            GetARCFile(mol)
+            dic = cpsa.GetCPSA()
             diction.append(dic)
         df_cpsa = pd.DataFrame(diction, columns=['ASA', 'MSA', 'PNSA1',
                                                  'PPSA1', 'PNSA2', 'PPSA2',
