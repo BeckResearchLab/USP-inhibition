@@ -61,7 +61,7 @@ def main():
 
     # Extracting molecular descriptors for all compounds
     print("Starting descriptor calculation")
-    #descriptors.extract_all_descriptors(df_x, 'SMILES')
+    descriptors.extract_all_descriptors(df_x, 'SMILES')
     print("Finished descriptor calculation")
 
     print("Joining dataframes")
@@ -122,10 +122,6 @@ def main():
     print("Generating models")
     models.run_models(x_train, y_train, x_test, y_test)
     print("Generated models and saved results")
-
-    print("Printing results")
-    post_process.results()
-    print("Printed results")
 
     # print("Finding ideal drug molecule using genetic algorithm"
     # ideal_mol_features = genalgo.
