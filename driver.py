@@ -89,7 +89,6 @@ def main():
     df_x.to_csv('data/df_x_postprocessing.csv')
     df_y.to_csv('data/df_y_postprocessing.csv')
     df = df_x.join(df_y)
-
     # Data to training task
     # Type check inputs for sanity
     if df is None:
@@ -106,11 +105,17 @@ def main():
     # Train, validation and test split
     df_train, df_test = sklearn.cross_validation.train_test_split(df, test_size=0.25)
 
+    # Reassign target column name and index after randomized split
+    df_train = df_train.rename(columns={-1: TARGET_COLUMN})
+    df_test = df_test.rename(columns={-1: TARGET_COLUMN})
+    df_train.reset_index(inplace=True, drop=True)
+    df_test.reset_index(inplace=True, drop=True)
+
     # Remove the classification column from the dataframe
-    x_train = np.array(df_train.drop(TARGET_COLUMN, 1))
-    x_test = np.array(df_test.drop(TARGET_COLUMN, 1))
-    y_train = np.array(pd.DataFrame(df_train[TARGET_COLUMN]))
-    y_test = np.array(pd.DataFrame(df_test[TARGET_COLUMN]))
+    x_train = np.array(df_train.drop(TARGET_COLUMN, axis=1))
+    x_test = np.array(df_test.drop(TARGET_COLUMN, axis=1))
+    y_train = np.array(df_train[TARGET_COLUMN])
+    y_test = np.array(df_test[TARGET_COLUMN])
 
     with open(XY_PICKLE, 'wb') as results:
         pickle.dump(x_train, results, pickle.HIGHEST_PROTOCOL)
