@@ -37,7 +37,6 @@ def results():
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
-        accuracy = pickle.load(result)
         y_pred_nn = pickle.load(result)
 
     clf.save_params_to('/tmp/clf.params')
@@ -67,16 +66,14 @@ def results():
     print(r2)
     print("Explained variance regression score function for NN model:")
     print(exp_var_score)
-    print("Accuracy prediction score for the NN model:")
-    print(accuracy)
 
     with open(SVM_PICKLE, 'rb') as result:
+        clf = pickle.load(result)
         mean_abs = pickle.load(result)
         mean_sq = pickle.load(result)
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
-        accuracy = pickle.load(result)
         y_pred_svm = pickle.load(result)
 
     print("Mean absolute error regression loss for SVM model:")
@@ -89,16 +86,14 @@ def results():
     print(r2)
     print("Explained variance regression score function for SVM model:")
     print(exp_var_score)
-    print("Accuracy prediction score for the SVM model:")
-    print(accuracy)
 
     with open(DT_PICKLE, 'rb') as result:
+        clf = pickle.load(result)
         mean_abs = pickle.load(result)
         mean_sq = pickle.load(result)
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
-        accuracy = pickle.load(result)
         y_pred_dt = pickle.load(result)
 
     print("Mean absolute error regression loss for tree model:")
@@ -111,16 +106,14 @@ def results():
     print(r2)
     print("Explained variance regression score function for tree model:")
     print(exp_var_score)
-    print("Accuracy prediction score for the tree model:")
-    print(accuracy)
 
     with open(RR_PICKLE, 'rb') as result:
+        clf = pickle.load(result)
         mean_abs = pickle.load(result)
         mean_sq = pickle.load(result)
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
-        accuracy = pickle.load(result)
         ridge_alpha = pickle.load(result)
         y_pred_rr = pickle.load(result)
 
@@ -134,18 +127,16 @@ def results():
     print(r2)
     print("Explained variance regression score function for ridge regression model:")
     print(exp_var_score)
-    print("Accuracy prediction score for the ridge regression model:")
-    print(accuracy)
     print("Cross-validated value of the alpha parameter for ridge regression model:")
     print(ridge_alpha)
 
     with open(BRR_PICKLE, 'rb') as result:
+        clf = pickle.load(result)
         mean_abs = pickle.load(result)
         mean_sq = pickle.load(result)
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
-        accuracy = pickle.load(result)
         ridge_alpha = pickle.load(result)
         y_pred_brr = pickle.load(result)
 
@@ -159,18 +150,16 @@ def results():
     print(r2)
     print("Explained variance regression score function for Bayesian ridge regression model:")
     print(exp_var_score)
-    print("Accuracy prediction score for the Bayesian ridge regression model:")
-    print(accuracy)
     print("Cross-validated value of the alpha parameter for Bayesian ridge regression model:")
     print(ridge_alpha)
 
     with open(LASSO_PICKLE, 'rb') as result:
+        clf = pickle.load(result)
         mean_abs = pickle.load(result)
         mean_sq = pickle.load(result)
         median_abs = pickle.load(result)
         r2 = pickle.load(result)
         exp_var_score = pickle.load(result)
-        accuracy = pickle.load(result)
         lasso_alpha = pickle.load(result)
         y_pred_lasso = pickle.load(result)
 
@@ -184,20 +173,23 @@ def results():
     print(r2)
     print("Explained variance regression score function for Lasso model:")
     print(exp_var_score)
-    print("Accuracy prediction score for the Lasso model:")
-    print(accuracy)
     print("Cross-validated value of the alpha parameter for Lasso model:")
     print(lasso_alpha)
 
     with open(XY_PICKLE, 'rb') as result:
+        x_train = pickle.load(result)
+        x_test = pickle.load(result)
+        y_train = pickle.load(result)
         y_test = pickle.load(result)
-    plt.plot(y_test, y_pred_nn, label='ANN')
-    plt.plot(y_test, y_pred_svm, label='SVM')
-    plt.plot(y_test, y_pred_dt, label='Decision Trees')
-    plt.plot(y_test, y_pred_rr, label='Ridge Regression')
-    plt.plot(y_test, y_pred_brr, label='Bayesian Ridge Regression')
-    plt.plot(y_test, y_pred_lasso, label='Lasso')
-    plt.title("Correlation plot")
+
+    lw = 2
+    plt.plot(y_test, y_pred_nn, lw=lw, label='ANN')
+    plt.plot(y_test, y_pred_svm, lw=lw, label='SVM')
+    plt.plot(y_test, y_pred_dt, lw=lw, label='Decision Trees')
+    plt.plot(y_test, y_pred_rr, lw=lw, label='Ridge Regression')
+    plt.plot(y_test, y_pred_brr, lw=lw, label='Bayesian Ridge Regression')
+    plt.plot(y_test, y_pred_lasso, lw=lw, label='Lasso')
+    plt.title("Comparison of predictions vs true values from different models")
     plt.xlabel('Actual Y')
     plt.ylabel('Predicted Y')
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
