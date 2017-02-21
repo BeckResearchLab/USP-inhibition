@@ -26,7 +26,7 @@ def main():
     i_length = 10
     i_min = -2
     i_max = 2
-    p = population(p_count, i_length, i_min, i_max)
+    p = np.array(population(p_count, i_length, i_min, i_max))
     parents = evolve(p, target)
     print parents
 
@@ -39,7 +39,7 @@ def individual(length, minimum, maximum):
     :param maximum:
     :return:
     """
-    return [randint(minimum, maximum) for x in xrange(length)]
+    return [random.uniform(minimum, maximum) for x in xrange(length)]
 
 
 def population(count, length, minimum, maximum):
@@ -64,8 +64,7 @@ def fitness(individuals, target):
     """
     with open(PICKLE, 'rb') as result:
         clf = pickle.load(result)
-    x_test = pd.DataFrame(individuals)
-    activity = clf.predict(x_test)
+    activity = clf.predict(individuals)
     return abs(target - activity)
 
 
