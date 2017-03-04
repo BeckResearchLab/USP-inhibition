@@ -28,7 +28,7 @@ def main():
     i_max = 2
     p = np.array(population(p_count, i_length, i_min, i_max))
     parents = evolve(p, target)
-    print parents
+    print(parents)
 
 
 def individual(length, minimum, maximum):
