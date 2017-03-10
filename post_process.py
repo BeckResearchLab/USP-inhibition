@@ -14,13 +14,13 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
-NN_PICKLE = 'nn_data.pkl'
-SVM_PICKLE = 'svm_data.pkl'
-DT_PICKLE = 'dt_data.pkl'
-RR_PICKLE = 'rr_data.pkl'
-BRR_PICKLE = 'brr_data.pkl'
-LASSO_PICKLE = 'lasso_data.pkl'
-XY_PICKLE = 'xy_data.pkl'
+NN_PICKLE = 'data/trained_networks/nn_data.pkl'
+SVM_PICKLE = 'data/trained_networks/svm_data.pkl'
+DT_PICKLE = 'data/trained_networks/dt_data.pkl'
+RR_PICKLE = 'data/trained_networks/rr_data.pkl'
+BRR_PICKLE = 'data/trained_networks/brr_data.pkl'
+LASSO_PICKLE = 'data/trained_networks/lasso_data.pkl'
+XY_PICKLE = 'data/xy_data.pkl'
 
 
 def results():
@@ -183,13 +183,14 @@ def results():
         y_test = pickle.load(result)
 
     lw = 2
-    plt.plot(y_test, y_pred_nn, lw=lw, label='ANN')
-    plt.plot(y_test, y_pred_svm, lw=lw, label='SVM')
-    plt.plot(y_test, y_pred_dt, lw=lw, label='Decision Trees')
-    plt.plot(y_test, y_pred_rr, lw=lw, label='Ridge Regression')
-    plt.plot(y_test, y_pred_brr, lw=lw, label='Bayesian Ridge Regression')
-    plt.plot(y_test, y_pred_lasso, lw=lw, label='Lasso')
-    plt.title("Comparison of predictions vs true values from different models")
+    plt.plot(y_test, y_pred_nn, lw=lw, label='ANN', marker='ro')
+    plt.plot(y_test, y_pred_svm, lw=lw, label='SVM', marker='ro')
+    plt.plot(y_test, y_pred_dt, lw=lw, label='Decision Trees', marker='ro')
+    plt.plot(y_test, y_pred_rr, lw=lw, label='Ridge Regression', marker='ro')
+    plt.plot(y_test, y_pred_brr, lw=lw, label='Bayesian Ridge Regression', marker='ro')
+    plt.plot(y_test, y_pred_lasso, lw=lw, label='Lasso', marker='ro')
+    plt.plot(y_test, y_test)
+    plt.title("Comparison of predictions vs true values from different models", marker='ro')
     plt.xlabel('Actual Y')
     plt.ylabel('Predicted Y')
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
