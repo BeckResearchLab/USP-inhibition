@@ -74,17 +74,6 @@ def create_activity_dataframe(dataframe):
     df['dupes'] = df.duplicated('CID')
     df = df[df['dupes'] == 0].drop(['dupes'], axis=1)
     df = df.sort_values(by='CID')
-    df.drop(276743)
-    """"# Extract SMILES strings from CID values
-    smiles = []
-    i = 0
-    for cid in df['CID']:
-        string = getmol.GetMolFromNCBI(cid='%d' % cid)
-        smiles.append(string)
-        print(i)
-        i += 1
-    df['SMILES'] = smiles
-    df.to_csv('data/NCBIdata.csv')"""
     return df
 
 
@@ -192,7 +181,7 @@ def choose_features(x, y):
     y = np.array(y)
 
     clf = RandomForestRegressor()
-    sfm = sklearn.feature_selection.SelectFromModel(clf, threshold=0.15)
+    sfm = sklearn.feature_selection.SelectFromModel(clf)
     sfm.fit(x, y)
     desired_x = sfm.transform(x)
 
