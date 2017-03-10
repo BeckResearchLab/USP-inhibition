@@ -22,12 +22,12 @@ __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
 NODES = 10
-NN_PICKLE = 'nn_data.pkl'
-SVM_PICKLE = 'svm_data.pkl'
-DT_PICKLE = 'dt_data.pkl'
-RR_PICKLE = 'rr_data.pkl'
-BRR_PICKLE = 'brr_data.pkl'
-LASSO_PICKLE = 'lasso_data.pkl'
+NN_PICKLE = 'data/trained_networks/nn_data.pkl'
+SVM_PICKLE = 'data/trained_networks/svm_data.pkl'
+DT_PICKLE = 'data/trained_networks/dt_data.pkl'
+RR_PICKLE = 'data/trained_networks/rr_data.pkl'
+BRR_PICKLE = 'data/trained_networks/brr_data.pkl'
+LASSO_PICKLE = 'data/trained_networks/lasso_data.pkl'
 
 
 def run_models(x_train, y_train, x_test, y_test):
