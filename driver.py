@@ -27,7 +27,7 @@ __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
 TARGET_COLUMN = 'Activity_Score'
-XY_PICKLE = 'xy_data.pkl'
+XY_PICKLE = 'data/xy_data.pkl'
 
 
 def main():
@@ -86,6 +86,8 @@ def main():
     print("Selected best features in dataframe")
 
     df_x = pd.DataFrame(df_x)
+    utils.plot_features(df_x, df_y)
+
     df_x.to_csv('data/df_x_postprocessing.csv')
     df_y.to_csv('data/df_y_postprocessing.csv')
     df = df_x.join(df_y)
