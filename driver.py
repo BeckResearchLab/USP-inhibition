@@ -49,6 +49,7 @@ def main():
     df_activity = utils.create_activity_dataframe(response)
 
     df = df_activity.merge(df_smiles)
+    df.drop(df.index[276743], inplace=True)
     df.sort_values(by='CID', inplace=True)
     df.reset_index(drop=True, inplace=True)
 
