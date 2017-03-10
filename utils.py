@@ -11,6 +11,7 @@ except ImportError:
     import urllib2
 
 import boto
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sklearn
@@ -209,3 +210,21 @@ def remove_nan_infinite(dataframe):
     dataframe.fillna(0, inplace=True)
 
     return dataframe
+
+
+def plot_features(x, y):
+    """
+    Plotting each feature x and its corresponding value of target function y.
+    :param x: Dataframe containing feature space.
+    :return y: Dataframe containing target/output.
+    """
+    axes = plt.gca()
+    for column in x:
+        plt.plot(x[column], y)
+        axes.set_ylim([0, 100])
+        plt.title('%s effect on inhibition activity score trend' % x[column].name)
+        plt.xlabel('%s' % x[column].name)
+        plt.ylabel('Activity score')
+        plt.savefig('plots/feature_plots/%s.png' % x[column].name, bbox_inches='tight')
+
+    return
