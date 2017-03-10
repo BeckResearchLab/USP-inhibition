@@ -11,6 +11,7 @@ except ImportError:
     import urllib2
 
 import pandas as pd
+import pybel
 from pychem import bcut, estate, basak, moran, geary, molproperty as mp
 from pychem import charge, moe, constitution, topology, kappa, whim
 from pychem import connectivity as con, geometric, cpsa, rdf, morse
@@ -886,7 +887,7 @@ def extract_geometric_descriptors(dataframe, column, url):
             i += 1
             print("geometric")
             print(i)
-            mol = pybel.readstring
+            mol = pybel.readstring("smi", smiles)
             GetARCFile(mol)
             dic = geometric.GetGeometric(mol)
             diction.append(dic)
