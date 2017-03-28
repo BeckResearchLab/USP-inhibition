@@ -59,13 +59,13 @@ def extract_all_descriptors(df, column):
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/data/df_morse.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/data/df_whim.csv']
 
-    """p1 = Process(target=extract_constitution_descriptors, args=(df, column, url_list[0]))
-    p1.start()"""
+    p1 = Process(target=extract_constitution_descriptors, args=(df, column, url_list[0]))
+    p1.start()
 
-    p2 = Process(target=extract_topology_descriptors, args=(df, column, url_list[1]))
-    p2.start()
+    # p2 = Process(target=extract_topology_descriptors, args=(df, column, url_list[1]))
+    # p2.start()
 
-    """p3 = Process(target=extract_con_descriptors, args=(df, column, url_list[2]))
+    p3 = Process(target=extract_con_descriptors, args=(df, column, url_list[2]))
     p3.start()
 
     p4 = Process(target=extract_kappa_descriptors, args=(df, column, url_list[3]))
@@ -93,26 +93,26 @@ def extract_all_descriptors(df, column):
     p11.start()
 
     p12 = Process(target=extract_moe_descriptors, args=(df, column, url_list[11]))
-    p12.start()"""
+    p12.start()
 
-    '''p13 = Process(target=extract_geometric_descriptors, args=(df, column, url_list[12]))
-    p13.start()
+    # p13 = Process(target=extract_geometric_descriptors, args=(df, column, url_list[12]))
+    # p13.start()
 
-    p14 = Process(target=extract_cpsa_descriptors, args=(df, column, url_list[13]))
-    p14.start()
+    # p14 = Process(target=extract_cpsa_descriptors, args=(df, column, url_list[13]))
+    # p14.start()
 
-    p15 = Process(target=extract_rdf_descriptors, args=(df, column, url_list[14]))
-    p15.start()
+    # p15 = Process(target=extract_rdf_descriptors, args=(df, column, url_list[14]))
+    # p15.start()
 
-    p16 = Process(target=extract_morse_descriptors, args=(df, column, url_list[15]))
-    p16.start()
+    # p16 = Process(target=extract_morse_descriptors, args=(df, column, url_list[15]))
+    # p16.start()
 
-    p17 = Process(target=extract_whim_descriptors, args=(df, column, url_list[16]))
-    p17.start()'''
+    # p17 = Process(target=extract_whim_descriptors, args=(df, column, url_list[16]))
+    # p17.start()
 
-    """p1.join()"""
-    p2.join()
-    """p3.join()
+    p1.join()
+    # p2.join()
+    p3.join()
     p4.join()
     p5.join()
     p6.join()
@@ -121,12 +121,12 @@ def extract_all_descriptors(df, column):
     p9.join()
     p10.join()
     p11.join()
-    p12.join()"""
-    """p13.join()
-    p14.join()
-    p15.join()
-    p16.join()
-    p17.join()"""
+    p12.join()
+    # p13.join()
+    # p14.join()
+    # p15.join()
+    # p16.join()
+    # p17.join()
 
     return
 
