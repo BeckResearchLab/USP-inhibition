@@ -11,6 +11,8 @@ except ImportError:
     import urllib2
 
 import boto
+import matplotlib
+matplotlib.use('Agg')  # Must be before importing matplotlib.pyplot or pylab
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -184,13 +186,14 @@ def choose_features(x, y):
     sfm = sklearn.feature_selection.SelectFromModel(clf)
     sfm.fit(x, y)
     desired_x = sfm.transform(x)
+    coefficients = sfm.get_support()
 
-    return desired_x
+    return desired_x, coefficients
 
 
-def remove_nan_infinite(dataframe):
+def change_nan_infinite(dataframe):
     """
-    Removing NaN and infinite values from the dataframe.
+    Replacing NaN and infinite values from the dataframe with zeros.
     :param dataframe: Dataframe containing NaN and infinite values.
     :return dataframe: Dataframe with no NaN or infinite values.
     """
@@ -205,15 +208,14 @@ def plot_features(x, y):
     """
     Plotting each feature x and its corresponding value of target function y.
     :param x: Dataframe containing feature space.
-    :return y: Dataframe containing target/output.
+    :param y: Dataframe containing target/output.
     """
-    axes = plt.gca()
     for column in x:
+        fig = plt.figure()
         plt.plot(x[column], y)
-        axes.set_ylim([0, 100])
         plt.title('%s effect on inhibition activity score trend' % x[column].name)
         plt.xlabel('%s' % x[column].name)
         plt.ylabel('Activity score')
-        plt.savefig('../plots/feature_plots/%s.png' % x[column].name, bbox_inches='tight')
+        fig.savefig('../plots/feature_plots/%s.png' % x[column].name, bbox_inches='tight')
 
     return
