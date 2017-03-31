@@ -37,61 +37,71 @@ def main():
     """
     run = input("Type 1 to calculate files from raw data or 0 to access stored files:")
     if run:
-        # Importing dataset from NCBI database to create dataframe
-        """response = pd.read_csv('https://pubchem.ncbi.nlm.nih.gov/pcajax/pcget.cgi?query=download&record_type='
-                               'datatable&response_type=save&aid=743255&version=1.1')"""
 
-        # Importing inhibitor notation data
-        response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/compounds_smiles.txt')
-        df_smiles = utils.create_notation_dataframe(response)
+        run = input("Type 1 to calculate postprocessing files from raw data or 0 to "
+                    "calculate postprocessing files from stored preprocessing data:")
+        if run:
 
-        # Importing inhibitor activity data
-        response = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/AID_743255_datatable.csv')
-        df_activity = utils.create_activity_dataframe(response)
+            # Importing inhibitor notation data
+            response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/compounds_smiles.txt')
+            df_smiles = utils.create_notation_dataframe(response)
 
-        df = df_activity.merge(df_smiles)
-        df.drop(df.index[[276743, 354142]], inplace=True)
-        df.sort_values(by='CID', inplace=True)
-        df.reset_index(drop=True, inplace=True)
+            # Importing inhibitor activity data
+            response = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/AID_743255_datatable.csv')
+            df_activity = utils.create_activity_dataframe(response)
 
-        # Drop non-descriptor columns before feature space reduction
-        df_x = df.drop(['Activity_Score', 'CID'], axis=1)
+            df = df_activity.merge(df_smiles)
+            df.drop(df.index[[276743, 354142]], inplace=True)
+            df.sort_values(by='CID', inplace=True)
+            df.reset_index(drop=True, inplace=True)
 
-        # Creating target column
-        df_y = df.drop(['SMILES', 'CID'], axis=1)
+            # Drop non-descriptor columns before feature space reduction
+            df_x = df.drop(['Activity_Score', 'CID'], axis=1)
 
-        # Extracting molecular descriptors for all compounds
-        print("Starting descriptor calculation")
-        descriptors.extract_all_descriptors(df_x, 'SMILES')
+            # Creating target column
+            df_y = df.drop(['SMILES', 'CID'], axis=1)
+            # Extracting molecular descriptors for all compounds
+            print("Starting descriptor calculation")
+            descriptors.extract_all_descriptors(df_x, 'SMILES')
 
-        print("Joining dataframes")
-        df_x = utils.join_dataframes()
-        df_x.to_csv('../data/df_x_preprocessing.csv')
-        df_y.to_csv('../data/df_y_preprocessing.csv')
+            print("Joining separate descriptor dataframes")
+            df_x = utils.join_dataframes()
+
+            df_x.to_csv('../data/df_x_preprocessing.csv')
+            df_y.to_csv('../data/df_y_preprocessing.csv')
+
+        else:
+            df_x = pd.read_csv('../data/df_x_preprocessing.csv')
+            df_y = pd.read_csv('../data/df_y_preprocessing.csv')
+            df_x.drop(df_x.columns[0], axis=1, inplace=True)
+            df_y.drop(df_y.columns[0], axis=1, inplace=True)
+
+        headers = list(df_x.columns.values)
 
         print("Checking dataframe for NaN and infinite values")
-        df_x = utils.remove_nan_infinite(df_x)
-        df_y = utils.remove_nan_infinite(df_y)
-
+        df_x = utils.change_nan_infinite(df_x)
+        df_y = utils.change_nan_infinite(df_y)
         # Transform all column values to mean 0 and unit variance
         print("Transforming dataframe using mean and variance")
         df_x = sklearn.preprocessing.scale(df_x)
         df_y = sklearn.preprocessing.scale(df_y)
-
         # Feature selection and space reduction
         print("Selecting best features in dataframe")
-        df_x = utils.choose_features(df_x, df_y)
+        df_x, coefficients = utils.choose_features(df_x, df_y)
         df_x = pd.DataFrame(df_x)
-        df_x.drop(df.columns[0], axis=1, inplace=True)
         df_y = pd.DataFrame(df_y)
+        coefficients = pd.DataFrame([])
+        coefficients['existence'] = coefficients
+        coefficients['column names'] = headers
         df_x.to_csv('../data/df_x_postprocessing.csv')
         df_y.to_csv('../data/df_y_postprocessing.csv')
+        coefficients.to_csv('../data/feature_coefficients.csv')
     else:
         df_x = pd.read_csv('../data/df_x_postprocessing.csv')
         df_y = pd.read_csv('../data/df_y_postprocessing.csv')
-        df_x.drop(df_x.columns[0], axis=1, inplace=True)
+        coefficients = pd.read_csv('../data/feature_coefficients.csv')
 
-    utils.plot_features(df_x, df_y)
+    print len(headers), coefficients.shape
     df = df_x.join(df_y)
     # Data to training task
     # Type check inputs for sanity
