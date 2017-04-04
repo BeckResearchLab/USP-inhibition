@@ -9,6 +9,7 @@ sys.path.append("/home/pphilip/Tools/openbabel-install/lib")
 import descriptors
 import genalgo
 import models
+import numpy as np
 import pandas as pd
 import pickle
 import post_process
@@ -35,19 +36,21 @@ def main():
     Module to execute the entire package from data retrieval to model results
     :return: None
     """
-    run = input("Type 1 to calculate files from raw data or 0 to access stored files:")
+    run = input("Type 1 to run ML models from raw data or 0 to run ML models from stored processed data:")
     if run:
 
-        run = input("Type 1 to calculate postprocessing files from raw data or 0 to "
-                    "calculate postprocessing files from stored preprocessing data:")
+        run = input("Type 1 to process data from raw data or 0 to "
+                    "process data from stored pre-processing data:")
         if run:
 
             # Importing inhibitor notation data
-            response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/compounds_smiles.txt')
+            response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition'
+                                       '/compounds_smiles.txt')
             df_smiles = utils.create_notation_dataframe(response)
 
             # Importing inhibitor activity data
-            response = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/AID_743255_datatable.csv')
+            response = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition'
+                                   '/AID_743255_datatable.csv')
             df_activity = utils.create_activity_dataframe(response)
 
             df = df_activity.merge(df_smiles)
@@ -77,7 +80,6 @@ def main():
             df_y.drop(df_y.columns[0], axis=1, inplace=True)
 
         headers = list(df_x.columns.values)
-
         print("Checking dataframe for NaN and infinite values")
         df_x = utils.change_nan_infinite(df_x)
         df_y = utils.change_nan_infinite(df_y)
@@ -90,9 +92,7 @@ def main():
         df_x, coefficients = utils.choose_features(df_x, df_y)
         df_x = pd.DataFrame(df_x)
         df_y = pd.DataFrame(df_y)
-        coefficients = pd.DataFrame([])
-        coefficients['existence'] = coefficients
-        coefficients['column names'] = headers
+        coefficients = pd.DataFrame({'existence': coefficients, 'column names': headers})
         df_x.to_csv('../data/df_x_postprocessing.csv')
         df_y.to_csv('../data/df_y_postprocessing.csv')
         coefficients.to_csv('../data/feature_coefficients.csv')
@@ -100,9 +100,15 @@ def main():
         df_x = pd.read_csv('../data/df_x_postprocessing.csv')
         df_y = pd.read_csv('../data/df_y_postprocessing.csv')
         coefficients = pd.read_csv('../data/feature_coefficients.csv')
+        df_x.drop(df_x.columns[0], axis=1, inplace=True)
+        df_y.drop(df_y.columns[0], axis=1, inplace=True)
+        coefficients.drop(coefficients.columns[0], axis=1, inplace=True)
 
-    print len(headers), coefficients.shape
+    coefficients['existence'] = coefficients['existence'].astype(int)
+    df_x.columns = list(coefficients[coefficients['existence'] == 1]['column names'])
+    df_y.columns = ['Activity_Score']
     df = df_x.join(df_y)
+
     # Data to training task
     # Type check inputs for sanity
     if df is None:
@@ -139,13 +145,10 @@ def main():
 
     print("Generating models")
     models.run_models(x_train, y_train, x_test, y_test)
-    print("Generated models and saved results")
 
     print("Finding candidate drug molecule using genetic algorithm")
     ideal_mol_features = genalgo.main()
     ideal_mol_features.to_csv('../data/genalgo_results.csv')
-    print("Found candidate drug molecule using genetic algorithm")
-
 
 if __name__ == "__main__":
     main()
