@@ -10,7 +10,6 @@ import sklearn
 from lasagne import nonlinearities
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
-from multiprocessing import Process
 from nolearn.lasagne import NeuralNet
 from sklearn.linear_model import RidgeCV, BayesianRidge, LassoCV
 from sklearn.svm import SVR
@@ -40,26 +39,12 @@ def run_models(x_train, y_train, x_test, y_test):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    p1 = Process(target=build_nn, args=(x_train, y_train, x_test, y_test))
-    p1.start()
-    p2 = Process(target=build_svm, args=(x_train, y_train, x_test, y_test))
-    p2.start()
-    p3 = Process(target=build_tree, args=(x_train, y_train, x_test, y_test))
-    p3.start()
-    p4 = Process(target=build_ridge, args=(x_train, y_train, x_test, y_test))
-    p4.start()
-    p5 = Process(target=build_bayesian_rr, args=(x_train, y_train, x_test, y_test))
-    p5.start()
-    p6 = Process(target=build_lasso, args=(x_train, y_train, x_test, y_test))
-    p6.start()
-
-    p1.join()
-    p2.join()
-    p3.join()
-    p4.join()
-    p5.join()
-    p6.join()
-
+    build_nn(x_train, y_train, x_test, y_test)
+    build_svm(x_train, y_train, x_test, y_test)
+    build_tree(x_train, y_train, x_test, y_test)
+    build_ridge(x_train, y_train, x_test, y_test)
+    build_bayesian_rr(x_train, y_train, x_test, y_test)
+    build_lasso(x_train, y_train, x_test, y_test)
     return
 
 
@@ -73,7 +58,7 @@ def build_nn(x_train, y_train, x_test, y_test):
     :return: None
     """
 
-    # Create classification model
+    # Create regression model
     net = NeuralNet(layers=[('input', InputLayer),
                             ('hidden0', DenseLayer),
                             ('hidden1', DenseLayer),
@@ -83,22 +68,18 @@ def build_nn(x_train, y_train, x_test, y_test):
                     hidden0_nonlinearity=nonlinearities.softmax,
                     hidden1_num_units=NODES,
                     hidden1_nonlinearity=nonlinearities.softmax,
-                    output_num_units=len(np.unique(y_train)),
+                    output_num_units=y_train.shape[0],
                     output_nonlinearity=nonlinearities.softmax,
                     update_learning_rate=0.1,
-                    verbose=1,
-                    max_epochs=100)
+                    regression=True,
+                    verbose=1)
 
     param_grid = {'hidden0_num_units': [1, 4, 17, 25],
-                  'hidden0_nonlinearity': 
-                  [nonlinearities.sigmoid, nonlinearities.softmax],
                   'hidden1_num_units': [1, 4, 17, 25],
-                  'hidden1_nonlinearity': 
-                  [nonlinearities.sigmoid, nonlinearities.softmax],
                   'update_learning_rate': [0.01, 0.1, 0.5]}
 
     # Finding the optimal set of params for each variable in the training of the neural network
-    clf = sklearn.grid_search.GridSearchCV(net, param_grid, verbose=0, n_jobs=3, cv=3)
+    clf = sklearn.model_selection.GridSearchCV(net, param_grid, verbose=0, n_jobs=3, cv=5)
     clf.fit(x_train, y_train)
 
     y_pred = clf.predict(x_test)
@@ -136,7 +117,7 @@ def build_svm(x_train, y_train, x_test, y_test):
     :return: None
     """
 
-    clf = SVR()
+    clf = SVR(kernel='linear', verbose=True)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -208,7 +189,7 @@ def build_ridge(x_train, y_train, x_test, y_test):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    clf = RidgeCV(alphas=[0.01, 0.1, 1.0, 10.0])
+    clf = RidgeCV(alphas=[0.01, 0.1, 1.0, 10.0], cv=5)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -287,7 +268,7 @@ def build_lasso(x_train, y_train, x_test, y_test):
     :return: None
     """
 
-    clf = LassoCV()
+    clf = LassoCV(tol=0.01, max_iter=10000, cv=5)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
