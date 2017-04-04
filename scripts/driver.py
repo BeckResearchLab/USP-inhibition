@@ -40,11 +40,11 @@ def main():
     Module to execute the entire package from data retrieval to model results
     :return: None
     """
-    run = input("Type 1 to run ML models from raw data or 0 to run ML models from stored processed data:")
+    run = input("Type 1 to run ML models from raw data or 0 to run ML models from stored processed data: ")
     if run:
 
         run = input("Type 1 to process data from raw data or 0 to "
-                    "process data from stored pre-processing data:")
+                    "process data from stored pre-processing data: ")
         if run:
 
             # Importing inhibitor notation data
@@ -149,8 +149,9 @@ def main():
     coefficients['existence'] = coefficients['existence'].astype(int)
     df_x.columns = list(coefficients[coefficients['existence'] == 1]['column names'])
     df_y.columns = ['Activity_Score']
-
-    utils.plot_features(df_x, df_y)
+    plot_input = input("Type 1 to plot feature space vs target column or 0 to skip: ")
+    if plot_input:
+        utils.plot_features(df_x, df_y)
     df = df_x.join(df_y)
 
     # Data to training task
@@ -197,9 +198,20 @@ def main():
     print("Generating models")
     models.run_models(x_train, y_train, x_test, y_test)
 
-    print("Finding candidate drug molecule using genetic algorithm")
-    ideal_mol_features = genalgo.main()
-    ideal_mol_features.to_csv('../data/genalgo_results.csv')
+    results_display = input("Type 1 to print ML model and prediction results or 0 to skip: ")
+    if results_display:
+        post_process.results()
+
+    ga_input = input("Type 1 to find candidate drug molecule using genetic algorithms or 0 to skip: ")
+    if ga_input:
+        ideal_mol_features = genalgo.main()
+        ideal_mol_features.to_csv('../data/genalgo_results.csv')
+        file_to_s3 = open('../data/genalgo_results.csv', 'r+')
+        key = file_to_s3.name
+        if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
+            print("genalgo_results has been uploaded to S3")
+        else:
+            print("genalgo_results could not be uploaded to S3")
 
 if __name__ == "__main__":
     main()
