@@ -6,6 +6,7 @@ activity and returns the characteristics of the parent drug compound.
 """
 
 from random import randint, random
+import numpy as np
 from operator import add
 import pandas as pd
 import pickle
