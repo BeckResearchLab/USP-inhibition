@@ -4,15 +4,16 @@
 Construct a neural network model, support vector and decision trees regression models from the data
 """
 
-import pickle
-from multiprocessing import Process
-
 import numpy as np
+import pickle
+import sklearn
 from lasagne import nonlinearities
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
+from multiprocessing import Process
 from nolearn.lasagne import NeuralNet
-import sklearn
+from sklearn.linear_model import RidgeCV, BayesianRidge, LassoCV
+from sklearn.svm import SVR
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -135,7 +136,7 @@ def build_svm(x_train, y_train, x_test, y_test):
     :return: None
     """
 
-    clf = sklearn.svm.SVR()
+    clf = SVR()
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -207,7 +208,7 @@ def build_ridge(x_train, y_train, x_test, y_test):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    clf = sklearn.linear_model.RidgeCV(alphas=[0.01, 0.1, 1.0, 10.0])
+    clf = RidgeCV(alphas=[0.01, 0.1, 1.0, 10.0])
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -246,7 +247,7 @@ def build_bayesian_rr(x_train, y_train, x_test, y_test):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    clf = sklearn.linear_model.BayesianRidge()
+    clf = BayesianRidge()
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -286,7 +287,7 @@ def build_lasso(x_train, y_train, x_test, y_test):
     :return: None
     """
 
-    clf = sklearn.linear_model.LassoCV()
+    clf = LassoCV()
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
