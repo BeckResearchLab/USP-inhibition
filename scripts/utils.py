@@ -204,18 +204,17 @@ def change_nan_infinite(dataframe):
     return dataframe
 
 
-def plot_features(x, y):
+def plot_features(df_x, df_y):
     """
     Plotting each feature x and its corresponding value of target function y.
-    :param x: Dataframe containing feature space.
-    :param y: Dataframe containing target/output.
+    :param df_x: Dataframe containing feature space.
+    :param df_y: Dataframe containing target/output.
     """
-    for column in x:
-        fig = plt.figure()
-        plt.plot(x[column], y)
-        plt.title('%s effect on inhibition activity score trend' % x[column].name)
-        plt.xlabel('%s' % x[column].name)
+    for column in df_x:
+        plt.scatter(df_x[column], df_y)
+        plt.title('%s effect on inhibition activity score trend' % df_x[column].name)
+        plt.xlabel('%s' % df_x[column].name)
         plt.ylabel('Activity score')
-        fig.savefig('../plots/feature_plots/%s.png' % x[column].name, bbox_inches='tight')
+        plt.savefig('../plots/feature_plots/%s.png' % df_x[column].name, bbox_inches='tight')
 
     return
