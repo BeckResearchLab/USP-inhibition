@@ -1,7 +1,7 @@
-<img src=https://raw.githubusercontent.com/pearlphilip/USP-inhibition/master/img/usp-inhibition-logo.png alt="Mountain View" width="300px" height="40px">
+<img src=https://raw.githubusercontent.com/BeckResearchLab/USP-inhibition/master/img/usp-inhibition-logo.png alt="Mountain View" width="300px" height="40px">
 </br></br>
-[![Join the chat at https://gitter.im/pearlphilip/USP-inhibition](https://badges.gitter.im/pearlphilip/USP-inhibition.svg)](https://gitter.im/pearlphilip/USP-inhibition?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/pearlphilip/USP-inhibition.svg?branch=master)](https://travis-ci.org/pearlphilip/USP-inhibition)
+[![Join the chat at https://gitter.im/BeckResearchLab/USP-inhibition](https://badges.gitter.im/BeckResearchLab/USP-inhibition.svg)](https://gitter.im/BeckResearchLab/USP-inhibition?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/BeckResearchLab/USP-inhibition.svg?branch=master)](https://travis-ci.org/BeckResearchLab/USP-inhibition)
 
 ## Introduction
 
@@ -15,7 +15,7 @@ The data describes the inhibition of the deubiquitinating USP1 - an enzyme essen
 
 * [Dataset](https://pubchem.ncbi.nlm.nih.gov/bioassay/743255)
 * [Previous work using this dataset](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4427583/pdf/11693_2015_Article_9162.pdf)
-* [Wiki](https://github.com/pearlphilip/USP-inhibition/wiki)
+* [Wiki](https://github.com/BeckResearchLab/USP-inhibition/wiki)
 
 ## Dependencies
 
