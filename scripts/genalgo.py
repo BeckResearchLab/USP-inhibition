@@ -5,7 +5,6 @@ To build a genetic algorithm that maximizes enzyme inhibition
 activity and returns the characteristics of the parent drug compound.
 """
 
-from random import randint, random
 import numpy as np
 from operator import add
 import pandas as pd
@@ -24,7 +23,7 @@ PICKLE = '../trained_networks/svm_data.pkl'
 def main():
     target = 100
     p_count = 1000
-    i_length = 10
+    i_length = 270
     i_min = -2
     i_max = 2
     p = np.array(population(p_count, i_length, i_min, i_max))
@@ -40,7 +39,7 @@ def individual(length, minimum, maximum):
     :param maximum:
     :return:
     """
-    return [random.uniform(minimum, maximum) for x in xrange(length)]
+    return [np.random.uniform(minimum, maximum) for x in xrange(length)]
 
 
 def population(count, length, minimum, maximum):
