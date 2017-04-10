@@ -3,9 +3,12 @@
 [![Join the chat at https://gitter.im/BeckResearchLab/USP-inhibition](https://badges.gitter.im/BeckResearchLab/USP-inhibition.svg)](https://gitter.im/BeckResearchLab/USP-inhibition?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/BeckResearchLab/USP-inhibition.svg?branch=master)](https://travis-ci.org/BeckResearchLab/USP-inhibition?branch=master)
 
-## Introduction
 
 [![Join the chat at https://gitter.im/USP-inhibition/Lobby](https://badges.gitter.im/USP-inhibition/Lobby.svg)](https://gitter.im/USP-inhibition/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+[![Build Status](https://travis-ci.org/BeckResearchLab/USP-inhibition.svg?branch=master)](https://travis-ci.org/BeckResearchLab/USP-inhibition?branch=master)
+
+## Introduction
 
 <p align="justify">
 <b> USP-inhibition </b> is a Python package for the analysis of enzyme inhibition data, available on PubChem. </br>
