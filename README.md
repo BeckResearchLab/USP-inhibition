@@ -1,6 +1,6 @@
 <img src=https://raw.githubusercontent.com/BeckResearchLab/USP-inhibition/master/img/usp-inhibition-logo.png alt="Mountain View" width="300px" height="40px">
 </br></br>
-[![Join the chat at https://gitter.im/BeckResearchLab/USP-inhibition](https://badges.gitter.im/BeckResearchLab/USP-inhibition.svg)](https://gitter.im/BeckResearchLab/USP-inhibition?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/USP-inhibition](https://badges.gitter.im/USP-inhibition.svg)](https://gitter.im/USP-inhibition?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/BeckResearchLab/USP-inhibition.svg?branch=master)](https://travis-ci.org/BeckResearchLab/USP-inhibition?branch=master)
 
 ## Introduction
