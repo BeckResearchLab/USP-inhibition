@@ -16,8 +16,6 @@ colorama==0.3.7
 
 conda==4.2.7
 
-conda-build==1.20.3
-
 conda-env==2.5.0a0
 
 configparser==3.5.0
