@@ -23,6 +23,10 @@ install:
   - python setup.py install
   - cd ..
   - pip install -r requirements.txt
+  - conda create -c https://conda.anaconda.org/rdkit -n my-rdkit-env rdkit
+  - source activate my-rdkit-env
+  - conda install boto
+  - conda install --channel https://conda.anaconda.org/openbabel openbabel
   - pip install coveralls
   - pip install nose
   - git clone https://github.com/rahulavadhoot/USP-inhibition
