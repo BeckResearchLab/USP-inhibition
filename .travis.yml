@@ -11,6 +11,7 @@ sudo: false
 
 install:
   - pip install pip
+  - pip install setuptools
   - pip install six
   - pip install -r requirements.txt
   - pip install coveralls
