@@ -14,6 +14,7 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
+LR_PICKLE = '../trained_networks/lr_data.pkl'
 NN_PICKLE = '../trained_networks/nn_data.pkl'
 SVM_PICKLE = '../trained_networks/svm_data.pkl'
 DT_PICKLE = '../trained_networks/dt_data.pkl'
@@ -29,6 +30,28 @@ def results():
     models used in models.py
     :return: None
     """
+
+    with open(LR_PICKLE, 'rb') as result:
+        clf = pickle.load(result)
+        mean_abs = pickle.load(result)
+        mean_sq = pickle.load(result)
+        median_abs = pickle.load(result)
+        r2 = pickle.load(result)
+        exp_var_score = pickle.load(result)
+        y_pred = pickle.load(result)
+
+    print("Mean absolute error regression loss for linear regression model:")
+    print(mean_abs)
+    print("Mean squared error regression loss for linear regression model:")
+    print(mean_sq)
+    print("Median absolute error regression loss for linear regression model:")
+    print(median_abs)
+    print("R^2 (coefficient of determination) regression score function for linear regression model:")
+    print(r2)
+    print("Explained variance regression score function for linear regression model:")
+    print(exp_var_score)
+
+
     with open(NN_PICKLE, 'rb') as result:
         clf = pickle.load(result)
         net = pickle.load(result)
