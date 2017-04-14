@@ -15,6 +15,15 @@ install:
   - pip install packaging
   - pip install setuptools
   - pip install six
+  - pip install -r requirements.txt
+  - conda config --set always_yes yes --set changeps1 no
+  - conda create -c https://conda.anaconda.org/rdkit -n my-rdkit-env rdkit
+  - source activate my-rdkit-env
+  - conda install pandas
+  - pip install matplotlib
+  - pip install nolearn
+  - conda install boto
+  - conda install --channel https://conda.anaconda.org/openbabel openbabel
   - curl -O https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pychem/pychem-1.0.tar.gz
   - tar -xvzf pychem-1.0.tar.gz
   - curl -O https://raw.githubusercontent.com/dacb/pychem_python3_patchset/master/pychem_python3.patch
@@ -22,15 +31,9 @@ install:
   - cd pychem-1.0
   - python setup.py install
   - cd ..
-  - pip install -r requirements.txt
-  - conda config --set always_yes yes --set changeps1 no
-  - conda create -c https://conda.anaconda.org/rdkit -n my-rdkit-env rdkit
-  - source activate my-rdkit-env
-  - conda install boto
-  - conda install --channel https://conda.anaconda.org/openbabel openbabel
+  - git clone https://github.com/rahulavadhoot/USP-inhibition
   - pip install coveralls
   - pip install nose
-  - git clone https://github.com/rahulavadhoot/USP-inhibition
   - cd USP-inhibition
   - cd scripts
   - python driver.py install
