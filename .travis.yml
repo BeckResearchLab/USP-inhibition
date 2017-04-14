@@ -17,6 +17,8 @@ install:
   - pip install six
   - curl -O https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
   - bash Anaconda3-4.2.0-Linux-x86_64.sh -b -p $HOME/Anaconda
+  - conda create -c https://conda.anaconda.org/rdkit -n my-rdkit-env rdkit
+  - source activate my-rdkit-env
   - conda install --yes --channel https://conda.anaconda.org/openbabel openbabel
   - curl -O https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pychem/pychem-1.0.tar.gz
   - tar -xvzf pychem-1.0.tar.gz
