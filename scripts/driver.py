@@ -188,12 +188,12 @@ def main():
         pickle.dump(y_train, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_test, results, pickle.HIGHEST_PROTOCOL)
 
-    file_to_s3 = open('../data/xy_data.pkl', 'r+')
+    """file_to_s3 = open('../data/xy_data.pkl', 'r+')
     key = file_to_s3.name
     if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
         print("xy_pickle has been uploaded to S3")
     else:
-        print("xy_pickle could not be uploaded to S3")
+        print("xy_pickle could not be uploaded to S3")"""
 
     print("Generating models")
     models.run_models(x_train, y_train, x_test, y_test)
@@ -206,12 +206,12 @@ def main():
     if ga_input:
         ideal_mol_features = genalgo.main()
         ideal_mol_features.to_csv('../data/genalgo_results.csv')
-        file_to_s3 = open('../data/genalgo_results.csv', 'r+')
+        """file_to_s3 = open('../data/genalgo_results.csv', 'r+')
         key = file_to_s3.name
         if utils.upload_to_s3(AWS_ACCESS_KEY_ID, AWS_ACCESS_SECRET_KEY, file_to_s3, BUCKET, key):
             print("genalgo_results has been uploaded to S3")
         else:
-            print("genalgo_results could not be uploaded to S3")
+            print("genalgo_results could not be uploaded to S3")"""
 
 if __name__ == "__main__":
     main()
