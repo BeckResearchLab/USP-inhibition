@@ -11,8 +11,8 @@ sudo: false
 
 install:
   - pip install pip
-  - pip3 install --upgrade pip
-  - pip3 install packaging
+  - pip install --upgrade pip
+  - pip install packaging
   - pip install setuptools
   - pip install six
   - pip install -r requirements.txt
