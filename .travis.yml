@@ -15,8 +15,13 @@ install:
   - pip install packaging
   - pip install setuptools
   - pip install six
-  - curl -O https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
-  - bash Anaconda3-4.2.0-Linux-x86_64.sh -b -p $HOME/Anaconda
+  - curl -O https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
+  - bash Miniconda2-latest-Linux-x86_64.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
   - conda create -c https://conda.anaconda.org/rdkit -n my-rdkit-env rdkit
   - source activate my-rdkit-env
   - conda install --yes --channel https://conda.anaconda.org/openbabel openbabel
