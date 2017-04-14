@@ -10,7 +10,7 @@
 <p align="justify">
 <b> USP-inhibition </b> is a Python package for the analysis of enzyme inhibition data, available on PubChem. </br>
 In this project, we used quantitative structure-activity relationships (QSAR) models for the prediction of a desired interaction between proteins and small-molecules. A large number of molecular descriptors are employed to characterize the molecular structure of about 400,000 drug-like compounds from a high-throughput screening assay.
-The data describes the inhibition of the deubiquitinating USP1 - an enzyme essential to DNA-repair in proliferating cancer cells. We have optimized variable selection and are creating an algorithm to describe the features of an ideal USP1 enzyme inhibitor. This is a comparative study of QSAR models, set of features and model parameters for the dataset. The goal of this research is to create an reuasable open-source tool for molecular structure design. Test
+The data describes the inhibition of the deubiquitinating USP1 - an enzyme essential to DNA-repair in proliferating cancer cells. We have optimized variable selection and are creating an algorithm to describe the features of an ideal USP1 enzyme inhibitor. This is a comparative study of QSAR models, set of features and model parameters for the dataset. The goal of this research is to create an reuasable open-source tool for molecular structure design.
 </p>
 
 ## Resources
