@@ -45,8 +45,6 @@ Jinja2==2.9.5
 
 joblib==0.10.3
 
-jsonschema==2.5.1
-
 jupyter-client==4.4.0
 
 jupyter-core==4.2.1
