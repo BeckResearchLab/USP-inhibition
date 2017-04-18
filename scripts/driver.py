@@ -41,11 +41,11 @@ def main():
     :return: None
     """
     run = input("Type 1 to run ML models from raw data or 0 to run ML models from stored processed data: ")
-    if run:
+    if run==1:
 
         run = input("Type 1 to process data from raw data or 0 to "
                     "process data from stored pre-processing data: ")
-        if run:
+        if run==1:
 
             # Importing inhibitor notation data
             response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition'
@@ -150,7 +150,7 @@ def main():
     df_x.columns = list(coefficients[coefficients['existence'] == 1]['column names'])
     df_y.columns = ['Activity_Score']
     plot_input = input("Type 1 to plot feature space vs target column or 0 to skip: ")
-    if plot_input:
+    if plot_input==1:
         utils.plot_features(df_x, df_y)
     df = df_x.join(df_y)
 
@@ -162,7 +162,7 @@ def main():
         raise TypeError('df is not a dataframe')
     if TARGET_COLUMN is None:
         raise ValueError('target_column is None')
-    if not isinstance(TARGET_COLUMN, basestring):
+    if not isinstance(TARGET_COLUMN, str):
         raise TypeError('target_column is not a string')
     if TARGET_COLUMN not in df.columns:
         raise ValueError('target_column (%s) is not a valid column name' % TARGET_COLUMN)
@@ -199,11 +199,11 @@ def main():
     models.run_models(x_train, y_train, x_test, y_test)
 
     results_display = input("Type 1 to print ML model and prediction results or 0 to skip: ")
-    if results_display:
+    if results_display==1:
         post_process.results()
 
     ga_input = input("Type 1 to find candidate drug molecule using genetic algorithms or 0 to skip: ")
-    if ga_input:
+    if ga_input==1:
         ideal_mol_features = genalgo.main()
         ideal_mol_features.to_csv('../data/genalgo_results.csv')
         """file_to_s3 = open('../data/genalgo_results.csv', 'r+')
