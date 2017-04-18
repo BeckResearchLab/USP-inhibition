@@ -7,7 +7,7 @@ Construct a neural network model, support vector and decision trees regression m
 import numpy as np
 import pickle
 import sklearn
-from lasagne import nonlinearities
+import lasagne
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
@@ -43,7 +43,7 @@ def run_models(x_train, y_train, x_test, y_test):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    model_choice = input("Type your choice of model to be run:" + "\n" +
+    model_choice = int(input("Type your choice of model to be run:" + "\n" +
                          "1 for Linear Regression" + "\n" +
                          "2 for Neural Network" + "\n" +
                          "3 for Support Vector Machine" + "\n" +
@@ -51,7 +51,7 @@ def run_models(x_train, y_train, x_test, y_test):
                          "5 for Ridge Regression" + "\n" +
                          "6 for Bayesian Ridge Regression" + "\n" +
                          "7 for Lasso:" + "\n"
-                         )
+                         ))
     if model_choice == 1:
         build_linear(x_train, y_train, x_test, y_test)
     elif model_choice == 2:
@@ -117,16 +117,16 @@ def build_nn(x_train, y_train, x_test, y_test):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    scaled_tanh = nonlinearities.ScaledTanH(scale_in=2. / 3, scale_out=1.7159)
+    # scaled_tanh = lasagne.nonlinearities.ScaledTanH(scale_in=2. / 3, scale_out=1.7159)
     reg = NeuralNet(layers=[('input', InputLayer),
                             ('hidden0', DenseLayer),
                             ('hidden1', DenseLayer),
                             ('output', DenseLayer)],
                     input_shape=(None, x_train.shape[1]),  # Number of i/p nodes = number of columns in x
-                    hidden0_nonlinearity=scaled_tanh,
-                    hidden1_nonlinearity=scaled_tanh,
+                    hidden0_nonlinearity=lasagne.nonlinearities.softmax,
+                    hidden1_nonlinearity=lasagne.nonlinearities.softmax,
                     output_num_units=1,  # Number of o/p nodes = number of columns in y
-                    output_nonlinearity=nonlinearities.linear,
+                    output_nonlinearity=lasagne.nonlinearities.linear,
                     max_epochs=1000,
                     regression=True,
                     verbose=1)
@@ -141,7 +141,8 @@ def build_nn(x_train, y_train, x_test, y_test):
 
     res_gp = gp_minimize(objective, param_grid, n_calls=100, random_state=0)
 
-    print res_gp.x[0], res_gp.x[1]
+    print(res_gp.x[0])
+    print(res_gp.x[1])
     with open(NN_PICKLE, 'wb') as results:
         pickle.dump(res_gp, results, pickle.HIGHEST_PROTOCOL)
 
@@ -221,6 +222,15 @@ def build_tree(x_train, y_train, x_test, y_test):
     :return: None
     """
     clf = DecisionTreeRegressor()
+    def objective(params):
+        max_depth = params
+    	clf.set_params(max_depth=max_depth)
+    return -np.mean(cross_val_score(reg, x_train, y_train, cv=5, n_jobs=-1,
+                                    scoring="neg_mean_absolute_error"))
+    space = [(1, 100)]
+    res_gp = gp_minimize(objective, space, n_calls=100, random_state=0)
+    print("""Best parameters:- max_depth=%d""" % (res_gp.x[0])
+    clf = DecisionTreeRegressor(max_depth=res_gp.x[0])
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -243,7 +253,7 @@ def build_tree(x_train, y_train, x_test, y_test):
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
-
+    print(r2)
     return
 
 
