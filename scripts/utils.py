@@ -19,7 +19,6 @@ import pandas as pd
 import sklearn
 import boto.s3
 from boto.s3.key import Key
-from pychem import getmol
 from sklearn.ensemble import RandomForestRegressor
 
 
@@ -181,12 +180,26 @@ def choose_features(x, y):
     # Random forest feature importance
     x = np.array(x)
     y = np.array(y)
-
-    clf = RandomForestRegressor()
+    n_features = x.shape[1]
+    clf = RandomForestRegressor(n_jobs=-1, random_state=1, oob_score=True,
+                                max_features=np.floor(np.sqrt(n_features)))
     sfm = sklearn.feature_selection.SelectFromModel(clf)
     sfm.fit(x, y)
     desired_x = sfm.transform(x)
     coefficients = sfm.get_support()
+    importance = sfm.feature_importances_
+    std = np.std([tree.feature_importances_ for tree in sfm.estimators_],
+                 axis=0)
+    indices = np.argsort(importance)[::-1]
+
+    # Plot the importance of features in the forest
+    plt.figure()
+    plt.title("Plot of feature importance")
+    plt.bar(range(x.shape[1]), importance[indices],
+            color="r", yerr=std[indices], align="center")
+    plt.xticks(range(x.shape[1]), indices)
+    plt.xlim([-1, x.shape[1]])
+    plt.savefig('../plots/feature_importance.png')
 
     return desired_x, coefficients
 
