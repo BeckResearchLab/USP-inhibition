@@ -40,21 +40,22 @@ def main():
     Module to execute the entire package from data retrieval to model results
     :return: None
     """
-    run = input("Type 1 to run ML models from raw data or 0 to run ML models from stored processed data: ")
+    run = input("Type 1 to run ML models from raw assay data "
+                "or 0 to run ML models from stored processed data: ")
     if run == 1:
 
-        run = input("Type 1 to process data from raw data or 0 to "
-                    "process data from stored pre-processing data: ")
+        run = input("Type 1 to use raw assay data or 0 to "
+                    "use calculated descriptor data: ")
         if run == 1:
 
             # Importing inhibitor notation data
-            response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition'
-                                       '/compounds_smiles.txt')
+            response = urllib2.urlopen('https://s3-us-west-2.amazonaws.com/'
+                                       'pphilip-usp-inhibition/data/compounds_smiles.txt')
             df_smiles = utils.create_notation_dataframe(response)
 
             # Importing inhibitor activity data
-            response = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition'
-                                   '/AID_743255_datatable.csv')
+            response = pd.read_csv('https://s3-us-west-2.amazonaws.com/'
+                                   'pphilip-usp-inhibition/data/AID_743255_datatable.csv')
             df_activity = utils.create_activity_dataframe(response)
 
             df = df_activity.merge(df_smiles)
@@ -78,10 +79,10 @@ def main():
             df_y.to_csv('../data/df_y_preprocessing.csv')
 
         else:
-            df_x = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                               'data/df_x_preprocessing.csv')
-            df_y = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                               'data/df_y_preprocessing.csv')
+            df_x = pd.read_csv('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/data/df_x_preprocessing.csv')
+            df_y = pd.read_csv('https://s3-us-west-2.amazonaws.com/'
+                               'pphilip-usp-inhibition/data/df_y_preprocessing.csv')
             df_x.drop(df_x.columns[0], axis=1, inplace=True)
             df_y.drop(df_y.columns[0], axis=1, inplace=True)
 
@@ -103,7 +104,7 @@ def main():
         df_y.to_csv('../data/df_y_postprocessing.csv')
 
         coefficients.to_csv('../data/feature_coefficients.csv')
-        
+
     else:
         df_x = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
                            'data/df_x_postprocessing.csv')
