@@ -4,19 +4,22 @@
 Construct a neural network model, support vector and decision trees regression models from the data
 """
 
-import numpy as np
 import pickle
-import sklearn
+
 import lasagne
+import numpy as np
+import sklearn
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import RidgeCV, BayesianRidge, LassoCV
+from sklearn.model_selection import cross_val_score
 from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import cross_val_score
 from skopt import gp_minimize
+from skopt.space import Integer
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -44,14 +47,15 @@ def run_models(x_train, y_train, x_test, y_test):
     :return: None
     """
     model_choice = int(input("Type your choice of model to be run:" + "\n" +
-                         "1 for Linear Regression" + "\n" +
-                         "2 for Neural Network" + "\n" +
-                         "3 for Support Vector Machine" + "\n" +
-                         "4 for Decision Tree" + "\n" +
-                         "5 for Ridge Regression" + "\n" +
-                         "6 for Bayesian Ridge Regression" + "\n" +
-                         "7 for Lasso:" + "\n"
-                         ))
+                             "1 for Linear Regression" + "\n" +
+                             "2 for Neural Network" + "\n" +
+                             "3 for Support Vector Machine" + "\n" +
+                             "4 for Decision Tree" + "\n" +
+                             "5 for Ridge Regression" + "\n" +
+                             "6 for Bayesian Ridge Regression" + "\n" +
+                             "7 for Lasso:" + "\n" +
+                             "8 for Random Forest Regressor:" + "\n"
+                             ))
     if model_choice == 1:
         build_linear(x_train, y_train, x_test, y_test)
     elif model_choice == 2:
@@ -66,6 +70,8 @@ def run_models(x_train, y_train, x_test, y_test):
         build_bayesian_rr(x_train, y_train, x_test, y_test)
     elif model_choice == 7:
         build_lasso(x_train, y_train, x_test, y_test)
+    elif model_choice == 8:
+        build_forest(x_train, y_train, x_test, y_test)
     else:
         print("Please choose from list of available models only")
 
@@ -222,14 +228,15 @@ def build_tree(x_train, y_train, x_test, y_test):
     :return: None
     """
     clf = DecisionTreeRegressor()
+
     def objective(params):
         max_depth = params
-    	clf.set_params(max_depth=max_depth)
-    return -np.mean(cross_val_score(reg, x_train, y_train, cv=5, n_jobs=-1,
-                                    scoring="neg_mean_absolute_error"))
-    space = [(1, 100)]
+        clf.set_params(max_depth=max_depth)
+        return -np.mean(cross_val_score(clf, x_train, y_train, n_jobs=-1,
+                                        scoring="neg_mean_absolute_error"))
+    space = [Integer(1, 20)]
     res_gp = gp_minimize(objective, space, n_calls=100, random_state=0)
-    print("""Best parameters:- max_depth=%d""" % (res_gp.x[0])
+    print("""Best parameters:- max_depth=%d""" % (res_gp.x[0]))
     clf = DecisionTreeRegressor(max_depth=res_gp.x[0])
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
@@ -253,7 +260,7 @@ def build_tree(x_train, y_train, x_test, y_test):
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
-    print(r2)
+
     return
 
 
@@ -372,4 +379,50 @@ def build_lasso(x_train, y_train, x_test, y_test):
         pickle.dump(lasso_alpha, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
+    return
+
+
+def build_forest(x_train, y_train, x_test, y_test):
+    """
+    Constructing a random forest regression model from input dataframe
+    :param x_train: features dataframe for model training
+    :param y_train: target dataframe for model training
+    :param x_test: features dataframe for model testing
+    :param y_test: target dataframe for model testing
+    :return: None
+    """
+    clf = RandomForestRegressor()
+
+    def objective(params):
+        max_depth = params
+        clf.set_params(max_depth=max_depth)
+        return -np.mean(cross_val_score(clf, x_train, y_train, n_jobs=-1,
+                                        scoring="neg_mean_absolute_error"))
+    space = [Integer(1, 20)]
+    res_gp = gp_minimize(objective, space, n_calls=100, random_state=0)
+    print("""Best parameters:- max_depth=%d""" % (res_gp.x[0]))
+    clf = RandomForestRegressor(max_depth=res_gp.x[0])
+    clf.fit(x_train, y_train)
+    y_pred = clf.predict(x_test)
+
+    # Mean absolute error regression loss
+    mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
+    # Mean squared error regression loss
+    mean_sq = sklearn.metrics.mean_squared_error(y_test, y_pred)
+    # Median absolute error regression loss
+    median_abs = sklearn.metrics.median_absolute_error(y_test, y_pred)
+    # R^2 (coefficient of determination) regression score function
+    r2 = sklearn.metrics.r2_score(y_test, y_pred)
+    # Explained variance regression score function
+    exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
+
+    with open(DT_PICKLE, 'wb') as results:
+        pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
+    print(r2)
     return
