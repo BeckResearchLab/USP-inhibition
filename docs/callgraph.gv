@@ -1,0 +1,20 @@
+digraph g {
+	graph [
+		rankdir = "LR"
+	];
+
+	node [
+		fontsize = "16"
+		shape = "record"
+	];
+
+	"driver.py" [
+		label = "<f0> driver.py | <f1> function1"
+	];
+
+	"file1.py" [
+		label = "<f0> file1.py | <f1> function1"
+	];
+
+	"driver.py":f0 -> "file1.py":f1;
+}
