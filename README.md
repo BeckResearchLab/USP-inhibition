@@ -10,8 +10,9 @@
 <p align="justify">
 <b> USP-inhibition </b> is a Python package for the analysis of publically available enzyme inhibition data. 
 <p>In this project, we build and use quantitative structure-activity relationships (QSAR) models for the prediction of a desired interaction between enzymes and small drug molecules. The data describes the inhibition of USP1 - an enzyme essential to DNA-repair in proliferating cancer cells. Descriptors of the molecular structures of these drugs are computed to populate a working data set from the raw data in the high-throughput screen. </p>
+<img src=https://raw.githubusercontent.com/BeckResearchLab/USP-inhibition/img/usp1_model_structure.png>
+
 Objectives: 
-<p>
 <ol>
 <li> Engineer molecular features and build machine learning models to predict the inhibition activity of small molecules. 
 <li> Use genetic algorithms to tease out optimal values of descriptors that contribute to high inhibitory action.
@@ -54,3 +55,11 @@ scikit-learn
 </a>
 </ul>
 </ul>
+
+## How to use this package
+
+Package requirements are listed [here](https://github.com/BeckResearchLab/USP-inhibition/docs/requirements.txt).
+
+Setup instructions for this package:
+- [Ubuntu](https://github.com/BeckResearchLab/USP-inhibition/docs/setup_instructions.txt)
+- Windows
