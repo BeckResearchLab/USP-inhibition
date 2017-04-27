@@ -13,32 +13,83 @@ digraph g {
 	];
 
 	"utils.py" [
-		label = "<f0> utils.py | <f1> utils.create_notation_dataframe | <f2> utils.create_activity_dataframe"
+		label = "<f0> utils.py | <f1> create_notation_dataframe | <f2> create_activity_dataframe | <f3> change_nan_infinite | <f4> choose_features | <f5> upload_to_s3 | <f6> plot_features"
 	];
 
 	"descriptors.py" [
 		label = "<f0> descriptors.py | <f1> extract_all_descriptors | <f2> extract_constitution_descriptors | <f3> extract_topology_descriptors | <f4> extract_con_descriptors | <f5> extract_kappa_descriptors | <f6> extract_burden_descriptors | <f7> extract_estate_descriptors | <f8> extract_basak_descriptors | <f9> extract_moran_descriptors | <f10> extract_geary_descriptors | <f11> extract_property_descriptors | <f12> extract_charge_descriptors | <f13> extract_moe_descriptors | <f14> extract_geometric_descriptors | <f15> extract_cpsa_descriptors | <f16> extract_rdf_descriptors | <f17> extract_morse_descriptors | <f18> extract_whim_descriptors"
 	];
 
-	"driver.py":f0 -> "utils.py":f1;
-	"driver.py":f0 -> "utils.py":f2;
-	"driver.py":f0 -> "descriptors.py":f1;
+	"models.py" [
+		label = "<f0> models.py | <f1> run_models | <f2> build_linear | <f3> build_nn | <f4> build_svm | <f5> build_tree | <f6> build_ridge | <f7> build_bayesian_rr | <f8> build_lasso | <f9> build_forest"
+	];
 
+	"post_process.py" [
+		label = "<f0> post_process.py | <f1> results"
+	];
+
+	"genalgo.py" [
+		label = "<f0> genalgo.py | <f1> main | <f2> population | <f3> individual | <f4> evolve | <f5> fitness | <f6> grade (unused)"
+	];
+
+	"driver.py":f1 -> "utils.py":f1;
+	"driver.py":f1 -> "utils.py":f2;
+	"driver.py":f1 -> "descriptors.py":f1;
 	"descriptors.py":f1 -> "descriptors.py":f2;
+	"descriptors.py":f2 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f3 [ color = "gray" ];
+	"descriptors.py":f3 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f4;
+	"descriptors.py":f4 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f5;
+	"descriptors.py":f5 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f6;
+	"descriptors.py":f6 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f7;
+	"descriptors.py":f7 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f8;
+	"descriptors.py":f8 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f9;
+	"descriptors.py":f9 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f10;
+	"descriptors.py":f10 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f11;
+	"descriptors.py":f11 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f12;
+	"descriptors.py":f12 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f13;
+	"descriptors.py":f13 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f14 [ color = "gray" ];
+	"descriptors.py":f14 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f15 [ color = "gray" ];
+	"descriptors.py":f15 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f16 [ color = "gray" ];
+	"descriptors.py":f16 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f17 [ color = "gray" ];
+	"descriptors.py":f17 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f18 [ color = "gray" ];
+	"descriptors.py":f18 -> "utils.py":f5;
+
+	"driver.py":f1 -> "utils.py":f3;
+	"driver.py":f1 -> "utils.py":f3;	# called twice
+	"driver.py":f1 -> "utils.py":f4;
+	"driver.py":f1 -> "utils.py":f6;
+
+	"driver.py":f1 -> "models.py":f1;
+	"models.py":f1 -> "models.py":f2;
+	"models.py":f1 -> "models.py":f3;
+	"models.py":f1 -> "models.py":f4;
+	"models.py":f1 -> "models.py":f5;
+	"models.py":f1 -> "models.py":f6;
+	"models.py":f1 -> "models.py":f7;
+	"models.py":f1 -> "models.py":f8;
+	"models.py":f1 -> "models.py":f9;
+
+	"driver.py":f1 -> "post_process.py":f1;
+
+	"driver.py":f1 -> "genalgo.py":f1;
+	"genalgo.py":f1 -> "genalgo.py":f2;
+	"genalgo.py":f2 -> "genalgo.py":f3;
+	"genalgo.py":f1 -> "genalgo.py":f4;
+	"genalgo.py":f4 -> "genalgo.py":f5;
 }
