@@ -1,0 +1,28 @@
+sudo apt-get update 
+sudo apt-get upgrade
+sudo apt-get install libfontconfig1 libxrender1
+curl -O https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
+bash Anaconda3-4.2.0-Linux-x86_64.sh
+source ~/.bashrc 
+conda create -c https://conda.anaconda.org/rdkit -n my-rdkit-env rdkit
+source activate my-rdkit-env
+pip install --upgrade pip
+conda install pandas
+pip install matplotlib
+pip install scikit-optimize
+conda install boto
+pip install nolearn
+conda install --channel https://conda.anaconda.org/openbabel openbabel
+curl -O https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pychem/pychem-1.0.tar.gz
+tar -xvzf pychem-1.0.tar.gz
+curl -O https://raw.githubusercontent.com/dacb/pychem_python3_patchset/master/pychem_python3.patch
+patch -p0 < pychem_python3.patch
+cd pychem-1.0
+python setup.py install
+source ~/.bashrc 
+cd ..
+ls
+git clone https://github.com/BeckResearchLab/USP-inhibition
+cd USP-inhibition
+git config --global user.name "Your name"
+git config --global user.email your_email
