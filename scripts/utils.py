@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sklearn
+import math
 import boto.s3
 from boto.s3.key import Key
 from sklearn.ensemble import RandomForestRegressor
@@ -181,8 +182,10 @@ def choose_features(x, y):
     x = np.array(x)
     y = np.array(y)
     n_features = x.shape[1]
+    max_features = math.ceil(math.sqrt(n_features))
+    max_features = max(1, max_features)
     clf = RandomForestRegressor(n_jobs=-1, random_state=1, oob_score=True,
-                                max_features=np.floor(np.sqrt(n_features)))
+                                max_features=max_features)
     sfm = sklearn.feature_selection.SelectFromModel(clf)
     sfm.fit(x, y)
     desired_x = sfm.transform(x)
