@@ -40,7 +40,7 @@ def main():
     Module to execute the entire package from data retrieval to model results
     :return: None
     """
-    run = input("Type 1 to run ML models from raw assay data "
+    run = input("Type 1 to run ML models from raw assay data/calculated descriptor data "
                 "or 0 to run ML models from stored processed data: ")
     if run == 1:
 
@@ -93,7 +93,6 @@ def main():
         # Transform all column values to mean 0 and unit variance
         print("Transforming dataframe using mean and variance")
         df_x = sklearn.preprocessing.scale(df_x)
-        df_y = sklearn.preprocessing.scale(df_y)
         # Feature selection and space reduction
         print("Selecting best features in dataframe")
         df_x, coefficients = utils.choose_features(df_x, df_y)
