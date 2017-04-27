@@ -8,52 +8,49 @@
 ## Introduction
 
 <p align="justify">
-<b> USP-inhibition </b> is a Python package for the analysis of enzyme inhibition data, available on PubChem. </br>
-In this project, we used quantitative structure-activity relationships (QSAR) models for the prediction of a desired interaction between proteins and small-molecules. A large number of molecular descriptors are employed to characterize the molecular structure of about 400,000 drug-like compounds from a high-throughput screening assay. 
-The data describes the inhibition of the deubiquitinating USP1 - an enzyme essential to DNA-repair in proliferating cancer cells. We have optimized variable selection and are creating an algorithm to describe the features of an ideal USP1 enzyme inhibitor. This is a comparative study of QSAR models, set of features and model parameters for the dataset. The goal of this research is to create an reuasable open-source tool for molecular structure design.
-</p>
+<b> USP-inhibition </b> is a Python package for the analysis of publically available enzyme inhibition data. 
+<p>In this project, we build and use quantitative structure-activity relationships (QSAR) models for the prediction of a desired interaction between enzymes and small drug molecules. The data describes the inhibition of USP1 - an enzyme essential to DNA-repair in proliferating cancer cells. Descriptors of the molecular structures of these drugs are computed to populate a working data set from the raw data in the high-throughput screen. </p>
+Objectives: 
+<p>
+<ol>
+<li> Engineer molecular features and build machine learning models to predict the inhibition activity of small molecules. 
+<li> Use genetic algorithms to tease out optimal values of descriptors that contribute to high inhibitory action.
+<li> Create an reusable open-source tool for cheminformaticians that acts as the first step to intelligent drug design prior to synthesis and testing in a lab.
+</ol>
 
 ## Resources
 
-* [Dataset](https://pubchem.ncbi.nlm.nih.gov/bioassay/743255)
+* Dataset: view latest version on [PubChem](https://pubchem.ncbi.nlm.nih.gov/bioassay/743255) or the version used in this project on [Amazon S3](https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/data/)
 * [Previous work using this dataset](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4427583/pdf/11693_2015_Article_9162.pdf)
-* [Wiki](https://github.com/BeckResearchLab/USP-inhibition/wiki)
 
 ## Dependencies
 
 <ul>
 <li><a href="http://bioinformatics.oxfordjournals.org/content/29/8/1092.long/">
 ChemoPy
-</a></br>
+</a>
 <li><a href="http://openmopac.net/">
 MOPAC
-</a></br>
+</a>
 <li><a href="http://openbabel.org/wiki/Main_Page"> 
 Open Babel
-</a></br>
+</a>
 <li><a href="https://openbabel.org/docs/dev/UseTheLibrary/Python_Pybel.html">
 Pybel
-</a></br>
+</a>
 <li><a href="https://code.google.com/archive/p/pychem/"> 
 PyChem
-</a></br>
+</a>
 <li><a href="http://www.rdkit.org/"> 
 RDKit
-</a></br>
-<li><a href="https://github.com/jundongl/scikit-feature">
-Scikit-feature
-</a></br>
-<li> Python packages:
+</a>
+<li> Significant Python packages:
 <ul>
 <li> <a href="https://pythonhosted.org/nolearn/">
 nolearn 
-</a></br>
+</a>
 <li> <a href="http://scikit-learn.org/stable/">
 scikit-learn
-</a></br>
-<li> <a href="http://deeplearning.net/software/theano/">
-Theano
-</a></br>
+</a>
 </ul>
 </ul>
-
