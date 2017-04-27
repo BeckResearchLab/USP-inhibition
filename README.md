@@ -10,7 +10,7 @@
 <p align="justify">
 <b> USP-inhibition </b> is a Python package for the analysis of publically available enzyme inhibition data. 
 <p>In this project, we build and use quantitative structure-activity relationships (QSAR) models for the prediction of a desired interaction between enzymes and small drug molecules. The data describes the inhibition of USP1 - an enzyme essential to DNA-repair in proliferating cancer cells. Descriptors of the molecular structures of these drugs are computed to populate a working data set from the raw data in the high-throughput screen. </p>
-<img src=https://raw.githubusercontent.com/BeckResearchLab/USP-inhibition/img/usp1_model_structure.png>
+<img src="https://raw.githubusercontent.com/BeckResearchLab/USP-inhibition/master/img/usp1_model_structure.png" align="center" alt="Modeled structure of USP1 catalytic domains using SWISS-MODEL">
 
 Objectives: 
 <ol>
