@@ -7,6 +7,7 @@ activity and returns the characteristics of the parent drug compound.
 
 import numpy as np
 from operator import add
+from random import randint, random
 import pandas as pd
 import pickle
 
@@ -17,18 +18,26 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
-PICKLE = '../trained_networks/svm_data.pkl'
+results_pickle = '../trained_networks/dt_data.pkl'
+with open(results_pickle, 'rb') as result:
+    CLF = pickle.load(result)
 
 
 def main():
     target = 100
-    p_count = 1000
+    p_count = 100
     i_length = 270
     i_min = -2
     i_max = 2
-    p = np.array(population(p_count, i_length, i_min, i_max))
-    parents = evolve(p, target)
-    print(parents)
+    p = np.array(population(p_count, i_length, i_min, i_max))  # Shape -> (p_count, i_length) = (100, 270)
+    fitness_history = [grade(p, target), ]
+    for i in range(100):
+        p = evolve(p, target)
+        print(p)
+        fitness_history.append(grade(p, target))
+
+    for datum in fitness_history:
+        print(datum)
 
 
 def individual(length, minimum, maximum):
@@ -62,9 +71,9 @@ def fitness(individuals, target):
     :param individuals: the individual to evaluate
     :param target: the target number individuals are aiming for
     """
-    with open(PICKLE, 'rb') as result:
-        clf = pickle.load(result)
-    activity = clf.predict(individuals)
+    individuals = individuals.reshape((1, -1))
+    activity = CLF.predict(individuals)
+
     return abs(target - activity)
 
 
@@ -81,7 +90,6 @@ def grade(pop, target):
 
 def evolve(pop, target, retain=0.2, random_select=0.05, mutate=0.01):
     """
-
     :param pop:
     :param target:
     :param retain:
@@ -89,12 +97,14 @@ def evolve(pop, target, retain=0.2, random_select=0.05, mutate=0.01):
     :param mutate:
     :return: parents
     """
-    graded = [(fitness(x, target), x) for x in pop]
-    graded = [x[1] for x in sorted(graded)]
+    graded = pd.DataFrame([(fitness(x, target), x) for x in pop],
+                          columns=['fitness', 'descriptors']).sort_values(by='fitness', ascending=0)
+    # Shape -> (100, 2)
+    graded.reset_index(drop=True, inplace=True)
+    graded = np.array(graded['descriptors'])
     retain_length = int(len(graded)*retain)
-    parents = graded[:retain_length]
-    # randomly add other individuals to
-    # promote genetic diversity
+    parents = graded[:retain_length].tolist()
+    # randomly add other individuals to promote genetic diversity
     for individuals in graded[retain_length:]:
         if random_select > random():
             parents.append(individuals)
@@ -102,12 +112,10 @@ def evolve(pop, target, retain=0.2, random_select=0.05, mutate=0.01):
     for individuals in parents:
         if mutate > random():
             pos_to_mutate = randint(0, len(individuals)-1)
-            # this mutation is not ideal, because it
-            # restricts the range of possible values,
-            # but the function is unaware of the min/max
-            # values used to create the individuals,
-            individuals[pos_to_mutate] = randint(
-                min(individuals), max(individuals))
+            # this mutation is not ideal, because it restricts the range of possible values,
+            # but the function is unaware of the min/max values used to create the individuals.
+            individuals[pos_to_mutate] = randint(np.floor(min(individuals)),
+                                                 np.ceil(max(individuals)))
     # crossover parents to create children
     parents_length = len(parents)
     desired_length = len(pop) - parents_length
