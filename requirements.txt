@@ -49,7 +49,6 @@ ptyprocess==0.5.1
 py2neo==3.1.2
 pybe==0.1.2
 PyBEL==0.3.7
-pychem==1.0
 pyfiglet==0.7.5
 Pygments==2.2.0
 pyparsing==2.1.10
