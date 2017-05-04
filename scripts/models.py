@@ -16,7 +16,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import RidgeCV, BayesianRidge, LassoCV
 from sklearn.model_selection import cross_val_score
-from sklearn.svm import SVR
+from sklearn.svm import LinearSVR
 from sklearn.tree import DecisionTreeRegressor
 from skopt import gp_minimize
 from skopt.space import Integer
@@ -191,7 +191,7 @@ def build_svm(x_train, y_train, x_test, y_test):
     :return: None
     """
 
-    clf = SVR(kernel='linear', verbose=True)  # LinearSVR
+    clf = LinearSVR(random_state=1)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
