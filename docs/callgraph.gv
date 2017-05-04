@@ -59,15 +59,15 @@ digraph g {
 #	"descriptors.py":f12 -> "utils.py":f5;
 	"descriptors.py":f1 -> "descriptors.py":f13;
 #	"descriptors.py":f13 -> "utils.py":f5;
-	"descriptors.py":f1 -> "descriptors.py":f14 [ color = "gray" ];
+	"descriptors.py":f1 -> "descriptors.py":f14;
 #	"descriptors.py":f14 -> "utils.py":f5;
-	"descriptors.py":f1 -> "descriptors.py":f15 [ color = "gray" ];
+	"descriptors.py":f1 -> "descriptors.py":f15;
 #	"descriptors.py":f15 -> "utils.py":f5;
-	"descriptors.py":f1 -> "descriptors.py":f16 [ color = "gray" ];
+	"descriptors.py":f1 -> "descriptors.py":f16;
 #	"descriptors.py":f16 -> "utils.py":f5;
-	"descriptors.py":f1 -> "descriptors.py":f17 [ color = "gray" ];
+	"descriptors.py":f1 -> "descriptors.py":f17;
 #	"descriptors.py":f17 -> "utils.py":f5;
-	"descriptors.py":f1 -> "descriptors.py":f18 [ color = "gray" ];
+	"descriptors.py":f1 -> "descriptors.py":f18;
 #	"descriptors.py":f18 -> "utils.py":f5;
 
 	"driver.py":f1 -> "utils.py":f3;
