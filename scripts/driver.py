@@ -72,7 +72,7 @@ def main():
             print("Starting descriptor calculation")
             descriptors.extract_all_descriptors(df_x, 'SMILES')
 
-            print("Joining separate descriptor dataframes")
+            # Joining separate descriptor dataframes
             df_x = utils.join_dataframes()
 
             df_x.to_csv('../data/df_x_preprocessing.csv')
@@ -86,16 +86,16 @@ def main():
             df_x.drop(df_x.columns[0], axis=1, inplace=True)
             df_y.drop(df_y.columns[0], axis=1, inplace=True)
 
+        # Copying column names to use after np array manipulation
         headers = list(df_x.columns.values)
-        print("Checking dataframe for NaN and infinite values")
+        # Checking dataframe for NaN and infinite values
         df_x = utils.change_nan_infinite(df_x)
         df_y = utils.change_nan_infinite(df_y)
         # Transform all column values to mean 0 and unit variance
-        print("Transforming dataframe using mean and variance")
         df_x = sklearn.preprocessing.scale(df_x)
-        # Feature selection and space reduction
-        print("Selecting best features in dataframe")
+        # Feature selection and feature importance plot
         df_x, coefficients = utils.choose_features(df_x, df_y)
+        print(df_x, coefficients)
         df_x = pd.DataFrame(df_x)
         df_y = pd.DataFrame(df_y)
         coefficients = pd.DataFrame({'existence': coefficients, 'column names': headers})
