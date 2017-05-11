@@ -17,6 +17,7 @@ from pychem import charge, moe, constitution, topology, kappa, whim
 from pychem import connectivity as con, geometric, cpsa, rdf, morse
 from pychem.pychem import Chem, GetARCFile
 import numpy as np
+import signal
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -787,6 +788,14 @@ def extract_moe_descriptors(dataframe, column, url):
         return
 
 
+class TimeoutException(Exception):
+    pass
+
+
+def timeout_handler(signum, frame):   # Custom signal handler
+    raise TimeoutException
+
+
 def extract_geometric_descriptors(dataframe, column, url):
     """
     Extracting molecular constitution descriptors using PyChem package and
@@ -813,18 +822,23 @@ def extract_geometric_descriptors(dataframe, column, url):
         diction = []
         columns = ['W3DH', 'W3D', 'Petitj3D', 'GeDi', 'grav1', 'rygr',
                    'Harary3D', 'AGDD', 'SEig', 'SPAN', 'ASPAN', 'MEcc']
+        signal.signal(signal.SIGALRM, timeout_handler)
         for line in dataframe[column]:
             i += 1
             print('geometric ', i)
             smiles = line
+            signal.alarm(30)
             try:
                 mol = pyb.readstring('smi', smiles)
                 GetARCFile(mol)
                 dic = geometric.GetGeometric(mol)
-            except OSError:
+            except OSError or TimeoutException:
                 dic = np.empty((len(columns), 1,))
                 dic[:] = np.NAN
-            diction.append(dic)
+            else:
+                signal.alarm(0)
+            finally:
+                diction.append(dic)
         df_geometric = pd.DataFrame(diction, columns=columns)
         df_geometric.to_csv('../data/df_geometric.csv')
         print("Done calculating geometric")
@@ -866,18 +880,24 @@ def extract_cpsa_descriptors(dataframe, column, url):
                    'PSA', 'FrTATP', 'RASA',
                    'RPSA', 'RNCS', 'RPCS']
         i = 0
+        signal.signal(signal.SIGALRM, timeout_handler)
         for line in dataframe[column]:
             i += 1
             print('cpsa ', i)
             smiles = line
+            signal.alarm(30)
             try:
                 mol = pyb.readstring('smi', smiles)
                 GetARCFile(mol)
                 dic = geometric.GetCPSA(mol)
-            except OSError:
+            except OSError or TimeoutException:
                 dic = np.empty((len(columns), 1,))
                 dic[:] = np.NAN
-            diction.append(dic)
+            else:
+                signal.alarm(0)
+            finally:
+                diction.append(dic)
+
         df_cpsa = pd.DataFrame(diction, columns=columns)
         df_cpsa.to_csv('../data/df_cpsa.csv')
         print("Done calculating cpsa")
@@ -909,6 +929,7 @@ def extract_rdf_descriptors(dataframe, column, url):
         print("Starting rdf calculation")
         diction = []
         columns = map(str, range(1, 210 + 1))
+        signal.signal(signal.SIGALRM, timeout_handler)
         for i in range(len(columns)):
             columns[i] = 'rdf' + columns[i]
         i = 0
@@ -916,10 +937,18 @@ def extract_rdf_descriptors(dataframe, column, url):
             i += 1
             print('rdf ', i)
             smiles = line
-            mol = pyb.readstring('smi', smiles)
-            GetARCFile(mol)
-            dic = rdf.GetRDF(mol)
-            diction.append(dic)
+            signal.alarm(30)
+            try:
+                mol = pyb.readstring('smi', smiles)
+                GetARCFile(mol)
+                dic = rdf.GetRDF(mol)
+            except OSError or TimeoutException:
+                dic = np.empty((len(columns), 1,))
+                dic[:] = np.NAN
+            else:
+                signal.alarm(0)
+            finally:
+                diction.append(dic)
         df_rdf = pd.DataFrame(diction, columns=columns)
         df_rdf.to_csv('../data/df_rdf.csv')
         print("Done calculating rdf")
@@ -951,6 +980,7 @@ def extract_morse_descriptors(dataframe, column, url):
         print("Starting morse calculation")
         diction = []
         columns = map(str, range(1, 210 + 1))
+        signal.signal(signal.SIGALRM, timeout_handler)
         for i in range(len(columns)):
             columns[i] = 'morse' + columns[i]
         i = 0
@@ -958,10 +988,18 @@ def extract_morse_descriptors(dataframe, column, url):
             i += 1
             print('morse ', i)
             smiles = line
-            mol = pyb.readstring('smi', smiles)
-            GetARCFile(mol)
-            dic = morse.GetMoRSE(mol)
-            diction.append(dic)
+            signal.alarm(30)
+            try:
+                mol = pyb.readstring('smi', smiles)
+                GetARCFile(mol)
+                dic = morse.GetMoRSE(mol)
+            except OSError or TimeoutException:
+                dic = np.empty((len(columns), 1,))
+                dic[:] = np.NAN
+            else:
+                signal.alarm(0)
+            finally:
+                diction.append(dic)
         df_morse = pd.DataFrame(diction, columns=columns)
         df_morse.to_csv('../data/df_morse.csv')
         print("Done calculating morse")
@@ -993,6 +1031,7 @@ def extract_whim_descriptors(dataframe, column, url):
         print("Starting whim calculation")
         diction = []
         columns = map(str, range(1, 70 + 1))
+        signal.signal(signal.SIGALRM, timeout_handler)
         for i in range(len(columns)):
             columns[i] = 'whim' + columns[i]
         i = 0
@@ -1000,10 +1039,18 @@ def extract_whim_descriptors(dataframe, column, url):
             i += 1
             print('whim ', i)
             smiles = line
-            mol = pyb.readstring('smi', smiles)
-            GetARCFile(mol)
-            dic = whim.GetWHIM()
-            diction.append(dic)
+            signal.alarm(30)
+            try:
+                mol = pyb.readstring('smi', smiles)
+                GetARCFile(mol)
+                dic = whim.GetWHIM()
+            except OSError or TimeoutException:
+                dic = np.empty((len(columns), 1,))
+                dic[:] = np.NAN
+            else:
+                signal.alarm(0)
+            finally:
+                diction.append(dic)
         df_whim = pd.DataFrame(diction, columns=columns)
         df_whim.to_csv('../data/df_whim.csv')
         print("Done calculating whim")
