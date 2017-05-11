@@ -100,9 +100,9 @@ def main():
 
         # Checking dataframe for NaN and infinite values
         x_train = utils.change_nan_infinite(x_train)
-        y_train = utils.change_nan_infinite(x_train)
-        x_test = utils.change_nan_infinite(x_train)
-        y_test = utils.change_nan_infinite(x_train)
+        y_train = utils.change_nan_infinite(y_train)
+        x_test = utils.change_nan_infinite(x_test)
+        y_test = utils.change_nan_infinite(y_test)
 
         n_features = int(input("Choose the number of features to be used in the model" + "\n" +
                                "Pick from 50, 100, 150, 200" + "\n"))
@@ -114,7 +114,8 @@ def main():
     else:
         n_features = int(input("Choose the number of features to be used in the model" + "\n" +
                                "Pick from 50, 100, 150, 200" + "\n"))
-        feature_selector = str(input("Choose the algorithm that is used to reduce the feature space." + "\n" +
+        feature_selector = str(input("Would you like to use the results after feature space reduction using "
+                                     "Random Forest regressor or Randomized Lasso?" + "\n" +
                                      "Type rfr for Random Forest Regressor" + "\n"
                                      "Type rl for Randomized Lasso" + "\n"))
         x_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
