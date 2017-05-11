@@ -29,10 +29,6 @@ __status__ = "Development"
 
 TARGET_COLUMN = 'Activity_Score'
 XY_PICKLE = '../data/xy_data.pkl'
-access_keys = pd.read_csv('../keys/accessKeys.csv')
-AWS_ACCESS_KEY_ID = access_keys['Access key ID'][0]
-AWS_ACCESS_SECRET_KEY = access_keys['Secret access key'][0]
-BUCKET = 'pphilip-usp-inhibition'
 
 
 def main():
@@ -71,57 +67,72 @@ def main():
             # Extracting molecular descriptors for all compounds
             print("Starting descriptor calculation")
             descriptors.extract_all_descriptors(df_x, 'SMILES')
-
-            # Joining separate descriptor dataframes
-            df_x = utils.join_dataframes()
-
-            df_x.to_csv('../data/df_x_preprocessing.csv')
-            df_y.to_csv('../data/df_y_preprocessing.csv')
+            # Joining separate descriptor data frames and target column
+            df = utils.join_dataframes()
+            df = df.join(df_y)
+            df.to_csv('../data/df_preprocessing.csv')
 
         else:
-            df_x = pd.read_csv('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/data/df_x_preprocessing.csv')
-            df_y = pd.read_csv('https://s3-us-west-2.amazonaws.com/'
-                               'pphilip-usp-inhibition/data/df_y_preprocessing.csv')
-            df_x.drop(df_x.columns[0], axis=1, inplace=True)
-            df_y.drop(df_y.columns[0], axis=1, inplace=True)
+            df = pd.read_csv('https://s3-us-west-2.amazonaws.com/'
+                             'pphilip-usp-inhibition/data/df_preprocessing.csv')
+            df.drop(df.columns[0], axis=1, inplace=True)
 
         # Copying column names to use after np array manipulation
-        headers = list(df_x.columns.values)
-        # Checking dataframe for NaN and infinite values
-        df_x = utils.change_nan_infinite(df_x)
-        df_y = utils.change_nan_infinite(df_y)
-        # Transform all column values to mean 0 and unit variance
-        df_x = sklearn.preprocessing.scale(df_x)
-        # Feature selection and feature importance plot
-        df_x, coefficients = utils.choose_features(df_x, df_y)
-        print(df_x, coefficients)
-        df_x = pd.DataFrame(df_x)
-        df_y = pd.DataFrame(df_y)
-        coefficients = pd.DataFrame({'existence': coefficients, 'column names': headers})
-        df_x.to_csv('../data/df_x_postprocessing.csv')
-        df_y.to_csv('../data/df_y_postprocessing.csv')
+        x = df.drop(df.columns[-1], axis=1)
+        headers = list(x.columns.values)
 
-        coefficients.to_csv('../data/feature_coefficients.csv')
+        # Train, validation and test split
+        df_train, df_test = sklearn.cross_validation.train_test_split(df, test_size=0.25)
+        # Reassign target column name and index after randomized split
+        df_train.reset_index(inplace=True, drop=True)
+        df_test.reset_index(inplace=True, drop=True)
+
+        # Remove the classification column from the dataframe
+        x_train = np.array(df_train.drop(TARGET_COLUMN, axis=1))
+        x_test = np.array(df_test.drop(TARGET_COLUMN, axis=1))
+        y_train = np.array(df_train[TARGET_COLUMN])
+        y_test = np.array(df_test[TARGET_COLUMN])
+
+        # Transform all column values to mean 0 and unit variance
+        clf = sklearn.preprocessing.StandardScaler().fit(x_train)
+        x_train = clf.transform(x_train)
+        x_test = clf.transform(x_test)
+
+        # Checking dataframe for NaN and infinite values
+        x_train = utils.change_nan_infinite(x_train)
+        y_train = utils.change_nan_infinite(x_train)
+        x_test = utils.change_nan_infinite(x_train)
+        y_test = utils.change_nan_infinite(x_train)
+
+        n_features = int(input("Choose the number of features to be used in the model" + "\n" +
+                               "Pick from 50, 100, 150, 200" + "\n"))
+
+        # Feature selection and feature importance plot
+        x_train, y_train, x_test, y_test = utils.choose_features(x_train, y_train, x_test, y_test, headers,
+                                                                 n_features)
 
     else:
-        df_x = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                           'data/df_x_postprocessing.csv')
-        df_y = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                           'data/df_y_postprocessing.csv')
-        coefficients = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                                   'data/feature_coefficients.csv')
-        df_x.drop(df_x.columns[0], axis=1, inplace=True)
-        df_y.drop(df_y.columns[0], axis=1, inplace=True)
-        coefficients.drop(coefficients.columns[0], axis=1, inplace=True)
+        n_features = int(input("Choose the number of features to be used in the model" + "\n" +
+                               "Pick from 50, 100, 150, 200" + "\n"))
+        feature_selector = str(input("Choose the algorithm that is used to reduce the feature space." + "\n" +
+                                     "Type rfr for Random Forest Regressor" + "\n"
+                                     "Type rl for Randomized Lasso" + "\n"))
+        x_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                              'data/x_train_postprocessing_%s_%d.csv' % (feature_selector, n_features))
+        y_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                              'data/y_train_postprocessing_%s_%d.csv' % (feature_selector, n_features))
+        x_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                             'data/x_test_postprocessing_%s_%d.csv' % (feature_selector, n_features))
+        y_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                             'data/y_test_postprocessing_%s_%d.csv' % (feature_selector, n_features))
+        x_train.drop(x_train.columns[0], axis=1, inplace=True)
+        y_train.drop(y_train.columns[0], axis=1, inplace=True)
+        x_test.drop(x_test.columns[0], axis=1, inplace=True)
+        y_test.drop(y_test.columns[0], axis=1, inplace=True)
 
-    coefficients['existence'] = coefficients['existence'].astype(int)
-    df_x.columns = list(coefficients[coefficients['existence'] == 1]['column names'])
-    df_y.columns = ['Activity_Score']
     plot_input = input("Type 1 to plot feature space vs target column or 0 to skip: ")
     if plot_input == 1:
-        utils.plot_features(df_x, df_y)
-    df = df_x.join(df_y)
+        utils.plot_features(x_train, y_train)
 
     # Data to training task
     # Type check inputs for sanity
@@ -135,21 +146,6 @@ def main():
         raise TypeError('target_column is not a string')
     if TARGET_COLUMN not in df.columns:
         raise ValueError('target_column (%s) is not a valid column name' % TARGET_COLUMN)
-
-    # Train, validation and test split
-    df_train, df_test = sklearn.cross_validation.train_test_split(df, test_size=0.25)
-
-    # Reassign target column name and index after randomized split
-    df_train = df_train.rename(columns={-1: TARGET_COLUMN})
-    df_test = df_test.rename(columns={-1: TARGET_COLUMN})
-    df_train.reset_index(inplace=True, drop=True)
-    df_test.reset_index(inplace=True, drop=True)
-
-    # Remove the classification column from the dataframe
-    x_train = np.array(df_train.drop(TARGET_COLUMN, axis=1))
-    x_test = np.array(df_test.drop(TARGET_COLUMN, axis=1))
-    y_train = np.array(df_train[TARGET_COLUMN])
-    y_test = np.array(df_test[TARGET_COLUMN])
 
     with open(XY_PICKLE, 'wb') as results:
         pickle.dump(x_train, results, pickle.HIGHEST_PROTOCOL)
