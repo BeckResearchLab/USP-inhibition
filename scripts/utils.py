@@ -178,16 +178,20 @@ def choose_features(x_train, y_train, x_test, y_test, column_names, n_features):
     :param y_train: Training target values
     :param y_test: Test target values.
     :param column_names: Names of columns in x
+    :param n_features: Number of features to be returned after selection
     :return desired_x_train: Reduced training set of features.
+    :return y_train: Training target column as a dataframe
     :return desired_x_test: Reduced test set of features.
+    :return y_test: Test target column as a dataframe.
     """
 
-    # Random forest feature importance
+
     choice = int(input("Type your choice of feature selection algorithm to be run:" + "\n" +
                        "1 for Random Forest Regression" + "\n" +
                        "2 for Randomized Lasso" + "\n"))
     if choice == 1:
-        clf = RandomForestRegressor(n_jobs=-1, random_state=1, max_features=100)
+        # Random forest feature importances
+        clf = RandomForestRegressor(n_jobs=-1, random_state=1, n_estimators=20, max_depth=10)
         clf.fit(x_train, y_train.ravel())
         feature_importance = clf.feature_importances_
         feature_scores = pd.DataFrame({'feature': column_names, 'scores': feature_importance
@@ -208,7 +212,8 @@ def choose_features(x_train, y_train, x_test, y_test, column_names, n_features):
         return desired_x_train, y_train, desired_x_test, y_test
 
     elif choice == 2:
-        clf = RandomizedLasso(alpha=0.025)
+        # Randomized lasso feature scores
+        clf = RandomizedLasso(alpha=0.01)
         clf.fit(x_train, y_train.ravel())
         feature_importance = clf.scores_
         feature_scores = pd.DataFrame({'feature': column_names, 'scores': feature_importance
