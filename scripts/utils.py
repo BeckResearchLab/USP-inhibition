@@ -12,16 +12,16 @@ except ImportError:
 
 import boto
 import matplotlib
-matplotlib.use('Agg')  # Must be before importing matplotlib.pyplot or pylab
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn
-import math
+import pickle
 import boto.s3
 from boto.s3.key import Key
 from sklearn.ensemble import RandomForestRegressor
-
+from sklearn.feature_selection import SelectFromModel
+from sklearn.linear_model import RandomizedLasso
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -170,41 +170,65 @@ def join_dataframes():
     return joined_df
 
 
-def choose_features(x, y):
+def choose_features(x_train, y_train, x_test, y_test, column_names, n_features):
     """
     Selecting the features of high importance to reduce feature space.
-    :param x: Dataframe of features.
-    :param y: Dataframe of target property.
-    :return desired x: Dataframe of short-listed features.
+    :param x_train: Training set of features.
+    :param x_test: Test set of features.
+    :param y_train: Training target values
+    :param y_test: Test target values.
+    :param column_names: Names of columns in x
+    :return desired_x_train: Reduced training set of features.
+    :return desired_x_test: Reduced test set of features.
     """
 
     # Random forest feature importance
-    x = np.array(x)
-    y = np.array(y)
-    n_features = x.shape[1]
-    max_features = math.ceil(math.sqrt(n_features))
-    max_features = max(1, max_features)
-    clf = RandomForestRegressor(n_jobs=-1, random_state=1, oob_score=True,
-                                max_features=max_features)
-    sfm = sklearn.feature_selection.SelectFromModel(clf)
-    sfm.fit(x, y)
-    desired_x = sfm.transform(x)
-    coefficients = sfm.get_support()
-    importance = sfm.feature_importances_
-    std = np.std([tree.feature_importances_ for tree in sfm.estimators_],
-                 axis=0)
-    indices = np.argsort(importance)[::-1]
+    choice = int(input("Type your choice of feature selection algorithm to be run:" + "\n" +
+                       "1 for Random Forest Regression" + "\n" +
+                       "2 for Randomized Lasso" + "\n"))
+    if choice == 1:
+        clf = RandomForestRegressor(n_jobs=-1, random_state=1, max_features=100)
+        clf.fit(x_train, y_train.ravel())
+        feature_importance = clf.feature_importances_
+        feature_scores = pd.DataFrame({'feature': column_names, 'scores': feature_importance
+                                       }).sort_values(by=['scores'], ascending=False)['feature'].tolist()
+        selected_features = feature_scores[:n_features]
+        x_train = pd.DataFrame(x_train, columns=column_names)
+        desired_x_train = x_train[selected_features]
+        x_test = pd.DataFrame(x_test, columns=column_names)
+        desired_x_test = x_test[selected_features]
+        y_train = pd.DataFrame(y_train, columns=['Activity_Score'])
+        y_test = pd.DataFrame(y_test, columns=['Activity_Score'])
 
-    # Plot the importance of features in the forest
-    plt.figure()
-    plt.title("Plot of feature importance")
-    plt.bar(range(x.shape[1]), importance[indices],
-            color="r", yerr=std[indices], align="center")
-    plt.xticks(range(x.shape[1]), indices)
-    plt.xlim([-1, x.shape[1]])
-    plt.savefig('../plots/feature_importance.png')
+        x_train.to_csv('../data/x_train_postprocessing_rfr_%d.csv' % n_features)
+        y_train.to_csv('../data/y_train_postprocessing_rfr_%d.csv' % n_features)
+        x_test.to_csv('../data/x_test_postprocessing_rfr_%d.csv' % n_features)
+        y_test.to_csv('../data/y_test_postprocessing_rfr_%d.csv' % n_features)
 
-    return desired_x, coefficients
+        return desired_x_train, y_train, desired_x_test, y_test
+
+    elif choice == 2:
+        clf = RandomizedLasso(alpha=0.025)
+        clf.fit(x_train, y_train.ravel())
+        feature_importance = clf.scores_
+        feature_scores = pd.DataFrame({'feature': column_names, 'scores': feature_importance
+                                       }).sort_values(by=['scores'], ascending=False)['feature'].tolist()
+        selected_features = feature_scores[:n_features]
+        x_train = pd.DataFrame(x_train, columns=column_names)
+        desired_x_train = x_train[selected_features]
+        x_test = pd.DataFrame(x_test, columns=column_names)
+        desired_x_test = x_test[selected_features]
+        y_train = pd.DataFrame(y_train, columns=['Activity_Score'])
+        y_test = pd.DataFrame(y_test, columns=['Activity_Score'])
+
+        x_train.to_csv('../data/x_train_postprocessing_rl_%d.csv' % n_features)
+        y_train.to_csv('../data/y_train_postprocessing_rl_%d.csv' % n_features)
+        x_test.to_csv('../data/x_test_postprocessing_rl_%d.csv' % n_features)
+        y_test.to_csv('../data/y_test_postprocessing_rl_%d.csv' % n_features)
+
+        return desired_x_train, y_train, desired_x_test, y_test
+    else:
+        print("Choose from options only")
 
 
 def change_nan_infinite(dataframe):
