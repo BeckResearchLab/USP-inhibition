@@ -170,68 +170,64 @@ def join_dataframes():
     return joined_df
 
 
-def choose_features(x_train, y_train, x_test, y_test, column_names, n_features):
+def choose_features(x_train, y_train, x_test, column_names):
     """
     Selecting the features of high importance to reduce feature space.
     :param x_train: Training set of features.
     :param x_test: Test set of features.
     :param y_train: Training target values
-    :param y_test: Test target values.
     :param column_names: Names of columns in x
-    :param n_features: Number of features to be returned after selection
-    :return desired_x_train: Reduced training set of features.
-    :return y_train: Training target column as a dataframe
-    :return desired_x_test: Reduced test set of features.
-    :return y_test: Test target column as a dataframe.
     """
-
 
     choice = int(input("Type your choice of feature selection algorithm to be run:" + "\n" +
                        "1 for Random Forest Regression" + "\n" +
                        "2 for Randomized Lasso" + "\n"))
+
     if choice == 1:
-        # Random forest feature importances
+        # Random forest feature importance
         clf = RandomForestRegressor(n_jobs=-1, random_state=1, n_estimators=20, max_depth=10)
-        clf.fit(x_train, y_train.ravel())
+        clf.fit(x_train, y_train)
         feature_importance = clf.feature_importances_
-        feature_scores = pd.DataFrame({'feature': column_names, 'scores': feature_importance
-                                       }).sort_values(by=['scores'], ascending=False)['feature'].tolist()
-        selected_features = feature_scores[:n_features]
-        x_train = pd.DataFrame(x_train, columns=column_names)
-        desired_x_train = x_train[selected_features]
-        x_test = pd.DataFrame(x_test, columns=column_names)
-        desired_x_test = x_test[selected_features]
-        y_train = pd.DataFrame(y_train, columns=['Activity_Score'])
-        y_test = pd.DataFrame(y_test, columns=['Activity_Score'])
+        scores_table = pd.DataFrame({'feature': column_names, 'scores':
+                                     feature_importance}).sort_values(by=['scores'], ascending=False)
+        scores = scores_table['scores'].tolist()
+        n_features = [25, 50, 75, 100, 150, 200, 250, 300]
+        for n in n_features:
+            feature_scores = scores_table['feature'].tolist()
+            selected_features = feature_scores[:n]
+            x_train = pd.DataFrame(x_train, columns=column_names)
+            desired_x_train = x_train[selected_features]
+            x_test = pd.DataFrame(x_test, columns=column_names)
+            desired_x_test = x_test[selected_features]
 
-        x_train.to_csv('../data/x_train_postprocessing_rfr_%d.csv' % n_features)
-        y_train.to_csv('../data/y_train_postprocessing_rfr_%d.csv' % n_features)
-        x_test.to_csv('../data/x_test_postprocessing_rfr_%d.csv' % n_features)
-        y_test.to_csv('../data/y_test_postprocessing_rfr_%d.csv' % n_features)
+            desired_x_train.to_csv('../data/x_train_postprocessing_rfr_%d.csv' % n)
+            desired_x_test.to_csv('../data/x_test_postprocessing_rfr_%d.csv' % n)
+        pd.DataFrame(scores).to_csv('../data/feature_scores_rfr.csv')
 
-        return desired_x_train, y_train, desired_x_test, y_test
+        return
 
     elif choice == 2:
         # Randomized lasso feature scores
         clf = RandomizedLasso(alpha=0.01)
         clf.fit(x_train, y_train.ravel())
         feature_importance = clf.scores_
-        feature_scores = pd.DataFrame({'feature': column_names, 'scores': feature_importance
-                                       }).sort_values(by=['scores'], ascending=False)['feature'].tolist()
-        selected_features = feature_scores[:n_features]
-        x_train = pd.DataFrame(x_train, columns=column_names)
-        desired_x_train = x_train[selected_features]
-        x_test = pd.DataFrame(x_test, columns=column_names)
-        desired_x_test = x_test[selected_features]
-        y_train = pd.DataFrame(y_train, columns=['Activity_Score'])
-        y_test = pd.DataFrame(y_test, columns=['Activity_Score'])
+        scores_table = pd.DataFrame({'feature': column_names, 'scores':
+                                     feature_importance}).sort_values(by=['scores'], ascending=False)
+        scores = scores_table['scores'].tolist()
+        n_features = [25, 50, 75, 100, 150, 200, 250, 300]
+        for n in n_features:
+            feature_scores = scores_table['feature'].tolist()
+            selected_features = feature_scores[:n]
+            x_train = pd.DataFrame(x_train, columns=column_names)
+            desired_x_train = x_train[selected_features]
+            x_test = pd.DataFrame(x_test, columns=column_names)
+            desired_x_test = x_test[selected_features]
 
-        x_train.to_csv('../data/x_train_postprocessing_rl_%d.csv' % n_features)
-        y_train.to_csv('../data/y_train_postprocessing_rl_%d.csv' % n_features)
-        x_test.to_csv('../data/x_test_postprocessing_rl_%d.csv' % n_features)
-        y_test.to_csv('../data/y_test_postprocessing_rl_%d.csv' % n_features)
+            desired_x_train.to_csv('../data/x_train_postprocessing_rl_%d.csv' % n)
+            desired_x_test.to_csv('../data/x_test_postprocessing_rl_%d.csv' % n)
+        pd.DataFrame(scores).to_csv('../data/feature_scores_rl.csv')
 
-        return desired_x_train, y_train, desired_x_test, y_test
+        return
     else:
         print("Choose from options only")
 
@@ -240,13 +236,13 @@ def change_nan_infinite(dataframe):
     """
     Replacing NaN and infinite values from the dataframe with zeros.
     :param dataframe: Dataframe containing NaN and infinite values.
-    :return dataframe: Dataframe with no NaN or infinite values.
+    :return data: Data with no NaN or infinite values.
     """
 
     dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
-    dataframe.fillna(0, inplace=True)
+    data = dataframe.fillna(0)
 
-    return dataframe
+    return data
 
 
 def plot_features(df_x, df_y):
