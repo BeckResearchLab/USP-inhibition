@@ -18,7 +18,7 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
-results_pickle = '../trained_networks/dt_data.pkl'
+results_pickle = '../trained_networks/rr_25_data.pkl'
 with open(results_pickle, 'rb') as result:
     CLF = pickle.load(result)
 
@@ -38,6 +38,8 @@ def main():
 
     for datum in fitness_history:
         print(datum)
+
+    p.to_csv('../data/genalgo_results.csv')
 
 
 def individual(length, minimum, maximum):
