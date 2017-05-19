@@ -11,7 +11,6 @@ import genalgo
 import models
 import numpy as np
 import pandas as pd
-import pickle
 import post_process
 import sklearn
 try:
@@ -28,7 +27,6 @@ __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
 TARGET_COLUMN = 'Activity_Score'
-XY_PICKLE = '../data/xy_data.pkl'
 
 
 def main():
@@ -115,57 +113,17 @@ def main():
         x_train = clf.transform(x_train)
         x_test = clf.transform(x_test)
         y_train = np.array(y_train)
+
         # Feature selection and feature importance plot
         utils.choose_features(x_train, y_train, x_test, x_headers)
 
     elif choice == 3:
         n_features = int(input("Choose the number of features to be used in the model" + "\n" +
-                               "Pick from 50, 100, 150, 200" + "\n"))
-        feature_selector = str(input("The feature space can be reduced using" + "\n" +
-                                     "Random Forest regressor or Randomized Lasso" + "\n" +
-                                     "Type rfr for Random Forest Regressor" + "\n"
-                                     "Type rl for Randomized Lasso" + "\n"))
+                               "Pick from 25, 50, 75, 100, 150, 200, 250, 300" + "\n"))
         x_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                              'data/x_train_postprocessing_%s_%d.csv' % (feature_selector, n_features))
+                              'data/x_train_postprocessing_rfr_%d.csv' % n_features)
         x_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                             'data/x_test_postprocessing_%s_%d.csv' % (feature_selector, n_features))
-        y_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                              'data/y_train_postprocessing.csv')
-        y_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                              'data/y_test_postprocessing.csv')
-        x_train.drop(x_train.columns[0], axis=1, inplace=True)
-        x_test.drop(x_test.columns[0], axis=1, inplace=True)
-        y_train.drop(y_train.columns[0], axis=1, inplace=True)
-        y_test.drop(y_test.columns[0], axis=1, inplace=True)
-
-        # Data to training task
-        # Type check inputs for sanity
-        if x_train or x_test or y_train or y_test is None:
-            raise ValueError('Empty dataframes')
-        if TARGET_COLUMN is None:
-            raise ValueError('target_column is None')
-        if not isinstance(TARGET_COLUMN, str):
-            raise TypeError('target_column is not a string')
-        if TARGET_COLUMN not in y_train.columns or y_test.columns:
-            raise ValueError('target_column (%s) is not a valid column name' % TARGET_COLUMN)
-
-        print("Generating models")
-        models.run_models(x_train, y_train, x_test, y_test)
-
-    elif choice == 4:
-        post_process.results()
-
-    elif choice == 5:
-        n_features = int(input("Choose the number of features to be plotted" + "\n" +
-                               "Pick from 50, 100, 150, 200" + "\n"))
-        feature_selector = str(input("The feature space can be reduced using "
-                                     "Random Forest regressor or Randomized Lasso" + "\n" +
-                                     "Type rfr for Random Forest Regressor" + "\n"
-                                     "Type rl for Randomized Lasso" + "\n"))
-        x_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                              'data/x_train_postprocessing_%s_%d.csv' % (feature_selector, n_features))
-        x_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
-                             'data/x_test_postprocessing_%s_%d.csv' % (feature_selector, n_features))
+                             'data/x_test_postprocessing_rfr_%d.csv' % n_features)
         y_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
                               'data/y_train_postprocessing.csv')
         y_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
@@ -175,9 +133,30 @@ def main():
         y_train.drop(y_train.columns[0], axis=1, inplace=True)
         y_test.drop(y_test.columns[0], axis=1, inplace=True)
 
+        print("Generating models")
+        models.run_models(x_train, y_train, x_test, y_test, n_features)
+
+    elif choice == 4:
+        post_process.results()
+
+    elif choice == 5:
+        n_features = 300
+        x_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                              'data/x_train_postprocessing_rfr_%d.csv' % n_features)
+        x_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                             'data/x_test_postprocessing_rfr_%d.csv' % n_features)
+        y_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                              'data/y_train_postprocessing.csv')
+        y_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                             'data/y_test_postprocessing.csv')
+        x_train.drop(x_train.columns[0], axis=1, inplace=True)
+        x_test.drop(x_test.columns[0], axis=1, inplace=True)
+        y_train.drop(y_train.columns[0], axis=1, inplace=True)
+        y_test.drop(y_test.columns[0], axis=1, inplace=True)
+        utils.plot_features(x_train, y_train, x_test, y_test)
+
     elif choice == 6:
         genalgo.main()
-
 
 
 if __name__ == "__main__":
