@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Create inputs and perform data manipulation tasks in project workflow
+Perform data manipulation tasks in project workflow
 """
 
 import os
@@ -11,17 +11,12 @@ except ImportError:
     import urllib2
 
 import boto
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import pickle
 import boto.s3
 from boto.s3.key import Key
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.feature_selection import SelectFromModel
-from sklearn.linear_model import RandomizedLasso
+
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -179,57 +174,27 @@ def choose_features(x_train, y_train, x_test, column_names):
     :param column_names: Names of columns in x
     """
 
-    choice = int(input("Type your choice of feature selection algorithm to be run:" + "\n" +
-                       "1 for Random Forest Regression" + "\n" +
-                       "2 for Randomized Lasso" + "\n"))
+    # Random forest feature importance
+    clf = RandomForestRegressor(n_jobs=-1, random_state=1, n_estimators=20, max_depth=10)
+    clf.fit(x_train, y_train)
+    feature_importance = clf.feature_importances_
+    scores_table = pd.DataFrame({'feature': column_names, 'scores':
+                                 feature_importance}).sort_values(by=['scores'], ascending=False)
+    scores = scores_table['scores'].tolist()
+    n_features = [25, 50, 75, 100, 150, 200, 250, 300]
+    for n in n_features:
+        feature_scores = scores_table['feature'].tolist()
+        selected_features = feature_scores[:n]
+        x_train = pd.DataFrame(x_train, columns=column_names)
+        desired_x_train = x_train[selected_features]
+        x_test = pd.DataFrame(x_test, columns=column_names)
+        desired_x_test = x_test[selected_features]
 
-    if choice == 1:
-        # Random forest feature importance
-        clf = RandomForestRegressor(n_jobs=-1, random_state=1, n_estimators=20, max_depth=10)
-        clf.fit(x_train, y_train)
-        feature_importance = clf.feature_importances_
-        scores_table = pd.DataFrame({'feature': column_names, 'scores':
-                                     feature_importance}).sort_values(by=['scores'], ascending=False)
-        scores = scores_table['scores'].tolist()
-        n_features = [25, 50, 75, 100, 150, 200, 250, 300]
-        for n in n_features:
-            feature_scores = scores_table['feature'].tolist()
-            selected_features = feature_scores[:n]
-            x_train = pd.DataFrame(x_train, columns=column_names)
-            desired_x_train = x_train[selected_features]
-            x_test = pd.DataFrame(x_test, columns=column_names)
-            desired_x_test = x_test[selected_features]
+        desired_x_train.to_csv('../data/x_train_postprocessing_rfr_%d.csv' % n)
+        desired_x_test.to_csv('../data/x_test_postprocessing_rfr_%d.csv' % n)
+    pd.DataFrame(scores).to_csv('../data/feature_scores_rfr.csv')
 
-            desired_x_train.to_csv('../data/x_train_postprocessing_rfr_%d.csv' % n)
-            desired_x_test.to_csv('../data/x_test_postprocessing_rfr_%d.csv' % n)
-        pd.DataFrame(scores).to_csv('../data/feature_scores_rfr.csv')
-
-        return
-
-    elif choice == 2:
-        # Randomized lasso feature scores
-        clf = RandomizedLasso(alpha=0.01)
-        clf.fit(x_train, y_train.ravel())
-        feature_importance = clf.scores_
-        scores_table = pd.DataFrame({'feature': column_names, 'scores':
-                                     feature_importance}).sort_values(by=['scores'], ascending=False)
-        scores = scores_table['scores'].tolist()
-        n_features = [25, 50, 75, 100, 150, 200, 250, 300]
-        for n in n_features:
-            feature_scores = scores_table['feature'].tolist()
-            selected_features = feature_scores[:n]
-            x_train = pd.DataFrame(x_train, columns=column_names)
-            desired_x_train = x_train[selected_features]
-            x_test = pd.DataFrame(x_test, columns=column_names)
-            desired_x_test = x_test[selected_features]
-
-            desired_x_train.to_csv('../data/x_train_postprocessing_rl_%d.csv' % n)
-            desired_x_test.to_csv('../data/x_test_postprocessing_rl_%d.csv' % n)
-        pd.DataFrame(scores).to_csv('../data/feature_scores_rl.csv')
-
-        return
-    else:
-        print("Choose from options only")
+    return
 
 
 def change_nan_infinite(dataframe):
@@ -243,19 +208,3 @@ def change_nan_infinite(dataframe):
     data = dataframe.fillna(0)
 
     return data
-
-
-def plot_features(df_x, df_y):
-    """
-    Plotting each feature x and its corresponding value of target function y.
-    :param df_x: Dataframe containing feature space.
-    :param df_y: Dataframe containing target/output.
-    """
-    for column in df_x:
-        plt.scatter(df_x[column], df_y)
-        plt.title('%s effect on inhibition activity score trend' % df_x[column].name)
-        plt.xlabel('%s' % df_x[column].name)
-        plt.ylabel('Activity score')
-        plt.savefig('../plots/feature_plots/%s.png' % df_x[column].name, bbox_inches='tight')
-
-    return
