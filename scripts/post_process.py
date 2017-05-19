@@ -14,15 +14,6 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
-LR_PICKLE = '../trained_networks/lr_data.pkl'
-NN_PICKLE = '../trained_networks/nn_data.pkl'
-SVM_PICKLE = '../trained_networks/svm_data.pkl'
-DT_PICKLE = '../trained_networks/dt_data.pkl'
-RR_PICKLE = '../trained_networks/rr_data.pkl'
-BRR_PICKLE = '../trained_networks/brr_data.pkl'
-LASSO_PICKLE = '../trained_networks/lasso_data.pkl'
-XY_PICKLE = '../data/xy_data.pkl'
-
 
 def results():
     """
@@ -31,181 +22,198 @@ def results():
     :return: None
     """
 
-    with open(LR_PICKLE, 'rb') as result:
-        clf = pickle.load(result)
-        mean_abs = pickle.load(result)
-        mean_sq = pickle.load(result)
-        median_abs = pickle.load(result)
-        r2 = pickle.load(result)
-        exp_var_score = pickle.load(result)
-        y_pred = pickle.load(result)
+    model_choice = int(input("Choose model for which results are to be printed:" + "\n" +
+                             "1 for Linear Regression" + "\n" +
+                             "2 for Neural Network" + "\n" +
+                             "3 for Support Vector Machine" + "\n" +
+                             "4 for Decision Tree" + "\n" +
+                             "5 for Ridge Regression" + "\n" +
+                             "6 for Bayesian Ridge Regression" + "\n" +
+                             "7 for Lasso:" + "\n" +
+                             "8 for Random Forest Regressor:" + "\n"
+                             ))
+    n_features = int(input("Choose number of features the model was built on:" + "\n" +
+                           "Pick from 25, 50, 75, 100, 150, 200, 250, 300" + "\n"))
+    if model_choice == 1:
+        with open('../trained_networks/lr_%d_data.pkl' % n_features, 'rb') as result:
+            clf = pickle.load(result)
+            mean_abs = pickle.load(result)
+            mean_sq = pickle.load(result)
+            median_abs = pickle.load(result)
+            r2 = pickle.load(result)
+            exp_var_score = pickle.load(result)
+            y_pred = pickle.load(result)
 
-    print("Mean absolute error regression loss for linear regression model:")
-    print(mean_abs)
-    print("Mean squared error regression loss for linear regression model:")
-    print(mean_sq)
-    print("Median absolute error regression loss for linear regression model:")
-    print(median_abs)
-    print("R^2 (coefficient of determination) regression score function for linear regression model:")
-    print(r2)
-    print("Explained variance regression score function for linear regression model:")
-    print(exp_var_score)
+        print("Mean absolute error regression loss for linear regression model:")
+        print(mean_abs)
+        print("Mean squared error regression loss for linear regression model:")
+        print(mean_sq)
+        print("Median absolute error regression loss for linear regression model:")
+        print(median_abs)
+        print("R^2 (coefficient of determination) regression score function for linear regression model:")
+        print(r2)
+        print("Explained variance regression score function for linear regression model:")
+        print(exp_var_score)
 
+    elif model_choice == 2:
+        with open('../trained_networks/nn_%d_data.pkl' % n_features, 'rb') as result:
+            clf = pickle.load(result)
+            net = pickle.load(result)
+            mean_abs = pickle.load(result)
+            mean_sq = pickle.load(result)
+            median_abs = pickle.load(result)
+            r2 = pickle.load(result)
+            exp_var_score = pickle.load(result)
+            y_pred_nn = pickle.load(result)
 
-    with open(NN_PICKLE, 'rb') as result:
-        clf = pickle.load(result)
-        net = pickle.load(result)
-        mean_abs = pickle.load(result)
-        mean_sq = pickle.load(result)
-        median_abs = pickle.load(result)
-        r2 = pickle.load(result)
-        exp_var_score = pickle.load(result)
-        y_pred_nn = pickle.load(result)
+        clf.save_params_to('/tmp/clf.params')
+        net.save_params_to('/tmp/net.params')
 
-    clf.save_params_to('/tmp/clf.params')
-    net.save_params_to('/tmp/net.params')
+        print("A list of named tuples of scores for each set of parameter "
+              "combinations in param_grid for the NN model:")
+        print("[parameters, mean_validation_score over CV folds, the list of "
+              "scores for each fold]")
+        print(clf.grid_scores_)
+        print("Estimator that was chosen by the search with the highest score for the NN model:")
+        print(clf.best_estimator_)
+        print("Score of best_estimator on the held out data for the NN model:")
+        print(clf.best_score_)
+        print("Parameter setting that gave the best results on the held out data for the NN model:")
+        print(clf.best_params_)
+        print("Scorer function used on the held out data to choose the best "
+              "parameters for the NN model:")
+        print(clf.scorer_)
+        print("Mean absolute error regression loss for NN model:")
+        print(mean_abs)
+        print("Mean squared error regression loss for NN model:")
+        print(mean_sq)
+        print("Median absolute error regression loss for NN model:")
+        print(median_abs)
+        print("R^2 (coefficient of determination) regression score function for NN model:")
+        print(r2)
+        print("Explained variance regression score function for NN model:")
+        print(exp_var_score)
 
-    print("A list of named tuples of scores for each set of parameter "
-          "combinations in param_grid for the NN model:")
-    print("[parameters, mean_validation_score over CV folds, the list of "
-          "scores for each fold]")
-    print(clf.grid_scores_)
-    print("Estimator that was chosen by the search with the highest score for the NN model:")
-    print(clf.best_estimator_)
-    print("Score of best_estimator on the held out data for the NN model:")
-    print(clf.best_score_)
-    print("Parameter setting that gave the best results on the held out data for the NN model:")
-    print(clf.best_params_)
-    print("Scorer function used on the held out data to choose the best "
-          "parameters for the NN model:")
-    print(clf.scorer_)
-    print("Mean absolute error regression loss for NN model:")
-    print(mean_abs)
-    print("Mean squared error regression loss for NN model:")
-    print(mean_sq)
-    print("Median absolute error regression loss for NN model:")
-    print(median_abs)
-    print("R^2 (coefficient of determination) regression score function for NN model:")
-    print(r2)
-    print("Explained variance regression score function for NN model:")
-    print(exp_var_score)
+    elif model_choice == 3:
+        with open('../trained_networks/svm_%d_data.pkl' % n_features, 'rb') as result:
+            clf = pickle.load(result)
+            mean_abs = pickle.load(result)
+            mean_sq = pickle.load(result)
+            median_abs = pickle.load(result)
+            r2 = pickle.load(result)
+            exp_var_score = pickle.load(result)
+            y_pred_svm = pickle.load(result)
 
-    with open(SVM_PICKLE, 'rb') as result:
-        clf = pickle.load(result)
-        mean_abs = pickle.load(result)
-        mean_sq = pickle.load(result)
-        median_abs = pickle.load(result)
-        r2 = pickle.load(result)
-        exp_var_score = pickle.load(result)
-        y_pred_svm = pickle.load(result)
+        print("Mean absolute error regression loss for SVM model:")
+        print(mean_abs)
+        print("Mean squared error regression loss for SVM model:")
+        print(mean_sq)
+        print("Median absolute error regression loss for SVM model:")
+        print(median_abs)
+        print("R^2 (coefficient of determination) regression score function for SVM model:")
+        print(r2)
+        print("Explained variance regression score function for SVM model:")
+        print(exp_var_score)
 
-    print("Mean absolute error regression loss for SVM model:")
-    print(mean_abs)
-    print("Mean squared error regression loss for SVM model:")
-    print(mean_sq)
-    print("Median absolute error regression loss for SVM model:")
-    print(median_abs)
-    print("R^2 (coefficient of determination) regression score function for SVM model:")
-    print(r2)
-    print("Explained variance regression score function for SVM model:")
-    print(exp_var_score)
+    elif model_choice == 4:
+        with open(DT_PICKLE, 'rb') as result:
+            clf = pickle.load(result)
+            mean_abs = pickle.load(result)
+            mean_sq = pickle.load(result)
+            median_abs = pickle.load(result)
+            r2 = pickle.load(result)
+            exp_var_score = pickle.load(result)
+            y_pred_dt = pickle.load(result)
 
-    with open(DT_PICKLE, 'rb') as result:
-        clf = pickle.load(result)
-        mean_abs = pickle.load(result)
-        mean_sq = pickle.load(result)
-        median_abs = pickle.load(result)
-        r2 = pickle.load(result)
-        exp_var_score = pickle.load(result)
-        y_pred_dt = pickle.load(result)
+        print("Mean absolute error regression loss for tree model:")
+        print(mean_abs)
+        print("Mean squared error regression loss for tree model:")
+        print(mean_sq)
+        print("Median absolute error regression loss for tree model:")
+        print(median_abs)
+        print("R^2 (coefficient of determination) regression score function for tree model:")
+        print(r2)
+        print("Explained variance regression score function for tree model:")
+        print(exp_var_score)
 
-    print("Mean absolute error regression loss for tree model:")
-    print(mean_abs)
-    print("Mean squared error regression loss for tree model:")
-    print(mean_sq)
-    print("Median absolute error regression loss for tree model:")
-    print(median_abs)
-    print("R^2 (coefficient of determination) regression score function for tree model:")
-    print(r2)
-    print("Explained variance regression score function for tree model:")
-    print(exp_var_score)
+    elif model_choice == 5:
+        with open('../trained_networks/rr_%d_data.pkl' % n_features, 'rb') as result:
+            clf = pickle.load(result)
+            mean_abs = pickle.load(result)
+            mean_sq = pickle.load(result)
+            median_abs = pickle.load(result)
+            r2 = pickle.load(result)
+            exp_var_score = pickle.load(result)
+            ridge_alpha = pickle.load(result)
+            y_pred_rr = pickle.load(result)
 
-    with open(RR_PICKLE, 'rb') as result:
-        clf = pickle.load(result)
-        mean_abs = pickle.load(result)
-        mean_sq = pickle.load(result)
-        median_abs = pickle.load(result)
-        r2 = pickle.load(result)
-        exp_var_score = pickle.load(result)
-        ridge_alpha = pickle.load(result)
-        y_pred_rr = pickle.load(result)
+        print("Mean absolute error regression loss for ridge regression model:")
+        print(mean_abs)
+        print("Mean squared error regression loss for ridge regression model:")
+        print(mean_sq)
+        print("Median absolute error regression loss for ridge regression model:")
+        print(median_abs)
+        print("R^2 (coefficient of determination) regression score function for ridge regression model:")
+        print(r2)
+        print("Explained variance regression score function for ridge regression model:")
+        print(exp_var_score)
+        print("Cross-validated value of the alpha parameter for ridge regression model:")
+        print(ridge_alpha)
 
-    print("Mean absolute error regression loss for ridge regression model:")
-    print(mean_abs)
-    print("Mean squared error regression loss for ridge regression model:")
-    print(mean_sq)
-    print("Median absolute error regression loss for ridge regression model:")
-    print(median_abs)
-    print("R^2 (coefficient of determination) regression score function for ridge regression model:")
-    print(r2)
-    print("Explained variance regression score function for ridge regression model:")
-    print(exp_var_score)
-    print("Cross-validated value of the alpha parameter for ridge regression model:")
-    print(ridge_alpha)
+    elif model_choice == 6:
+        with open('../trained_networks/brr_%d_data.pkl' % n_features, 'rb') as result:
+            clf = pickle.load(result)
+            mean_abs = pickle.load(result)
+            mean_sq = pickle.load(result)
+            median_abs = pickle.load(result)
+            r2 = pickle.load(result)
+            exp_var_score = pickle.load(result)
+            ridge_alpha = pickle.load(result)
+            y_pred_brr = pickle.load(result)
 
-    with open(BRR_PICKLE, 'rb') as result:
-        clf = pickle.load(result)
-        mean_abs = pickle.load(result)
-        mean_sq = pickle.load(result)
-        median_abs = pickle.load(result)
-        r2 = pickle.load(result)
-        exp_var_score = pickle.load(result)
-        ridge_alpha = pickle.load(result)
-        y_pred_brr = pickle.load(result)
+        print("Mean absolute error regression loss for Bayesian ridge regression model:")
+        print(mean_abs)
+        print("Mean squared error regression loss for Bayesian ridge regression model:")
+        print(mean_sq)
+        print("Median absolute error regression loss for Bayesian ridge regression model:")
+        print(median_abs)
+        print("R^2 (coefficient of determination) regression score function for Bayesian ridge regression model:")
+        print(r2)
+        print("Explained variance regression score function for Bayesian ridge regression model:")
+        print(exp_var_score)
+        print("Cross-validated value of the alpha parameter for Bayesian ridge regression model:")
+        print(ridge_alpha)
 
-    print("Mean absolute error regression loss for Bayesian ridge regression model:")
-    print(mean_abs)
-    print("Mean squared error regression loss for Bayesian ridge regression model:")
-    print(mean_sq)
-    print("Median absolute error regression loss for Bayesian ridge regression model:")
-    print(median_abs)
-    print("R^2 (coefficient of determination) regression score function for Bayesian ridge regression model:")
-    print(r2)
-    print("Explained variance regression score function for Bayesian ridge regression model:")
-    print(exp_var_score)
-    print("Cross-validated value of the alpha parameter for Bayesian ridge regression model:")
-    print(ridge_alpha)
+    elif model_choice == 7:
+        with open('../trained_networks/lasso_%d_data.pkl' % n_features, 'rb') as result:
+            clf = pickle.load(result)
+            mean_abs = pickle.load(result)
+            mean_sq = pickle.load(result)
+            median_abs = pickle.load(result)
+            r2 = pickle.load(result)
+            exp_var_score = pickle.load(result)
+            lasso_alpha = pickle.load(result)
+            y_pred_lasso = pickle.load(result)
 
-    with open(LASSO_PICKLE, 'rb') as result:
-        clf = pickle.load(result)
-        mean_abs = pickle.load(result)
-        mean_sq = pickle.load(result)
-        median_abs = pickle.load(result)
-        r2 = pickle.load(result)
-        exp_var_score = pickle.load(result)
-        lasso_alpha = pickle.load(result)
-        y_pred_lasso = pickle.load(result)
+        print("Mean absolute error regression loss for Lasso model:")
+        print(mean_abs)
+        print("Mean squared error regression loss for Lasso model:")
+        print(mean_sq)
+        print("Median absolute error regression loss for Lasso model:")
+        print(median_abs)
+        print("R^2 (coefficient of determination) regression score function for Lasso model:")
+        print(r2)
+        print("Explained variance regression score function for Lasso model:")
+        print(exp_var_score)
+        print("Cross-validated value of the alpha parameter for Lasso model:")
+        print(lasso_alpha)
 
-    print("Mean absolute error regression loss for Lasso model:")
-    print(mean_abs)
-    print("Mean squared error regression loss for Lasso model:")
-    print(mean_sq)
-    print("Median absolute error regression loss for Lasso model:")
-    print(median_abs)
-    print("R^2 (coefficient of determination) regression score function for Lasso model:")
-    print(r2)
-    print("Explained variance regression score function for Lasso model:")
-    print(exp_var_score)
-    print("Cross-validated value of the alpha parameter for Lasso model:")
-    print(lasso_alpha)
+    elif model_choice == 8:
+        return
+    else:
+        print("Please choose from list of available models only")
 
-    with open(XY_PICKLE, 'rb') as result:
-        x_train = pickle.load(result)
-        x_test = pickle.load(result)
-        y_train = pickle.load(result)
-        y_test = pickle.load(result)
-
-    lw = 2
+    """lw = 2
     plt.plot(y_test, y_pred_nn, lw=lw, label='ANN', marker='ro')
     plt.plot(y_test, y_pred_svm, lw=lw, label='SVM', marker='ro')
     plt.plot(y_test, y_pred_dt, lw=lw, label='Decision Trees', marker='ro')
@@ -218,4 +226,4 @@ def results():
     plt.ylabel('Predicted Y')
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.style.use('ggplot')
-    plt.show()
+    plt.show()"""
