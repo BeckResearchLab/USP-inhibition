@@ -68,3 +68,8 @@ Package requirements are listed [here](https://github.com/BeckResearchLab/USP-in
 Setup instructions for this package:
 - [Ubuntu](https://github.com/BeckResearchLab/USP-inhibition/docs/setup_instructions.txt)
 - Windows
+
+<br><p>
+Call graph for this Python application: 
+</p>
+<img src="https://cdn.rawgit.com/BeckResearchLab/USP-inhibition/master/docs/callgraph.gv.svg" alt="USP-inhibition call graph image" height="1200" width="300">
