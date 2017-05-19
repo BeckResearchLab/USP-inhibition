@@ -58,8 +58,8 @@ def extract_all_descriptors(df, column):
     p1 = Process(target=extract_constitution_descriptors, args=(df, column, url_list[0]))
     p1.start()
 
-    # p2 = Process(target=extract_topology_descriptors, args=(df, column, url_list[1]))
-    # p2.start()
+    p2 = Process(target=extract_topology_descriptors, args=(df, column, url_list[1]))
+    p2.start()
 
     p3 = Process(target=extract_con_descriptors, args=(df, column, url_list[2]))
     p3.start()
@@ -792,7 +792,10 @@ class TimeoutException(Exception):
     pass
 
 
-def timeout_handler(signum, frame):   # Custom signal handler
+def timeout_handler(signum, frame):
+
+    print('handler is called')
+    # Custom signal handler
     raise TimeoutException
 
 
