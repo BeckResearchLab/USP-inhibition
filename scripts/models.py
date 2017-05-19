@@ -28,16 +28,8 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
-LR_PICKLE = '../trained_networks/lr_data.pkl'
-NN_PICKLE = '../trained_networks/nn_data.pkl'
-SVM_PICKLE = '../trained_networks/svm_data.pkl'
-DT_PICKLE = '../trained_networks/dt_data.pkl'
-RR_PICKLE = '../trained_networks/rr_data.pkl'
-BRR_PICKLE = '../trained_networks/brr_data.pkl'
-LASSO_PICKLE = '../trained_networks/lasso_data.pkl'
 
-
-def run_models(x_train, y_train, x_test, y_test):
+def run_models(x_train, y_train, x_test, y_test, n_features):
     """
     Driving all machine learning models as parallel processes.
     :param x_train: features dataframe for model training
@@ -57,28 +49,28 @@ def run_models(x_train, y_train, x_test, y_test):
                              "8 for Random Forest Regressor:" + "\n"
                              ))
     if model_choice == 1:
-        build_linear(x_train, y_train, x_test, y_test)
+        build_linear(x_train, y_train, x_test, y_test, n_features)
     elif model_choice == 2:
-        build_nn(x_train, y_train, x_test, y_test)
+        build_nn(x_train, y_train, x_test, y_test, n_features)
     elif model_choice == 3:
-        build_svm(x_train, y_train, x_test, y_test)
+        build_svm(x_train, y_train, x_test, y_test, n_features)
     elif model_choice == 4:
-        build_tree(x_train, y_train, x_test, y_test)
+        build_tree(x_train, y_train, x_test, y_test, n_features)
     elif model_choice == 5:
-        build_ridge(x_train, y_train, x_test, y_test)
+        build_ridge(x_train, y_train, x_test, y_test, n_features)
     elif model_choice == 6:
-        build_bayesian_rr(x_train, y_train, x_test, y_test)
+        build_bayesian_rr(x_train, y_train, x_test, y_test, n_features)
     elif model_choice == 7:
-        build_lasso(x_train, y_train, x_test, y_test)
+        build_lasso(x_train, y_train, x_test, y_test, n_features)
     elif model_choice == 8:
-        build_forest(x_train, y_train, x_test, y_test)
+        build_forest(x_train, y_train, x_test, y_test, n_features)
     else:
         print("Please choose from list of available models only")
 
     return
 
 
-def build_linear(x_train, y_train, x_test, y_test):
+def build_linear(x_train, y_train, x_test, y_test, n_features):
     """
     Constructing a decision trees regression model from input dataframe
     :param x_train: features dataframe for model training
@@ -102,7 +94,7 @@ def build_linear(x_train, y_train, x_test, y_test):
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
 
-    with open(LR_PICKLE, 'wb') as results:
+    with open('../trained_networks/lr_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
@@ -114,7 +106,7 @@ def build_linear(x_train, y_train, x_test, y_test):
     return
 
 
-def build_nn(x_train, y_train, x_test, y_test):
+def build_nn(x_train, y_train, x_test, y_test, n_features):
     """
     Constructing a regression neural network model from input dataframe
     :param x_train: features dataframe for model training
@@ -149,7 +141,7 @@ def build_nn(x_train, y_train, x_test, y_test):
 
     print(res_gp.x[0])
     print(res_gp.x[1])
-    with open(NN_PICKLE, 'wb') as results:
+    with open('../trained_networks/nn_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(res_gp, results, pickle.HIGHEST_PROTOCOL)
 
     """# Finding the optimal set of params for each variable in the training of the neural network
@@ -168,7 +160,7 @@ def build_nn(x_train, y_train, x_test, y_test):
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
 
-    with open(NN_PICKLE, 'wb') as results:
+    with open('../trained_networks/nn_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(net, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
@@ -181,7 +173,7 @@ def build_nn(x_train, y_train, x_test, y_test):
     return
 
 
-def build_svm(x_train, y_train, x_test, y_test):
+def build_svm(x_train, y_train, x_test, y_test, n_features):
     """
     Constructing a support vector regression model from input dataframe
     :param x_train: features dataframe for model training
@@ -206,7 +198,7 @@ def build_svm(x_train, y_train, x_test, y_test):
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
 
-    with open(SVM_PICKLE, 'wb') as results:
+    with open('../trained_networks/svm_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
@@ -218,7 +210,7 @@ def build_svm(x_train, y_train, x_test, y_test):
     return
 
 
-def build_tree(x_train, y_train, x_test, y_test):
+def build_tree(x_train, y_train, x_test, y_test, n_features):
     """
     Constructing a decision trees regression model from input dataframe
     :param x_train: features dataframe for model training
@@ -252,7 +244,7 @@ def build_tree(x_train, y_train, x_test, y_test):
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
 
-    with open(DT_PICKLE, 'wb') as results:
+    with open('../trained_networks/dt_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
@@ -264,7 +256,7 @@ def build_tree(x_train, y_train, x_test, y_test):
     return
 
 
-def build_ridge(x_train, y_train, x_test, y_test):
+def build_ridge(x_train, y_train, x_test, y_test, n_features):
     """
     Constructing a ridge regression model from input dataframe
     :param x_train: features dataframe for model training
@@ -290,7 +282,7 @@ def build_ridge(x_train, y_train, x_test, y_test):
     # Optimal ridge regression alpha value from CV
     ridge_alpha = clf.alpha_
 
-    with open(RR_PICKLE, 'wb') as results:
+    with open('../trained_networks/rr_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
@@ -303,7 +295,7 @@ def build_ridge(x_train, y_train, x_test, y_test):
     return
 
 
-def build_bayesian_rr(x_train, y_train, x_test, y_test):
+def build_bayesian_rr(x_train, y_train, x_test, y_test, n_features):
     """
     Constructing a Bayesian ridge regression model from input dataframe
     :param x_train: features dataframe for model training
@@ -329,7 +321,7 @@ def build_bayesian_rr(x_train, y_train, x_test, y_test):
     # Optimal ridge regression alpha value from CV
     ridge_alpha = clf.alpha_
 
-    with open(BRR_PICKLE, 'wb') as results:
+    with open('../trained_networks/brr_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
@@ -342,7 +334,7 @@ def build_bayesian_rr(x_train, y_train, x_test, y_test):
     return
 
 
-def build_lasso(x_train, y_train, x_test, y_test):
+def build_lasso(x_train, y_train, x_test, y_test, n_features):
     """
     Constructing a Lasso linear model with cross validation from input dataframe
     :param x_train: features dataframe for model training
@@ -369,7 +361,7 @@ def build_lasso(x_train, y_train, x_test, y_test):
     # Optimal ridge regression alpha value from CV
     lasso_alpha = clf.alpha_
 
-    with open(LASSO_PICKLE, 'wb') as results:
+    with open('../trained_networks/lasso_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
@@ -382,7 +374,7 @@ def build_lasso(x_train, y_train, x_test, y_test):
     return
 
 
-def build_forest(x_train, y_train, x_test, y_test):
+def build_forest(x_train, y_train, x_test, y_test, n_features):
     """
     Constructing a random forest regression model from input dataframe
     :param x_train: features dataframe for model training
@@ -416,7 +408,7 @@ def build_forest(x_train, y_train, x_test, y_test):
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
 
-    with open(DT_PICKLE, 'wb') as results:
+    with open('../trained_networks/rfr_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(mean_sq, results, pickle.HIGHEST_PROTOCOL)
