@@ -11,6 +11,7 @@ import genalgo
 import models
 import numpy as np
 import pandas as pd
+import plots
 import post_process
 import sklearn
 try:
@@ -41,7 +42,8 @@ def main():
                        "3 to create ML models" + "\n" +
                        "4 to display model results" + "\n" +
                        "5 to plot the data set using limited features" + "\n" +
-                       "6 to run a genetic algorithm" + "\n"
+                       "6 to plot the spread of inhibition scores in the dataset" + "\n" +
+                       "7 to run a genetic algorithm" + "\n"
                        ))
     if choice == 1:
 
@@ -61,7 +63,7 @@ def main():
         df.reset_index(drop=True, inplace=True)
 
         # Drop non-descriptor columns before feature space reduction
-        df_x = df.drop(['Activity_Score', 'CID'], axis=1)
+        df_x = df.drop([TARGET_COLUMN, 'CID'], axis=1)
 
         # Creating target column
         df_y = df.drop(['SMILES', 'CID'], axis=1)
@@ -103,8 +105,8 @@ def main():
         x_test = utils.change_nan_infinite(x_test)
         y_test = utils.change_nan_infinite(y_test)
 
-        y_train = pd.DataFrame(y_train, columns=['Activity_Score'])
-        y_test = pd.DataFrame(y_test, columns=['Activity_Score'])
+        y_train = pd.DataFrame(y_train, columns=[TARGET_COLUMN])
+        y_test = pd.DataFrame(y_test, columns=[TARGET_COLUMN])
         y_train.to_csv('../data/y_train_postprocessing.csv')
         y_test.to_csv('../data/y_test_postprocessing.csv')
 
@@ -134,7 +136,8 @@ def main():
         y_test.drop(y_test.columns[0], axis=1, inplace=True)
 
         print("Generating models")
-        models.run_models(x_train, y_train, x_test, y_test, n_features)
+        models.run_models(np.array(x_train), np.array(y_train).ravel(), np.array(x_test),
+                          np.array(y_test).ravel(), n_features)
 
     elif choice == 4:
         post_process.results()
@@ -153,10 +156,22 @@ def main():
         x_test.drop(x_test.columns[0], axis=1, inplace=True)
         y_train.drop(y_train.columns[0], axis=1, inplace=True)
         y_test.drop(y_test.columns[0], axis=1, inplace=True)
-        utils.plot_features(x_train, y_train, x_test, y_test)
+        plots.plot_features(x_train, y_train, x_test, y_test)
 
     elif choice == 6:
+        y_train = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                              'data/y_train_postprocessing.csv')
+        y_test = pd.read_csv('https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/'
+                             'data/y_test_postprocessing.csv')
+        y_train.drop(y_train.columns[0], axis=1, inplace=True)
+        y_test.drop(y_test.columns[0], axis=1, inplace=True)
+        plots.plot_y_dist(y_train, y_test)
+
+    elif choice == 7:
         genalgo.main()
+
+    else:
+        print("Choose from available options above")
 
 
 if __name__ == "__main__":
