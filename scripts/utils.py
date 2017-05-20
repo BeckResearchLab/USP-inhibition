@@ -176,6 +176,7 @@ def choose_features(x_train, y_train, x_test, column_names):
 
     # Random forest feature importance
     clf = RandomForestRegressor(n_jobs=-1, random_state=1, n_estimators=20, max_depth=10)
+    # Random state has int value for non-random sampling
     clf.fit(x_train, y_train)
     feature_importance = clf.feature_importances_
     scores_table = pd.DataFrame({'feature': column_names, 'scores':
