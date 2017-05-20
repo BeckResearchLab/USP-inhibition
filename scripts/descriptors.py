@@ -55,6 +55,10 @@ def extract_all_descriptors(df, column):
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/data/df_morse.csv',
                 'https://s3-us-west-2.amazonaws.com/pphilip-usp-inhibition/data/df_whim.csv']
 
+    # The 2-D descriptors (p1 to p12) are run in parallel as they are independent
+    # of each other during calculations. The 3-D descriptors (p13 to p17) are run
+    # in series as they access the same file during computation.
+
     p1 = Process(target=extract_constitution_descriptors, args=(df, column, url_list[0]))
     p1.start()
 
