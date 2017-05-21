@@ -66,9 +66,6 @@ def results():
             exp_var_score = pickle.load(result)
             y_pred_nn = pickle.load(result)
 
-        clf.save_params_to('/tmp/clf.params')
-        net.save_params_to('/tmp/net.params')
-
         print("A list of named tuples of scores for each set of parameter "
               "combinations in param_grid for the NN model:")
         print("[parameters, mean_validation_score over CV folds, the list of "
@@ -116,7 +113,7 @@ def results():
         print(exp_var_score)
 
     elif model_choice == 4:
-        with open(DT_PICKLE, 'rb') as result:
+        with open('../trained_networks/dt_%d_data.pkl' % n_features, 'rb') as result:
             clf = pickle.load(result)
             mean_abs = pickle.load(result)
             mean_sq = pickle.load(result)
@@ -168,7 +165,6 @@ def results():
             median_abs = pickle.load(result)
             r2 = pickle.load(result)
             exp_var_score = pickle.load(result)
-            ridge_alpha = pickle.load(result)
             y_pred_brr = pickle.load(result)
 
         print("Mean absolute error regression loss for Bayesian ridge regression model:")
@@ -181,8 +177,8 @@ def results():
         print(r2)
         print("Explained variance regression score function for Bayesian ridge regression model:")
         print(exp_var_score)
-        print("Cross-validated value of the alpha parameter for Bayesian ridge regression model:")
-        print(ridge_alpha)
+        print("Best parameters for Bayesian ridge regression model:")
+        print(clf.best_params_)
 
     elif model_choice == 7:
         with open('../trained_networks/lasso_%d_data.pkl' % n_features, 'rb') as result:
@@ -192,7 +188,6 @@ def results():
             median_abs = pickle.load(result)
             r2 = pickle.load(result)
             exp_var_score = pickle.load(result)
-            lasso_alpha = pickle.load(result)
             y_pred_lasso = pickle.load(result)
 
         print("Mean absolute error regression loss for Lasso model:")
@@ -205,8 +200,8 @@ def results():
         print(r2)
         print("Explained variance regression score function for Lasso model:")
         print(exp_var_score)
-        print("Cross-validated value of the alpha parameter for Lasso model:")
-        print(lasso_alpha)
+        print("Best parameters for Lasso model:")
+        print(clf.best_params_)
 
     elif model_choice == 8:
         return
