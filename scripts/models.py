@@ -12,14 +12,14 @@ import sklearn
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
+from scipy.stats import randint as sp_randint
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import RidgeCV, BayesianRidge, LassoCV
+from sklearn.linear_model import Ridge, BayesianRidge, Lasso
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.svm import LinearSVR
 from sklearn.tree import DecisionTreeRegressor
-from skopt import gp_minimize
-from skopt.space import Integer
 
 __author__ = "Pearl Philip"
 __credits__ = "David Beck"
@@ -115,40 +115,29 @@ def build_nn(x_train, y_train, x_test, y_test, n_features):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    # scaled_tanh = lasagne.nonlinearities.ScaledTanH(scale_in=2. / 3, scale_out=1.7159)
-    reg = NeuralNet(layers=[('input', InputLayer),
+    net = NeuralNet(layers=[('input', InputLayer),
                             ('hidden0', DenseLayer),
                             ('hidden1', DenseLayer),
                             ('output', DenseLayer)],
                     input_shape=(None, x_train.shape[1]),  # Number of i/p nodes = number of columns in x
+                    hidden0_num_units=15,
                     hidden0_nonlinearity=lasagne.nonlinearities.softmax,
+                    hidden1_num_units=17,
                     hidden1_nonlinearity=lasagne.nonlinearities.softmax,
                     output_num_units=1,  # Number of o/p nodes = number of columns in y
-                    output_nonlinearity=lasagne.nonlinearities.linear,
-                    max_epochs=1000,
+                    output_nonlinearity=lasagne.nonlinearities.softmax,
+                    max_epochs=100,
+                    update_learning_rate=0.01,
                     regression=True,
                     verbose=1)
 
-    param_grid = [(2, 5), (2, 5)]
-
-    def objective(params):
-        hidden0_num_units, hidden1_num_units = params
-        reg.set_params(hidden0_num_units=hidden0_num_units, hidden1_num_units=hidden1_num_units)
-
-        return -np.mean(cross_val_score(reg, x_train, y_train, cv=5, n_jobs=-1, scoring="neg_mean_absolute_error"))
-
-    res_gp = gp_minimize(objective, param_grid, n_calls=100, random_state=0)
-
-    print(res_gp.x[0])
-    print(res_gp.x[1])
-    with open('../trained_networks/nn_%d_data.pkl' % n_features, 'wb') as results:
-        pickle.dump(res_gp, results, pickle.HIGHEST_PROTOCOL)
-
-    """# Finding the optimal set of params for each variable in the training of the neural network
-    clf = sklearn.model_selection.GridSearchCV(net, param_grid, verbose=0, n_jobs=18, cv=5) # find the score used here
+    # Finding the optimal set of params for each variable in the training of the neural network
+    param_dist = {'hidden0_num_units':sp_randint(3, 30), 'hidden1_num_units':sp_randint(3, 30)}
+    clf = RandomizedSearchCV(estimator=net, param_distributions=param_dist,
+                             n_iter=15, n_jobs=-1)
     clf.fit(x_train, y_train)
-
     y_pred = clf.predict(x_test)
+
     # Mean absolute error regression loss
     mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
     # Mean squared error regression loss
@@ -168,7 +157,7 @@ def build_nn(x_train, y_train, x_test, y_test, n_features):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)"""
+        pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
     return
 
@@ -183,7 +172,9 @@ def build_svm(x_train, y_train, x_test, y_test, n_features):
     :return: None
     """
 
-    clf = LinearSVR(random_state=1)
+    clf = LinearSVR(random_state=1, dual=False, epsilon=0,
+                    loss='squared_epsilon_insensitive')
+    # Random state has int value for non-random sampling
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -219,19 +210,15 @@ def build_tree(x_train, y_train, x_test, y_test, n_features):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    clf = DecisionTreeRegressor()
-
-    def objective(params):
-        max_depth = params
-        clf.set_params(max_depth=max_depth)
-        return -np.mean(cross_val_score(clf, x_train, y_train, n_jobs=-1,
-                                        scoring="neg_mean_absolute_error"))
-    space = [Integer(1, 20)]
-    res_gp = gp_minimize(objective, space, n_calls=100, random_state=0)
-    print("""Best parameters:- max_depth=%d""" % (res_gp.x[0]))
-    clf = DecisionTreeRegressor(max_depth=res_gp.x[0])
+    model = DecisionTreeRegressor()
+    param_dist = {'max_depth': sp_randint(1, 15),
+                  'min_samples_split': sp_randint(2, 15)}
+    clf = RandomizedSearchCV(estimator=model, param_distributions=param_dist,
+                             n_iter=15, n_jobs=-1)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
+
+    print(clf.best_params_, clf.best_score_)
 
     # Mean absolute error regression loss
     mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
@@ -265,7 +252,7 @@ def build_ridge(x_train, y_train, x_test, y_test, n_features):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    clf = RidgeCV()
+    clf = Ridge()
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -344,9 +331,15 @@ def build_lasso(x_train, y_train, x_test, y_test, n_features):
     :return: None
     """
 
-    clf = LassoCV()
+    model = Lasso(random_state=1)
+    # Random state has int value for non-random sampling
+    param_dist = {'alpha': np.arange( 0.0001, 1, 0.001 ).tolist()}
+    clf = RandomizedSearchCV(estimator=model, param_distributions=param_dist,
+                             n_iter=20, n_jobs=-1)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
+
+    print(clf.best_params_, clf.best_score_)
 
     # Mean absolute error regression loss
     mean_abs = sklearn.metrics.mean_absolute_error(y_test, y_pred)
@@ -358,8 +351,6 @@ def build_lasso(x_train, y_train, x_test, y_test, n_features):
     r2 = sklearn.metrics.r2_score(y_test, y_pred)
     # Explained variance regression score function
     exp_var_score = sklearn.metrics.explained_variance_score(y_test, y_pred)
-    # Optimal ridge regression alpha value from CV
-    lasso_alpha = clf.alpha_
 
     with open('../trained_networks/lasso_%d_data.pkl' % n_features, 'wb') as results:
         pickle.dump(clf, results, pickle.HIGHEST_PROTOCOL)
@@ -368,7 +359,6 @@ def build_lasso(x_train, y_train, x_test, y_test, n_features):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(lasso_alpha, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
     return
@@ -383,17 +373,11 @@ def build_forest(x_train, y_train, x_test, y_test, n_features):
     :param y_test: target dataframe for model testing
     :return: None
     """
-    clf = RandomForestRegressor()
-
-    def objective(params):
-        max_depth = params
-        clf.set_params(max_depth=max_depth)
-        return -np.mean(cross_val_score(clf, x_train, y_train, n_jobs=-1,
-                                        scoring="neg_mean_absolute_error"))
-    space = [Integer(1, 20)]
-    res_gp = gp_minimize(objective, space, n_calls=100, random_state=0)
-    print("""Best parameters:- max_depth=%d""" % (res_gp.x[0]))
-    clf = RandomForestRegressor(max_depth=res_gp.x[0])
+    model = RandomForestRegressor()
+    param_dist = {'max_depth': sp_randint(1, 15),
+                  'min_samples_split': sp_randint(2, 15)}
+    clf = RandomizedSearchCV(estimator=model, param_distributions=param_dist,
+                             n_iter=15, n_jobs=-1)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
