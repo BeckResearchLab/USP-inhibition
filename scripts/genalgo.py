@@ -18,28 +18,29 @@ __maintainer__ = "Pearl Philip"
 __email__ = "pphilip@uw.edu"
 __status__ = "Development"
 
-results_pickle = '../trained_networks/rr_25_data.pkl'
-with open(results_pickle, 'rb') as result:
+N_FEATURES = 25
+with open('../trained_networks/rr_%d_data.pkl' % N_FEATURES, 'rb') as result:
     CLF = pickle.load(result)
 
-
 def main():
-    target = 100
-    p_count = 100
-    i_length = 270
-    i_min = -2
-    i_max = 2
-    p = np.array(population(p_count, i_length, i_min, i_max))  # Shape -> (p_count, i_length) = (100, 270)
-    fitness_history = [grade(p, target), ]
-    for i in range(100):
+    target = 100  # Activity score ideal to measure fitness of individuals
+    p_count = 100  # Population size
+    i_length = N_FEATURES # Number of features possesses by individuals
+    i_min = -10  # Upper bound of feature value
+    i_max = 10  # Lower bound of feature value
+    p = population(p_count, i_length, i_min, i_max)
+    fitness_history = [grade(p, target),]
+    for i in xrange(100):
         p = evolve(p, target)
-        print(p)
         fitness_history.append(grade(p, target))
+        solution = p
+    solution = pd.DataFrame(solution)
+    # Saving parents to file
+    solution.to_csv('../data/genalgo_results_%d.csv' % N_FEATURES)
 
+    # Generations' fitness gradually approach zero
     for datum in fitness_history:
         print(datum)
-
-    p.to_csv('../data/genalgo_results.csv')
 
 
 def individual(length, minimum, maximum):
@@ -73,7 +74,8 @@ def fitness(individuals, target):
     :param individuals: the individual to evaluate
     :param target: the target number individuals are aiming for
     """
-    individuals = individuals.reshape((1, -1))
+    
+    individuals = np.array(individuals).reshape((1, -1))
     activity = CLF.predict(individuals)
 
     return abs(target - activity)
