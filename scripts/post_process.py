@@ -66,20 +66,6 @@ def results():
             exp_var_score = pickle.load(result)
             y_pred_nn = pickle.load(result)
 
-        print("A list of named tuples of scores for each set of parameter "
-              "combinations in param_grid for the NN model:")
-        print("[parameters, mean_validation_score over CV folds, the list of "
-              "scores for each fold]")
-        print(clf.grid_scores_)
-        print("Estimator that was chosen by the search with the highest score for the NN model:")
-        print(clf.best_estimator_)
-        print("Score of best_estimator on the held out data for the NN model:")
-        print(clf.best_score_)
-        print("Parameter setting that gave the best results on the held out data for the NN model:")
-        print(clf.best_params_)
-        print("Scorer function used on the held out data to choose the best "
-              "parameters for the NN model:")
-        print(clf.scorer_)
         print("Mean absolute error regression loss for NN model:")
         print(mean_abs)
         print("Mean squared error regression loss for NN model:")
@@ -141,7 +127,6 @@ def results():
             median_abs = pickle.load(result)
             r2 = pickle.load(result)
             exp_var_score = pickle.load(result)
-            ridge_alpha = pickle.load(result)
             y_pred_rr = pickle.load(result)
 
         print("Mean absolute error regression loss for ridge regression model:")
@@ -207,18 +192,3 @@ def results():
         return
     else:
         print("Please choose from list of available models only")
-
-    """lw = 2
-    plt.plot(y_test, y_pred_nn, lw=lw, label='ANN', marker='ro')
-    plt.plot(y_test, y_pred_svm, lw=lw, label='SVM', marker='ro')
-    plt.plot(y_test, y_pred_dt, lw=lw, label='Decision Trees', marker='ro')
-    plt.plot(y_test, y_pred_rr, lw=lw, label='Ridge Regression', marker='ro')
-    plt.plot(y_test, y_pred_brr, lw=lw, label='Bayesian Ridge Regression', marker='ro')
-    plt.plot(y_test, y_pred_lasso, lw=lw, label='Lasso', marker='ro')
-    plt.plot(y_test, y_test)
-    plt.title("Comparison of predictions vs true values from different models", marker='ro')
-    plt.xlabel('Actual Y')
-    plt.ylabel('Predicted Y')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-    plt.style.use('ggplot')
-    plt.show()"""
