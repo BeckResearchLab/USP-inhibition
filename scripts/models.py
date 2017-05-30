@@ -129,7 +129,7 @@ def build_nn(x_train, y_train, x_test, y_test, n_features):
                     max_epochs=100,
                     update_learning_rate=0.01,
                     regression=True,
-                    verbose=1)
+                    verbose=0)
 
     # Finding the optimal set of params for each variable in the training of the neural network
     param_dist = {'hidden0_num_units':sp_randint(3, 30), 'hidden1_num_units':sp_randint(3, 30)}
@@ -276,7 +276,6 @@ def build_ridge(x_train, y_train, x_test, y_test, n_features):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(ridge_alpha, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
     return
@@ -315,7 +314,6 @@ def build_bayesian_rr(x_train, y_train, x_test, y_test, n_features):
         pickle.dump(median_abs, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(r2, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(exp_var_score, results, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(ridge_alpha, results, pickle.HIGHEST_PROTOCOL)
         pickle.dump(y_pred, results, pickle.HIGHEST_PROTOCOL)
 
     return
@@ -335,7 +333,7 @@ def build_lasso(x_train, y_train, x_test, y_test, n_features):
     # Random state has int value for non-random sampling
     param_dist = {'alpha': np.arange( 0.0001, 1, 0.001 ).tolist()}
     clf = RandomizedSearchCV(estimator=model, param_distributions=param_dist,
-                             n_iter=20, n_jobs=-1)
+                             n_iter=15, n_jobs=-1)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
