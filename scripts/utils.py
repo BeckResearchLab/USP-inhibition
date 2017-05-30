@@ -15,6 +15,8 @@ import numpy as np
 import pandas as pd
 import boto.s3
 from boto.s3.key import Key
+from scipy.stats import randint as sp_randint
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.ensemble import RandomForestRegressor
 
 
@@ -173,11 +175,9 @@ def choose_features(x_train, y_train, x_test, column_names):
     :param y_train: Training target values
     :param column_names: Names of columns in x
     """
-
     # Random forest feature importance
-    clf = RandomForestRegressor(n_jobs=-1, random_state=1, n_estimators=20, max_depth=10)
-    # Random state has int value for non-random sampling
-    clf.fit(x_train, y_train)
+    clf = RandomForestRegressor(n_jobs=-1, random_state=1, n_estimators=10)
+    clf.fit(x_train, y_train.ravel())
     feature_importance = clf.feature_importances_
     scores_table = pd.DataFrame({'feature': column_names, 'scores':
                                  feature_importance}).sort_values(by=['scores'], ascending=False)
